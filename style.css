@@ -18,19 +18,27 @@ input, select, button {
     margin: 5px;
 }
 
+.table-container {
+    overflow-x: auto; /* yatay kaydırma */
+    -webkit-overflow-scrolling: touch; /* iOS kaydırması */
+}
+
 table {
     width: 100%;
-    max-width: 1000px;
+    min-width: 700px; /* kolonlar sıkışmasın */
     margin: auto;
     border-collapse: collapse;
     background: white;
+    position: relative;
 }
 
 th, td {
     border: 1px solid #ccc;
     padding: 10px;
     text-align: center;
-    min-height: 40px;
+    min-height: 45px;
+    vertical-align: middle;
+    font-size: 13px;
 }
 
 th {
@@ -158,6 +166,21 @@ table th:first-child {
     text-align: center;
     padding: 12px;
     font-size: 12px; /* veya 11px, ihtiyaca göre */    
+}
+
+/* ===================== MOBILE ===================== */
+@media (max-width: 600px) {
+    body { padding: 10px; }
+
+    .menu { flex-direction: column; gap:10px; }
+    .menu button { width: 100%; }
+
+    table { display: block; white-space: nowrap; }
+    th, td { font-size: 10px; padding: 5px; }
+
+    .form input, .form select, .form button { width: 100%; box-sizing: border-box; margin-bottom: 8px; }
+
+    .ders-blok { font-size: 0.8em; padding: 4px; width: 100%; }
 }
 
 /* Mobil ekranlar için */
