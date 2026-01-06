@@ -233,28 +233,37 @@ table th:first-child {
 
 .ay-kayit {
     display: grid;
-    grid-template-columns: 1.2fr 1fr 0.6fr 0.8fr 40px;
-    gap: 6px;
+    grid-template-columns: 1.3fr 1fr 0.5fr 0.7fr 32px;
+    gap: 4px;
     align-items: center;
-    padding: 6px 4px;
+    padding: 3px 4px;   /* 🔽 küçüldü */
     border-bottom: 1px solid #eee;
-    font-size: 12px;
+    font-size: 11px;
+    line-height: 1;
 }
+
 
 .ay-kayit input {
+    height: 22px;          /* 🔽 default 34px → 22px */
+    padding: 2px 4px;
     font-size: 11px;
-    padding: 3px 5px;
 }
 
+
 .ay-kayit strong {
-    font-size: 12px;
+    font-size: 11px;
     white-space: nowrap;
 }
 
+
 .ay-kayit button {
-    padding: 2px 6px;
+    height: 22px;
+    padding: 0;
     font-size: 12px;
+    line-height: 1;
+    border-radius: 4px;
 }
+
 
 .ay-kayit button {
     background: #e74c3c;
@@ -262,4 +271,12 @@ table th:first-child {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.ay-kayit:hover {
+    background: #f6f9fc;
+}
+
+.modal {
+    padding: 15px;
 }
