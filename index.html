@@ -12,6 +12,7 @@
 <div class="menu">
     <button onclick="sayfaGoster('takvim')">📅 Haftalık Takvim</button>
     <button onclick="sayfaGoster('kazanc')">💰 Aylık Kazanç</button>
+    <button onclick="sayfaGoster('rapor')">📄 PDF Rapor</button> </div>
 </div>
 
 <!-- ================= TAKVİM SAYFASI ================= -->
@@ -135,7 +136,9 @@
 
         <input type="date" id="kazancTarih">
         <input type="number" id="kazancSure" placeholder="Ders Süresi (saat)" step="0.5">
-
+        <label style="font-size:13px; display: block; margin: 10px 0;">
+            <input type="checkbox" id="kazancOdeme"> Ödeme Alındı
+        </label>
         <button onclick="kazancEkle()">Ders Kaydet</button>
     </div>
 
@@ -185,6 +188,31 @@
 
 
     <ul id="kazancListe"></ul>
+</div>
+
+<!-- ================= PDF SAYFASI ================= -->
+
+<div id="raporSayfa" style="display:none">
+    <h1>Ders Raporu Oluştur</h1>
+    <div class="form no-print">
+        <select id="raporYil">
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+        </select>
+        <select id="raporAy">
+            <option value="hepsi">Tüm Aylar</option>
+            <option value="0">Ocak</option>
+            <option value="1">Şubat</option>
+            </select>
+        <select id="raporOgrenci">
+            <option value="hepsi">Tüm Öğrenciler</option>
+        </select>
+        <button onclick="raporOlustur()">Raporu Hazırla</button>
+        <button style="background:#27ae60; color:white;" onclick="window.print()">PDF Olarak İndir</button>
+    </div>
+
+    <div id="raporOnizleme" class="rapor-alan">
+        </div>
 </div>
 
 <!-- 🔥 SCRIPT EN ALTTA -->

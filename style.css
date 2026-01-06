@@ -233,13 +233,13 @@ table th:first-child {
 
 .ay-kayit {
     display: grid;
-    grid-template-columns: 1.3fr 1fr 0.5fr 0.7fr 32px;
-    gap: 4px;
-    align-items: center;
-    padding: 3px 4px;   /* 🔽 küçüldü */
+    /* Sırasıyla: Sil, İsim, Tarih, Saat, Ücret, Ödeme Durumu */
+    grid-template-columns: 35px 1.5fr 0.8fr 0.6fr 1fr 40px;
+    gap: 8px;
+    align-items: center; /* Dikeyde her şeyi ortalar */
+    padding: 10px 5px;
     border-bottom: 1px solid #eee;
-    font-size: 11px;
-    line-height: 1;
+    font-size: 13px;
 }
 
 
@@ -279,4 +279,70 @@ table th:first-child {
 
 .modal {
     padding: 15px;
+}
+
+.odeme-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 1;
+}
+.sil-btn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    height: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media print {
+    /* Menü, form ve butonları gizle */
+    .menu, .form, button, h1 { 
+        display: none !important; 
+    }
+
+    /* Sayfa yapısını ayarla */
+    @page {
+        size: auto;
+        margin: 10mm; /* Kağıt kenar boşluğu */
+    }
+
+    body {
+        background: white;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* Raporun sayfaya sığması için zorla */
+    .rapor-alan {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+    }
+
+    /* Tablonun taşmasını engelle */
+    table {
+        width: 100% !important;
+        table-layout: fixed; /* Hücre genişliklerini sabitler */
+        word-wrap: break-word; /* Uzun yazıları alt satıra atar */
+        font-size: 10pt; /* Yazıcı için ideal font boyutu */
+    }
+
+    th, td {
+        padding: 5px !important;
+        border: 1px solid #000 !important;
+    }
 }

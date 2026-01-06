@@ -228,7 +228,7 @@ function kazancEkle() {
     const ogrenci = document.getElementById("kazancOgrenci").value;
     const tarih = document.getElementById("kazancTarih").value;
     const sure = parseFloat(document.getElementById("kazancSure").value);
-
+    const odemeAlindi = document.getElementById("kazancOdeme").checked; // 👈 Checkbox durumu
     if (!ogrenci || !tarih || !sure) {
         alert("Tüm alanları doldurun");
         return;
@@ -248,7 +248,8 @@ function kazancEkle() {
         ogrenci,
         tarih,
         sure,
-        ucret: Number(ders.ucret)
+        ucret: Number(ders.ucret),
+        odemeDurumu: odemeAlindi // 👈 true veya false olarak kaydediyoruz
     };
 
     const kayitlar = JSON.parse(localStorage.getItem("kazancKayitlari")) || [];
@@ -256,6 +257,7 @@ function kazancEkle() {
     localStorage.setItem("kazancKayitlari", JSON.stringify(kayitlar));
 
     kazancTablosuCiz();
+    document.getElementById("kazancOdeme").checked = false; // Formu sıfırla
 }
 
 
@@ -271,20 +273,20 @@ function kazancTablosuCiz() {
 
     kayitlar.forEach(k => {
         const tarih = new Date(k.tarih);
-
         if (tarih.getFullYear() === yil) {
             const ay = tarih.getMonth();
-            const tutar = k.sure * k.ucret;
+            
+            // ❗ SADECE ÖDEMESİ ALINANLARI HESAPLA (İsteğine göre değiştirebilirsin)
+            // Eğer tüm derslerin toplamda görünmesini istiyorsan aşağıdaki 'if'i kaldırabilirsin.
+            if (k.odemeDurumu === true) { 
+                const tutar = k.sure * k.ucret;
+                aylikToplam[ay] += tutar;
 
-            // Genel toplam
-            aylikToplam[ay] += tutar;
-
-            // Öğrenci bazlı
-            if (!ogrenciToplam[k.ogrenci]) {
-                ogrenciToplam[k.ogrenci] = Array(12).fill(0);
+                if (!ogrenciToplam[k.ogrenci]) {
+                    ogrenciToplam[k.ogrenci] = Array(12).fill(0);
+                }
+                ogrenciToplam[k.ogrenci][ay] += tutar;
             }
-
-            ogrenciToplam[k.ogrenci][ay] += tutar;
         }
     });
 
@@ -317,7 +319,6 @@ function kazancTablosuCiz() {
         tbody.appendChild(tr);
     });
 }
-
 function ayDetayAc(ayIndex) {
     const yil = Number(document.getElementById("yilSecim").value);
     const kayitlar = JSON.parse(localStorage.getItem("kazancKayitlari")) || [];
@@ -327,11 +328,8 @@ function ayDetayAc(ayIndex) {
         return t.getFullYear() === yil && t.getMonth() === ayIndex;
     });
 
-    const ayAdlari = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran",
-                      "Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
-
-    document.getElementById("ayModalBaslik").innerText =
-        `${ayAdlari[ayIndex]} ${yil} Ders Kayıtları`;
+    const ayAdlari = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+    document.getElementById("ayModalBaslik").innerText = `${ayAdlari[ayIndex]} - Ders Detayları`;
 
     const liste = document.getElementById("ayKayitListe");
     liste.innerHTML = "";
@@ -340,27 +338,44 @@ function ayDetayAc(ayIndex) {
         liste.innerHTML = "<p>Bu ay için kayıt yok.</p>";
     }
 
-    ayKayitlari.forEach((k, index) => {
+    ayKayitlari.forEach((k) => {
         const div = document.createElement("div");
         div.className = "ay-kayit";
 
-        div.innerHTML = `
-            <input type="text" value="${k.ogrenci}"
-               onchange="kayitGuncelle(${k.id}, 'ogrenci', this.value)">
-            <input type="date" value="${k.tarih}"
-               oonchange="kayitGuncelle(${k.id}, 'tarih', this.value)">
-            <input type="number" step="0.5" value="${k.sure}"
-               onchange="kayitGuncelle(${k.id}, 'sure', this.value)">
-            <strong>${(k.sure * k.ucret).toFixed(2)} ₺</strong>
-            <button onclick="kayitSil(${k.id})">🗑️</button>
-        `;
+        // Ödeme durumuna göre stil ve yazı ayarı
+        const btnMetin = k.odemeDurumu ? "✅" : "❌";
+        const btnRenk = k.odemeDurumu ? "#2ecc71" : "#f39c12";
 
-        document.getElementById("ayKayitListe").appendChild(div);
+        div.innerHTML = `
+            <button class="sil-btn" onclick="kayitSil(${k.id})">🗑️</button>
+            <span style="font-weight:bold">${k.ogrenci}</span>
+            <span>${k.tarih.split('-').reverse().slice(0,2).join('.')}</span>
+            <span>${k.sure} sa</span>
+            <strong style="text-align:right">${(k.sure * k.ucret).toFixed(2)} ₺</strong>
+            <button class="odeme-btn" style="background:${btnRenk};" 
+                onclick="odemeDurumuDegistir(${k.id})">${btnMetin}</button>
+        `;
+        liste.appendChild(div);
     });
 
-
-
     document.getElementById("ayModalArka").style.display = "flex";
+}
+
+function odemeDurumuDegistir(id) {
+    let kayitlar = JSON.parse(localStorage.getItem("kazancKayitlari")) || [];
+    const kayit = kayitlar.find(k => k.id === id);
+    
+    if (kayit) {
+        kayit.odemeDurumu = !kayit.odemeDurumu; // true ise false, false ise true yapar
+        localStorage.setItem("kazancKayitlari", JSON.stringify(kayitlar));
+        
+        // Modalın içeriğini ve tabloyu güncelle
+        kazancTablosuCiz();
+        
+        // Modalı kapatmadan içeriği yenilemek için ayIndex'i bulup tekrar açabiliriz
+        const tarih = new Date(kayit.tarih);
+        ayDetayAc(tarih.getMonth()); 
+    }
 }
 
 function kayitSil(id) {
@@ -393,3 +408,69 @@ function ayModalKapat() {
     document.getElementById("ayModalArka").style.display = "none";
 }
 
+// Sayfa değiştirme fonksiyonuna 'rapor' seçeneğini ekle
+function sayfaGoster(sayfa) {
+    document.getElementById("takvimSayfa").style.display = sayfa === "takvim" ? "block" : "none";
+    document.getElementById("kazancSayfa").style.display = sayfa === "kazanc" ? "block" : "none";
+    document.getElementById("raporSayfa").style.display = sayfa === "rapor" ? "block" : "none";
+
+    if (sayfa === "rapor") raporOgrencileriYukle();
+    if (sayfa === "kazanc") { ogrencileriYukle(); kazancTablosuCiz(); }
+}
+
+function raporOgrencileriYukle() {
+    const select = document.getElementById("raporOgrenci");
+    select.innerHTML = `<option value="hepsi">Tüm Öğrenciler</option>`;
+    const benzersizOgrenciler = [...new Set(dersler.map(d => d.ogrenci))];
+    benzersizOgrenciler.forEach(o => {
+        const opt = document.createElement("option");
+        opt.value = o; opt.textContent = o;
+        select.appendChild(opt);
+    });
+}
+
+function raporOlustur() {
+    const yil = Number(document.getElementById("raporYil").value);
+    const ay = document.getElementById("raporAy").value;
+    const ogrenci = document.getElementById("raporOgrenci").value;
+    const kayitlar = JSON.parse(localStorage.getItem("kazancKayitlari")) || [];
+
+    const filtreli = kayitlar.filter(k => {
+        const t = new Date(k.tarih);
+        const yilUygun = t.getFullYear() === yil;
+        const ayUygun = ay === "hepsi" || t.getMonth() === Number(ay);
+        const ogrenciUygun = ogrenci === "hepsi" || k.ogrenci === ogrenci;
+        return yilUygun && ayUygun && ogrenciUygun;
+    });
+
+    let toplam = 0;
+    let tabloHTML = `
+        <div class="rapor-ozet">
+            <div><strong>Öğretmen Raporu</strong><br>Tarih: ${new Date().toLocaleDateString()}</div>
+            <div><strong>Filtre:</strong> ${ogrenci} / ${yil}</div>
+        </div>
+        <table border="1" style="width:100%; border-collapse:collapse;">
+            <thead>
+                <tr style="background:#f2f2f2">
+                    <th>Tarih</th><th>Öğrenci</th><th>Süre</th><th>Ücret</th><th>Durum</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+    filtreli.forEach(k => {
+        toplam += (k.sure * k.ucret);
+        tabloHTML += `
+            <tr>
+                <td>${k.tarih}</td>
+                <td>${k.ogrenci}</td>
+                <td>${k.sure} sa</td>
+                <td>${(k.sure * k.ucret).toFixed(2)} ₺</td>
+                <td>${k.odemeDurumu ? "Ödendi" : "Bekliyor"}</td>
+            </tr>`;
+    });
+
+    tabloHTML += `</tbody></table>
+        <h3 style="text-align:right; margin-top:20px;">Genel Toplam: ${toplam.toFixed(2)} ₺</h3>`;
+
+    document.getElementById("raporOnizleme").innerHTML = tabloHTML;
+}
