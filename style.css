@@ -220,3 +220,46 @@ table th:first-child {
         padding: 4px;
     }
 }
+
+/* =====================
+   AY DETAY MODALI
+===================== */
+
+#ayKayitListe {
+    max-height: 55vh;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+.ay-kayit {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 0.6fr 0.8fr 40px;
+    gap: 6px;
+    align-items: center;
+    padding: 6px 4px;
+    border-bottom: 1px solid #eee;
+    font-size: 12px;
+}
+
+.ay-kayit input {
+    font-size: 11px;
+    padding: 3px 5px;
+}
+
+.ay-kayit strong {
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.ay-kayit button {
+    padding: 2px 6px;
+    font-size: 12px;
+}
+
+.ay-kayit button {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}

@@ -147,28 +147,42 @@
 
     <table id="kazancTablo" border="1" style="margin-top:20px; width:100%; text-align:center;">
         <thead>
-            <tr>
-                <th>Ay</th>
-                <th>Ocak</th>
-                <th>Şubat</th>
-                <th>Mart</th>
-                <th>Nisan</th>
-                <th>Mayıs</th>
-                <th>Haziran</th>
-                <th>Temmuz</th>
-                <th>Ağustos</th>
-                <th>Eylül</th>
-                <th>Ekim</th>
-                <th>Kasım</th>
-                <th>Aralık</th>
-            </tr>
+        <tr>
+            <th>Ay</th>
+            <th onclick="ayDetayAc(0)">Ocak</th>
+            <th onclick="ayDetayAc(1)">Şubat</th>
+            <th onclick="ayDetayAc(2)">Mart</th>
+            <th onclick="ayDetayAc(3)">Nisan</th>
+            <th onclick="ayDetayAc(4)">Mayıs</th>
+            <th onclick="ayDetayAc(5)">Haziran</th>
+            <th onclick="ayDetayAc(6)">Temmuz</th>
+            <th onclick="ayDetayAc(7)">Ağustos</th>
+            <th onclick="ayDetayAc(8)">Eylül</th>
+            <th onclick="ayDetayAc(9)">Ekim</th>
+            <th onclick="ayDetayAc(10)">Kasım</th>
+            <th onclick="ayDetayAc(11)">Aralık</th>
+        </tr>
         </thead>
+
         <tbody>
             <tr id="kazancSatir">
                 <th>Toplam</th>
             </tr>
         </tbody>
     </table>
+    
+    <!-- 🔹 AY DETAY MODALI -->
+    <div id="ayModalArka" class="modal-arka">
+        <div class="modal" style="width:420px; max-height:80vh; overflow:auto;">
+            <h3 id="ayModalBaslik"></h3>
+
+            <div id="ayKayitListe"></div>
+
+            <br>
+            <button onclick="ayModalKapat()">Kapat</button>
+        </div>
+    </div>
+
 
     <ul id="kazancListe"></ul>
 </div>

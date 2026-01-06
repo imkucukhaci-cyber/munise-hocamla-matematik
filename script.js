@@ -317,4 +317,72 @@ function kazancTablosuCiz() {
     });
 }
 
+function ayDetayAc(ayIndex) {
+    const yil = Number(document.getElementById("yilSecim").value);
+    const kayitlar = JSON.parse(localStorage.getItem("kazancKayitlari")) || [];
+
+    const ayKayitlari = kayitlar.filter(k => {
+        const t = new Date(k.tarih);
+        return t.getFullYear() === yil && t.getMonth() === ayIndex;
+    });
+
+    const ayAdlari = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran",
+                      "Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+
+    document.getElementById("ayModalBaslik").innerText =
+        `${ayAdlari[ayIndex]} ${yil} Ders Kayıtları`;
+
+    const liste = document.getElementById("ayKayitListe");
+    liste.innerHTML = "";
+
+    if (ayKayitlari.length === 0) {
+        liste.innerHTML = "<p>Bu ay için kayıt yok.</p>";
+    }
+
+    ayKayitlari.forEach((k, index) => {
+        const div = document.createElement("div");
+        div.className = "ay-kayit";
+
+        div.innerHTML = `
+            <input type="text" value="${k.ogrenci}"
+               onchange="kayitGuncelle(${index}, 'ogrenci', this.value)">
+            <input type="date" value="${k.tarih}"
+               onchange="kayitGuncelle(${index}, 'tarih', this.value)">
+            <input type="number" step="0.5" value="${k.sure}"
+               onchange="kayitGuncelle(${index}, 'sure', this.value)">
+            <strong>${(k.sure * k.ucret).toFixed(2)} ₺</strong>
+            <button onclick="kayitSil(${index})">🗑️</button>
+        `;
+
+        document.getElementById("ayKayitListe").appendChild(div);
+    });
+
+
+
+    document.getElementById("ayModalArka").style.display = "flex";
+}
+
+function kayitGuncelle(index, alan, deger) {
+    const kayitlar = JSON.parse(localStorage.getItem("kazancKayitlari")) || [];
+    kayitlar[index][alan] = alan === "sure" ? Number(deger) : deger;
+
+    localStorage.setItem("kazancKayitlari", JSON.stringify(kayitlar));
+    kazancTablosuCiz();
+}
+
+function kayitSil(index) {
+    if (!confirm("Bu kaydı silmek istiyor musun?")) return;
+
+    const kayitlar = JSON.parse(localStorage.getItem("kazancKayitlari")) || [];
+    kayitlar.splice(index, 1);
+
+    localStorage.setItem("kazancKayitlari", JSON.stringify(kayitlar));
+
+    kazancTablosuCiz();
+    ayModalKapat();
+}
+
+function ayModalKapat() {
+    document.getElementById("ayModalArka").style.display = "none";
+}
 
