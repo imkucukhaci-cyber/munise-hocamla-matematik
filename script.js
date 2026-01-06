@@ -244,6 +244,7 @@ function kazancEkle() {
     }
 
     const kayit = {
+        id: Date.now(),
         ogrenci,
         tarih,
         sure,
@@ -345,13 +346,13 @@ function ayDetayAc(ayIndex) {
 
         div.innerHTML = `
             <input type="text" value="${k.ogrenci}"
-               onchange="kayitGuncelle(${index}, 'ogrenci', this.value)">
+               onchange="kayitGuncelle(${k.id}, 'ogrenci', this.value)">
             <input type="date" value="${k.tarih}"
-               onchange="kayitGuncelle(${index}, 'tarih', this.value)">
+               oonchange="kayitGuncelle(${k.id}, 'tarih', this.value)">
             <input type="number" step="0.5" value="${k.sure}"
-               onchange="kayitGuncelle(${index}, 'sure', this.value)">
+               onchange="kayitGuncelle(${k.id}, 'sure', this.value)">
             <strong>${(k.sure * k.ucret).toFixed(2)} ₺</strong>
-            <button onclick="kayitSil(${index})">🗑️</button>
+            <button onclick="kayitSil(${k.id})">🗑️</button>
         `;
 
         document.getElementById("ayKayitListe").appendChild(div);
@@ -362,24 +363,30 @@ function ayDetayAc(ayIndex) {
     document.getElementById("ayModalArka").style.display = "flex";
 }
 
-function kayitGuncelle(index, alan, deger) {
-    const kayitlar = JSON.parse(localStorage.getItem("kazancKayitlari")) || [];
-    kayitlar[index][alan] = alan === "sure" ? Number(deger) : deger;
-
-    localStorage.setItem("kazancKayitlari", JSON.stringify(kayitlar));
-    kazancTablosuCiz();
-}
-
-function kayitSil(index) {
+function kayitSil(id) {
     if (!confirm("Bu kaydı silmek istiyor musun?")) return;
 
-    const kayitlar = JSON.parse(localStorage.getItem("kazancKayitlari")) || [];
-    kayitlar.splice(index, 1);
+    let kayitlar = JSON.parse(localStorage.getItem("kazancKayitlari")) || [];
+    
+    // ID'si eşleşmeyenleri tut, eşleşeni listeden at
+    kayitlar = kayitlar.filter(k => k.id !== id);
 
     localStorage.setItem("kazancKayitlari", JSON.stringify(kayitlar));
 
     kazancTablosuCiz();
-    ayModalKapat();
+    ayModalKapat(); // Pencereyi kapatıp güncel halini görmeyi sağlar
+}
+
+function kayitGuncelle(id, alan, deger) {
+    const kayitlar = JSON.parse(localStorage.getItem("kazancKayitlari")) || [];
+    
+    // İlgili kaydı bul ve güncelle
+    const kayit = kayitlar.find(k => k.id === id);
+    if (kayit) {
+        kayit[alan] = (alan === "sure" || alan === "ucret") ? Number(deger) : deger;
+        localStorage.setItem("kazancKayitlari", JSON.stringify(kayitlar));
+        kazancTablosuCiz();
+    }
 }
 
 function ayModalKapat() {
