@@ -1,348 +1,127 @@
+/* =========================================
+   1. GENEL AYARLAR (YENİ TASARIMLA UYUMLU)
+   ========================================= */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f6f8;
-    padding: 20px;
+    font-family: 'Inter', sans-serif;
+    background-color: #f8fafc;
+    margin: 0;
+    color: #1e293b;
 }
 
-h1 {
-    text-align: center;
-}
-
-.form {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-input, select, button {
-    padding: 8px;
-    margin: 5px;
-}
-
+/* Tablonun kapsayıcısı - Yeni tasarıma uygun gölge ve yuvarlama */
 .table-container {
-    overflow-x: auto; /* yatay kaydırma */
-    -webkit-overflow-scrolling: touch; /* iOS kaydırması */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
 }
 
 table {
     width: 100%;
-    min-width: 700px; /* kolonlar sıkışmasın */
-    margin: auto;
+    min-width: 800px;
     border-collapse: collapse;
     background: white;
-    position: relative;
+    position: relative; /* Ders blokları için şart */
 }
 
 th, td {
-    border: 1px solid #ccc;
-    padding: 10px;
+    border: 1px solid #e2e8f0;
+    padding: 12px 8px;
     text-align: center;
-    min-height: 45px;
     vertical-align: middle;
-    font-size: 13px;
 }
 
 th {
-    background-color: #e9eef3;
+    background-color: #f1f5f9;
+    font-weight: 600;
+    color: #475569;
 }
 
-td {
-    cursor: pointer;
-}
-
-/* Ücret input oklarını kaldır */
-input[type=text]::-webkit-outer-spin-button,
-input[type=text]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-/* Tablo biraz daha net olsun */
-td {
-    min-height: 45px;
-    vertical-align: middle;
-    font-size: 13px;
-}
-
-.merged {
-    background-color: #d6eaff;
-    font-weight: bold;
-    vertical-align: middle;
-}
-
-.hidden {
-    display: none;
-}
-
-table {
-    position: relative;
-}
-
+/* =========================================
+   2. DERS BLOKLARI (EN KRİTİK KISIM)
+   ========================================= */
+/* Bu kısım JS'deki hesaplamanın doğru çalışması için değişmemeli */
 .ders-blok {
     position: absolute;
-    background-color: #d6eaff;
-    border: 1px solid #3498db;
-    border-radius: 6px;
-    padding: 6px;
-    font-weight: bold;
+    background-color: #dbeafe; /* Hafif mavi */
+    border: 1.5px solid #3b82f6; /* Modern mavi */
+    border-radius: 8px;
+    padding: 4px;
+    font-weight: 700;
+    font-size: 11px;
     text-align: center;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.1s;
+    z-index: 10;
+}
+
+.ders-blok:hover {
+    transform: scale(1.02);
+    z-index: 20;
+}
+
+.ders-blok small {
+    font-weight: 400;
+    color: #2563eb;
+    margin-top: 2px;
+}
+
+/* =========================================
+   3. KAZANÇ TABLOSU VE MODALLAR
+   ========================================= */
+#kazancTablo th, #kazancTablo td {
+    padding: 10px 5px;
+    font-size: 11px;
 }
 
 .modal-arka {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.4);
+    background: rgba(15, 23, 42, 0.5); /* Daha koyu modern bir maske */
+    backdrop-filter: blur(4px); /* Arka planı bulanıklaştırır */
     justify-content: center;
     align-items: center;
-    z-index: 999;
-}
-
-.modal {
-    background: white;
-    padding: 20px;
-    width: 300px;
-    border-radius: 10px;
-    text-align: center;
-}
-
-.modal input {
-    width: 90%;
-    padding: 8px;
-    margin-bottom: 10px;
-}
-
-.modal-butonlar {
-    display: flex;
-    justify-content: space-between;
-}
-
-.modal-butonlar button {
-    width: 48%;
-}
-
-.modal-butonlar .iptal {
-    background-color: #e74c3c;
-}
-
-/* Saat kolonunu farklı renkte göster */
-table td:first-child,
-table th:first-child {
-    background-color: #f0f3f7;
-    font-weight: bold;
-    text-align: center;
-    width: 110px;
-}
-
-.menu {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 25px;
-}
-
-.menu button {
-    padding: 10px 20px;
-    border: none;
-    background: #2c3e50;
-    color: white;
-    font-size: 15px;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.menu button:hover {
-    background: #34495e;
-}
-
-#kazancTablo {
-    table-layout: fixed;
-    width: 100%;
-}
-
-#kazancTablo th,
-#kazancTablo td {
-    width: calc(100% / 13); /* 1 isim kolonu + 12 ay */
-    text-align: center;
-    padding: 12px;
-    font-size: 12px; /* veya 11px, ihtiyaca göre */    
-}
-
-/* ===================== MOBILE ===================== */
-@media (max-width: 600px) {
-    body { padding: 10px; }
-
-    .menu { flex-direction: column; gap:10px; }
-    .menu button { width: 100%; }
-
-    table { display: block; white-space: nowrap; }
-    th, td { font-size: 10px; padding: 5px; }
-
-    .form input, .form select, .form button { width: 100%; box-sizing: border-box; margin-bottom: 8px; }
-
-    .ders-blok { font-size: 0.8em; padding: 4px; width: 100%; }
-}
-
-/* Mobil ekranlar için */
-@media (max-width: 600px) {
-    body {
-        padding: 10px;
-    }
-
-    .menu {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .menu button {
-        width: 100%;
-    }
-
-    table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-
-    th, td {
-        font-size: 10px;
-        padding: 5px;
-    }
-
-    .form input, .form select, .form button {
-        width: 100%;
-        box-sizing: border-box;
-        margin-bottom: 8px;
-    }
-
-    .ders-blok {
-        font-size: 0.8em;
-        padding: 4px;
-    }
-}
-
-/* =====================
-   AY DETAY MODALI
-===================== */
-
-#ayKayitListe {
-    max-height: 55vh;
-    overflow-y: auto;
-    margin-top: 10px;
+    z-index: 9999;
 }
 
 .ay-kayit {
     display: grid;
-    /* Sırasıyla: Sil, İsim, Tarih, Saat, Ücret, Ödeme Durumu */
-    grid-template-columns: 35px 1.5fr 0.8fr 0.6fr 1fr 40px;
+    grid-template-columns: 40px 1.5fr 1fr 0.8fr 1fr 45px;
     gap: 8px;
-    align-items: center; /* Dikeyde her şeyi ortalar */
-    padding: 10px 5px;
-    border-bottom: 1px solid #eee;
+    align-items: center;
+    padding: 12px 8px;
+    border-bottom: 1px solid #f1f5f9;
     font-size: 13px;
 }
 
+.ay-kayit:last-child { border-bottom: none; }
 
-.ay-kayit input {
-    height: 22px;          /* 🔽 default 34px → 22px */
-    padding: 2px 4px;
-    font-size: 11px;
-}
-
-
-.ay-kayit strong {
-    font-size: 11px;
-    white-space: nowrap;
-}
-
-
-.ay-kayit button {
-    height: 22px;
-    padding: 0;
-    font-size: 12px;
-    line-height: 1;
-    border-radius: 4px;
-}
-
-
-.ay-kayit button {
-    background: #e74c3c;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.ay-kayit:hover {
-    background: #f6f9fc;
-}
-
-.modal {
-    padding: 15px;
-}
-
-.odeme-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 28px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    color: white;
-    font-size: 11px;
-    font-weight: bold;
-    line-height: 1;
-}
-.sil-btn {
-    background: #e74c3c;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    height: 28px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
+/* =========================================
+   4. YAZDIRMA (PRINT) AYARLARI
+   ========================================= */
 @media print {
-    /* Menü, form ve butonları gizle */
-    .menu, .form, button, h1 { 
+    header, .no-print, .form, button, nav { 
         display: none !important; 
     }
+    body { background: white; padding: 0; }
+    .rapor-alan { display: block !important; width: 100% !important; }
+    table { width: 100% !important; border-collapse: collapse; }
+    th, td { border: 1px solid #000 !important; color: black; }
+}
 
-    /* Sayfa yapısını ayarla */
-    @page {
-        size: auto;
-        margin: 10mm; /* Kağıt kenar boşluğu */
-    }
-
-    body {
-        background: white;
-        padding: 0;
-        margin: 0;
-    }
-
-    /* Raporun sayfaya sığması için zorla */
-    .rapor-alan {
-        display: block !important;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: none !important;
-    }
-
-    /* Tablonun taşmasını engelle */
-    table {
-        width: 100% !important;
-        table-layout: fixed; /* Hücre genişliklerini sabitler */
-        word-wrap: break-word; /* Uzun yazıları alt satıra atar */
-        font-size: 10pt; /* Yazıcı için ideal font boyutu */
-    }
-
-    th, td {
-        padding: 5px !important;
-        border: 1px solid #000 !important;
+/* Mobil için Kaydırma İpucu */
+@media (max-width: 768px) {
+    .table-container::after {
+        content: "↔ Kaydırmak için kaydırın";
+        display: block;
+        text-align: center;
+        font-size: 10px;
+        color: #94a3b8;
+        padding: 5px;
     }
 }
