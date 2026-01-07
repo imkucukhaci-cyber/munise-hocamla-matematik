@@ -125,3 +125,16 @@ th {
         padding: 5px;
     }
 }
+
+/* Grafik kutularının yüksekliğini sabitleyelim */
+.chart-container {
+    position: relative;
+    height: 300px; /* Grafiklerin yüksekliği 300px'i geçmesin */
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+canvas {
+    max-height: 100% !important;
+    max-width: 100% !important;
+}

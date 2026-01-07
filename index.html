@@ -18,33 +18,33 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 text-gray-900">
 
-    <div id="loginSayfa" class="flex flex-col items-center justify-center h-screen bg-white">
-        <img src="ikon.png" width="100" class="mb-5 rounded-2xl shadow-lg">
-        <h2 class="text-2xl font-bold text-gray-800">Ders Takip Sistemi</h2>
-        <p class="text-gray-500 mb-6 text-sm">Verilerinize erişmek için giriş yapın.</p>
-        <button onclick="googleIleGiris()" class="bg-blue-600 text-white px-8 py-3 rounded-lg font-bold flex items-center gap-3 hover:bg-blue-700 transition shadow-lg">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" class="bg-white rounded-sm">
+    <div id="loginSayfa" class="flex flex-col items-center justify-center h-screen bg-white p-6">
+        <img src="ikon.png" width="100" class="mb-5 rounded-2xl shadow-xl">
+        <h2 class="text-2xl font-black text-gray-800 tracking-tight">Munise Hoca</h2>
+        <p class="text-gray-500 mb-8 text-sm text-center">Özel ders ve kazanç takip sistemine hoş geldiniz.</p>
+        <button onclick="googleIleGiris()" class="w-full max-w-xs bg-blue-600 text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-blue-700 transition shadow-lg">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" class="bg-white rounded-full p-0.5">
             Google ile Giriş Yap
         </button>
     </div>
 
     <div id="anaUygulama" style="display:none;">
 
-        <header class="bg-white border-b sticky top-0 z-50">
+        <header class="bg-white border-b sticky top-0 z-50 shadow-sm">
             <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <div class="p-2 bg-blue-600 rounded-lg text-white">🎓</div>
-                    <span class="font-bold text-xl">Munise Hoca</span>
+                    <div class="p-2 bg-blue-600 rounded-lg text-white shadow-md">🎓</div>
+                    <span class="font-bold text-xl tracking-tight">DersTakip</span>
                 </div>
-                <button onclick="cikisYap()" class="bg-red-50 text-red-600 text-xs font-bold px-3 py-1.5 rounded-lg border border-red-100">Güvenli Çıkış</button>
+                <button onclick="cikisYap()" class="bg-red-50 text-red-600 text-xs font-bold px-3 py-2 rounded-lg border border-red-100 hover:bg-red-100 transition">Güvenli Çıkış</button>
             </div>
-            <nav class="max-w-7xl mx-auto px-4 flex gap-4 overflow-x-auto no-scrollbar">
-                <button onclick="sayfaGoster('panel')" id="nav-panel" class="nav-btn active py-3 px-2 border-b-2 border-blue-600 text-blue-600 font-bold text-sm">Panel</button>
-                <button onclick="sayfaGoster('takvim')" id="nav-takvim" class="nav-btn py-3 px-2 border-b-2 border-transparent text-gray-500 font-medium text-sm">Öğrenciler</button>
-                <button onclick="sayfaGoster('kazanc')" id="nav-kazanc" class="nav-btn py-3 px-2 border-b-2 border-transparent text-gray-500 font-medium text-sm">Dersler</button>
-                <button onclick="sayfaGoster('rapor')" id="nav-rapor" class="nav-btn py-3 px-2 border-b-2 border-transparent text-gray-500 font-medium text-sm">Raporlar</button>
+            <nav class="max-w-7xl mx-auto px-4 flex gap-6 overflow-x-auto no-scrollbar">
+                <button onclick="sayfaGoster('panel')" id="nav-panel" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Panel</button>
+                <button onclick="sayfaGoster('takvim')" id="nav-takvim" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Öğrenciler</button>
+                <button onclick="sayfaGoster('kazanc')" id="nav-kazanc" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Dersler</button>
+                <button onclick="sayfaGoster('rapor')" id="nav-rapor" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Raporlar</button>
             </nav>
         </header>
 
@@ -52,149 +52,182 @@
 
             <div id="panelSayfa" class="sayfa-bolum">
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-                        <p class="text-xs text-gray-500 font-semibold uppercase">Toplam Öğrenci</p>
-                        <h3 id="panel-toplamOgrenci" class="text-2xl font-black mt-1">0</h3>
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Toplam Öğrenci</p>
+                        <h3 id="panel-toplamOgrenci" class="text-2xl font-black mt-1 text-gray-800">0</h3>
                     </div>
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-                        <p class="text-xs text-gray-500 font-semibold uppercase">Bu Ay Ders</p>
-                        <h3 id="panel-buAyDers" class="text-2xl font-black mt-1">0</h3>
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 border-l-4 border-l-blue-500">
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Bu Ay Ders</p>
+                        <h3 id="panel-buAyDers" class="text-2xl font-black mt-1 text-blue-600">0</h3>
                     </div>
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-                        <p class="text-xs text-gray-500 font-semibold uppercase text-purple-500">Bu Ay Kazanç</p>
-                        <h3 id="panel-kazanc" class="text-2xl font-black mt-1">₺0</h3>
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 border-l-4 border-l-purple-500">
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Bu Ay Kazanç</p>
+                        <h3 id="panel-kazanc" class="text-2xl font-black mt-1 text-purple-600">₺0</h3>
                     </div>
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-                        <p class="text-xs text-gray-500 font-semibold uppercase text-orange-500">Bekleyen</p>
-                        <h3 id="panel-bekleyen" class="text-2xl font-black mt-1">₺0</h3>
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 border-l-4 border-l-orange-500">
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Bekleyen Ödeme</p>
+                        <h3 id="panel-bekleyen" class="text-2xl font-black mt-1 text-orange-600">₺0</h3>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                        <h4 class="font-bold mb-4">Aylık Kazanç Grafiği</h4>
-                        <canvas id="kazancChart" height="200"></canvas>
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h4 class="font-bold text-gray-700 mb-6 flex items-center gap-2">📈 Aylık Kazanç Akışı</h4>
+                        <div class="chart-container" style="position: relative; height:300px; width:100%">
+                            <canvas id="kazancChart"></canvas>
+                        </div>
                     </div>
-                    <div class="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                        <h4 class="font-bold mb-4">Aylık Ders Sayısı</h4>
-                        <canvas id="dersChart" height="200"></canvas>
+                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                        <h4 class="font-bold text-gray-700 mb-6 flex items-center gap-2">📊 Aylık Ders Yükü</h4>
+                        <div class="chart-container" style="position: relative; height:300px; width:100%">
+                            <canvas id="dersChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div id="takvimSayfa" class="sayfa-bolum" style="display:none">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
-                    <h2 class="text-xl font-bold mb-4">Haftalık Ders Ekle</h2>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                    <h2 class="text-xl font-black mb-4 flex items-center gap-2">📅 Haftalık Program Ayarları</h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
-                        <input type="text" id="ogrenci" placeholder="Öğrenci Adı" class="p-2 border rounded-lg text-sm">
-                        <input type="text" id="ucret" placeholder="Ücret" class="p-2 border rounded-lg text-sm">
-                        <select id="gun" class="p-2 border rounded-lg text-sm">
-                            <option value="1">Pazartesi</option>
-                            <option value="2">Salı</option>
-                            <option value="3">Çarşamba</option>
-                            <option value="4">Perşembe</option>
-                            <option value="5">Cuma</option>
-                            <option value="6">Cumartesi</option>
-                            <option value="7">Pazar</option>
+                        <input type="text" id="ogrenci" placeholder="Öğrenci Adı" class="p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <input type="number" id="ucret" placeholder="Saatlik Ücret" class="p-3 border rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <select id="gun" class="p-3 border rounded-xl text-sm bg-white">
+                            <option value="1">Pazartesi</option><option value="2">Salı</option><option value="3">Çarşamba</option>
+                            <option value="4">Perşembe</option><option value="5">Cuma</option><option value="6">Cumartesi</option><option value="7">Pazar</option>
                         </select>
-                        <select id="baslangic" class="p-2 border rounded-lg text-sm">
-                            <option value="13">13:00</option>
-                            <option value="13.5">13:30</option>
-                            <option value="14">14:00</option>
-                            <option value="14.5">14:30</option>
-                            <option value="15">15:00</option>
-                            <option value="15.5">15:30</option>
-                            <option value="16">16:00</option>
-                            <option value="16.5">16:30</option>
-                            <option value="17">17:00</option>
-                            <option value="17.5">17:30</option>
-                            <option value="18">18:00</option>
-                            <option value="18.5">18:30</option>
-                            <option value="19">19:00</option>
-                            <option value="19.5">19:30</option>
-                            <option value="20">20:00</option>
-                            <option value="20.5">20:30</option>
-                            <option value="21">21:00</option>
-                            <option value="21.5">21:30</option>
-                            <option value="22">22:00</option>
+                        <select id="baslangic" class="p-3 border rounded-xl text-sm bg-white">
+                            <option value="13">13:00</option><option value="13.5">13:30</option><option value="14">14:00</option>
+                            <option value="14.5">14:30</option><option value="15">15:00</option><option value="15.5">15:30</option>
+                            <option value="16">16:00</option><option value="16.5">16:30</option><option value="17">17:00</option>
+                            <option value="17.5">17:30</option><option value="18">18:00</option><option value="18.5">18:30</option>
+                            <option value="19">19:00</option><option value="19.5">19:30</option><option value="20">20:00</option>
+                            <option value="20.5">20:30</option><option value="21">21:00</option><option value="21.5">21:30</option>
                         </select>
-                        <select id="sure" class="p-2 border rounded-lg text-sm">
-                            <option value="1">1 Saat</option>
-                            <option value="1.5">1.5 Saat</option>
-                            <option value="2">2 Saat</option>
+                        <select id="sure" class="p-3 border rounded-xl text-sm bg-white">
+                            <option value="1">1 Saat</option><option value="1.5">1.5 Saat</option><option value="2">2 Saat</option>
                         </select>
-                        <button onclick="dersEkle()" class="bg-blue-600 text-white font-bold rounded-lg py-2 hover:bg-blue-700 transition">Ekle</button>
+                        <button onclick="dersEkle()" class="bg-blue-600 text-white font-bold rounded-xl py-3 hover:bg-blue-700 transition shadow-md">Dersi Kaydet</button>
                     </div>
                 </div>
 
-                <div class="table-container bg-white rounded-xl shadow-sm border border-gray-100 overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <tr class="bg-gray-50 border-b">
-                            <th class="p-3 text-left">Saat</th>
-                            <th>Pzt</th><th>Sal</th><th>Çar</th><th>Per</th><th>Cum</th><th>Cmt</th><th>Paz</th>
-                        </tr>
-                        <script>
-                            for (let s = 13; s < 22; s += 0.5) {
-                                const bas = s % 1 === 0 ? `${s}:00` : `${Math.floor(s)}:30`;
-                                const bit = s % 1 === 0 ? `${s}:30` : `${Math.floor(s)+1}:00`;
-                                document.write("<tr class='border-b hover:bg-gray-50 transition'>");
-                                document.write(`<td class='p-2 font-medium border-r bg-gray-50'>${bas}-${bit}</td>`);
-                                for (let g = 1; g <= 7; g++) {
-                                    document.write(`<td id="hucre-${g}-${s}" class="p-1 border-r text-center h-12"></td>`);
+                <div class="table-container bg-white rounded-2xl shadow-sm border border-gray-100">
+                    <table class="w-full text-sm relative">
+                        <thead>
+                            <tr class="bg-gray-50 border-b">
+                                <th class="p-4 text-left font-bold text-gray-400 uppercase text-[10px]">Saat</th>
+                                <th class="p-4 font-bold text-gray-700">PZT</th><th class="p-4 font-bold text-gray-700">SAL</th>
+                                <th class="p-4 font-bold text-gray-700">ÇAR</th><th class="p-4 font-bold text-gray-700">PER</th>
+                                <th class="p-4 font-bold text-gray-700">CUM</th><th class="p-4 font-bold text-gray-700">CMT</th>
+                                <th class="p-4 font-bold text-gray-700 text-red-500">PAZ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="takvimBody">
+                            <script>
+                                for (let s = 13; s < 22; s += 0.5) {
+                                    const bas = s % 1 === 0 ? `${s}:00` : `${Math.floor(s)}:30`;
+                                    document.write("<tr class='border-b last:border-0'>");
+                                    document.write(`<td class='p-3 font-bold bg-gray-50 text-gray-400 text-xs border-r text-center'>${bas}</td>`);
+                                    for (let g = 1; g <= 7; g++) {
+                                        document.write(`<td id="hucre-${g}-${s}" class="p-0 border-r min-h-[50px] relative"></td>`);
+                                    }
+                                    document.write("</tr>");
                                 }
-                                document.write("</tr>");
-                            }
-                        </script>
+                            </script>
+                        </tbody>
                     </table>
                 </div>
             </div>
 
             <div id="kazancSayfa" class="sayfa-bolum" style="display:none">
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6">
-                    <h2 class="text-xl font-bold mb-4">Gerçekleşen Ders Kaydı</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                        <select id="kazancOgrenci" class="p-2 border rounded-lg text-sm"><option value="">Öğrenci Seç</option></select>
-                        <input type="date" id="kazancTarih" class="p-2 border rounded-lg text-sm">
-                        <input type="number" id="kazancSure" placeholder="Süre (saat)" class="p-2 border rounded-lg text-sm">
-                        <div class="flex items-center gap-2">
-                             <input type="checkbox" id="kazancOdeme" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                             <label for="kazancOdeme" class="text-sm font-medium text-gray-700">Ödeme Alındı</label>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                    <h2 class="text-xl font-black mb-4">✅ Tamamlanan Dersi İşle</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Öğrenci</label>
+                            <select id="kazancOgrenci" class="w-full p-3 border rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-green-500 transition"></select>
                         </div>
-                        <button onclick="kazancEkle()" class="bg-blue-600 text-white font-bold rounded-lg py-2 hover:bg-blue-700 transition col-span-full lg:col-span-1">Kaydet</button>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Tarih</label>
+                            <input type="date" id="kazancTarih" class="w-full p-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-green-500 transition">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Süre (Saat)</label>
+                            <input type="number" id="kazancSure" placeholder="1.5" class="w-full p-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-green-500 transition">
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                             <input type="checkbox" id="kazancOdeme" class="w-5 h-5 accent-green-600">
+                             <label for="kazancOdeme" class="text-sm font-bold text-gray-600">Ödeme Alındı</label>
+                        </div>
+                        <button onclick="kazancEkle()" class="bg-green-600 text-white font-bold rounded-xl py-3 hover:bg-green-700 transition shadow-lg">Dersi Kaydet</button>
                     </div>
                 </div>
-                <div class="bg-white p-4 rounded-xl shadow-sm border overflow-x-auto">
-                    <select id="yilSecim" onchange="kazancTablosuCiz()" class="mb-4 p-2 border rounded-lg w-full">
-                        <option value="2026">2026</option><option value="2027">2027</option>
-                    </select>
-                    <table id="kazancTablo" class="w-full text-center text-xs border-collapse">
-                        <thead><tr class="bg-gray-100 font-bold border-b"><th>Ay</th><th>Oca</th><th>Şub</th><th>Mar</th><th>Nis</th><th>May</th><th>Haz</th><th>Tem</th><th>Ağu</th><th>Eyl</th><th>Eki</th><th>Kas</th><th>Ara</th></tr></thead>
-                        <tbody><tr id="kazancSatir" class="h-10 border-b"><th>Toplam</th></tr></tbody>
-                    </table>
+
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="font-black text-gray-700">💰 Yıllık Kazanç Tablosu</h3>
+                        <select id="yilSecim" onchange="kazancTablosuCiz()" class="p-2 border rounded-lg text-sm bg-gray-50 font-bold">
+                            <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
+                        </select>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table id="kazancTablo" class="w-full text-center text-[11px] border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-400 font-bold border-b">
+                                    <th class="p-3 text-left">ÖĞRENCİ</th>
+                                    <th>OCA</th><th>ŞUB</th><th>MAR</th><th>NİS</th><th>MAY</th><th>HAZ</th>
+                                    <th>TEM</th><th>AĞU</th><th>EYL</th><th>EKİ</th><th>KAS</th><th>ARA</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
             <div id="raporSayfa" class="sayfa-bolum" style="display:none">
-                <div class="bg-white p-6 rounded-xl shadow-sm border">
-                    <h2 class="text-xl font-bold mb-4">Detaylı Rapor</h2>
-                    <div id="raporOnizleme" class="rapor-alan space-y-2"></div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between mb-6 no-print">
+                        <h2 class="text-xl font-black">📊 Detaylı Raporlama</h2>
+                        <button onclick="window.print()" class="bg-gray-800 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-md hover:bg-black transition">🖨️ Yazdır / PDF Al</button>
+                    </div>
+                    <div id="raporOnizleme" class="rapor-alan min-h-[400px]">
+                        </div>
                 </div>
             </div>
 
         </main>
     </div>
 
-    <div id="secimModalArka" class="modal-arka" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:100; align-items:center; justify-content:center;">
-        <div class="bg-white p-6 rounded-xl max-w-sm w-full shadow-2xl">
-            <h3 class="font-bold text-lg mb-4">Ders İşlemleri</h3>
-            <div class="flex flex-col gap-2">
-                <button onclick="secimDuzenle()" class="bg-blue-600 text-white py-2 rounded-lg">Düzenle</button>
-                <button onclick="secimSil()" class="bg-red-500 text-white py-2 rounded-lg">Sil</button>
-                <button onclick="secimKapat()" class="bg-gray-200 py-2 rounded-lg">Kapat</button>
+    <div id="secimModalArka" class="modal-arka" style="display:none;">
+        <div class="bg-white p-6 rounded-2xl max-w-sm w-full shadow-2xl mx-4 transform transition-all scale-100">
+            <h3 class="font-black text-xl mb-2 text-gray-800">Ders İşlemleri</h3>
+            <p class="text-gray-400 text-sm mb-6 font-medium">Bu ders kaydı üzerinde ne yapmak istersiniz?</p>
+            <div class="flex flex-col gap-3">
+                <button onclick="secimSil()" class="w-full bg-red-50 text-red-600 font-bold py-4 rounded-xl hover:bg-red-100 transition flex items-center justify-center gap-2">🗑️ Dersi Programdan Kaldır</button>
+                <button onclick="secimKapat()" class="w-full bg-gray-100 text-gray-600 font-bold py-4 rounded-xl hover:bg-gray-200 transition">İptal</button>
             </div>
         </div>
     </div>
 
+    <div id="ayModalArka" class="modal-arka" style="display:none;">
+        <div class="bg-white p-6 rounded-2xl max-w-2xl w-full shadow-2xl mx-4 max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="ayModalBaslik" class="font-black text-xl text-gray-800">Aylık Detay</h3>
+                <button onclick="ayModalKapat()" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">✕</button>
+            </div>
+            <div id="ayKayitListe" class="overflow-y-auto space-y-3 pr-2">
+                </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
+    <script>
+        // Service Worker Kaydı
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js');
+        }
+    </script>
 </body>
 </html>

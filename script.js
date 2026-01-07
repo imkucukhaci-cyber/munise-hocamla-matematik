@@ -147,9 +147,19 @@ function paneliCiz(kazancData, dersData) {
         type: 'line',
         data: {
             labels: aylar,
-            datasets: [{ label: 'Kazanç (₺)', data: kazancData, borderColor: '#4F46E5', tension: 0.4, fill: true, backgroundColor: 'rgba(79, 70, 229, 0.05)' }]
+            datasets: [{ 
+                label: 'Kazanç (₺)', 
+                data: kazancData, 
+                borderColor: '#4F46E5', 
+                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                fill: true,
+                tension: 0.4 
+            }]
         },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false, // CSS yüksekliğine uyması için şart
+        }
     });
 
     // Ders Sayısı Grafiği
@@ -159,9 +169,17 @@ function paneliCiz(kazancData, dersData) {
         type: 'bar',
         data: {
             labels: aylar,
-            datasets: [{ label: 'Ders Sayısı', data: dersData, backgroundColor: '#3B82F6', borderRadius: 4 }]
+            datasets: [{ 
+                label: 'Ders Sayısı', 
+                data: dersData, 
+                backgroundColor: '#3B82F6',
+                borderRadius: 5
+            }]
         },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false // CSS yüksekliğine uyması için şart
+        }
     });
 }
 
