@@ -302,26 +302,34 @@ function dersEkle() {
     document.getElementById("ogrenci").value = "";
 }
 
+// script.js içindeki dersCiz fonksiyonunu bu şekilde güncelleyin:
 function dersCiz(ders) {
-    const ilkHucre = document.getElementById(`hucre-${ders.gun}-${ders.baslangic}`);
-    if (!ilkHucre) return;
+    // Tablonun ve hücrelerin DOM'da tam oluştuğundan emin olmak için 50ms bekletiyoruz
+    setTimeout(() => {
+        const ilkHucre = document.getElementById(`hucre-${ders.gun}-${ders.baslangic}`);
+        if (!ilkHucre) return;
 
-    const hucreRect = ilkHucre.getBoundingClientRect();
-    const tabloRect = document.querySelector("table").getBoundingClientRect();
-    const hucreYukseklik = ilkHucre.offsetHeight;
-    const parcaSayisi = ders.sure / 0.5;
+        const hucreRect = ilkHucre.getBoundingClientRect();
+        const tablo = document.querySelector("table");
+        const tabloRect = tablo.getBoundingClientRect();
+        const hucreYukseklik = ilkHucre.offsetHeight;
+        const parcaSayisi = ders.sure / 0.5;
 
-    const dersBlok = document.createElement("div");
-    dersBlok.className = "ders-blok";
-    dersBlok.innerHTML = `${ders.ogrenci}<br><small>${ders.ucret} ₺ / sa</small>`;
-    dersBlok.dataset.id = ders.id;
+        const dersBlok = document.createElement("div");
+        dersBlok.className = "ders-blok";
+        dersBlok.innerHTML = `${ders.ogrenci}<br><small>${ders.ucret} ₺ / sa</small>`;
+        dersBlok.dataset.id = ders.id;
 
-    dersBlok.style.left = (hucreRect.left - tabloRect.left) + "px";
-    dersBlok.style.top = (hucreRect.top - tabloRect.top) + "px";
-    dersBlok.style.width = (hucreRect.width - 2) + "px";
-    dersBlok.style.height = (hucreYukseklik * parcaSayisi - 2) + "px";
-    dersBlok.onclick = function () { secimModalAc(this); };
-    document.querySelector("table").appendChild(dersBlok);
+        // Koordinatları tabloya göre hesapla
+        // Scroll durumunu (window.scrollY) hesaba katmak için tabloRect.top kullanıyoruz
+        dersBlok.style.left = (hucreRect.left - tabloRect.left) + "px";
+        dersBlok.style.top = (hucreRect.top - tabloRect.top) + "px";
+        dersBlok.style.width = (hucreRect.width - 2) + "px";
+        dersBlok.style.height = (hucreYukseklik * parcaSayisi - 2) + "px";
+        
+        dersBlok.onclick = function () { secimModalAc(this); };
+        tablo.appendChild(dersBlok);
+    }, 50); // 50 milisaniye gecikme koordinatların doğru alınmasını sağlar
 }
 
 function tabloyuTemizle() {
