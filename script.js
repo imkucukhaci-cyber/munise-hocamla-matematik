@@ -33,7 +33,7 @@ auth.onAuthStateChanged((user) => {
         document.getElementById("loginSayfa").style.display = "none";
         document.getElementById("anaUygulama").style.display = "block";
         verileriBuluttanDinle(); 
-        sayfaGoster('panel'); // İlk girişte Paneli göster
+        sayfaGoster('panel');
     } else {
         aktifKullaniciId = null;
         document.getElementById("loginSayfa").style.display = "flex";
@@ -54,11 +54,13 @@ function cikisYap() {
 
 function sayfaGoster(sayfa) {
     const sayfalar = ["panelSayfa", "takvimSayfa", "kazancSayfa", "raporSayfa"];
-    sayfalar.forEach(s => document.getElementById(s).style.display = "none");
+    sayfalar.forEach(s => {
+        const el = document.getElementById(s);
+        if(el) el.style.display = "none";
+    });
     
     document.getElementById(sayfa + "Sayfa").style.display = "block";
 
-    // Navigasyon butonlarının stilini güncelle
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('border-blue-600', 'text-blue-600', 'font-bold');
         btn.classList.add('border-transparent', 'text-gray-500');
@@ -80,7 +82,6 @@ function sayfaGoster(sayfa) {
 function verileriBuluttanDinle() {
     if (!aktifKullaniciId) return;
 
-    // Ders Programı Dinleyicisi
     database.ref(`kullanicilar/${aktifKullaniciId}/dersler`).on('value', (snapshot) => {
         const veri = snapshot.val();
         dersler = veri ? Object.keys(veri).map(key => ({ id: key, ...veri[key] })) : [];
@@ -89,7 +90,6 @@ function verileriBuluttanDinle() {
         panelOzetiniGuncelle();
     });
 
-    // Kazanç Kayıtları Dinleyicisi
     database.ref(`kullanicilar/${aktifKullaniciId}/kazanclar`).on('value', (snapshot) => {
         const veri = snapshot.val();
         kazancKayitlari = veri ? Object.keys(veri).map(key => ({ id: key, ...veri[key] })) : [];
@@ -109,11 +109,9 @@ function panelOzetiniGuncelle() {
     const aylikKazancVerisi = Array(12).fill(0);
     const aylikDersVerisi = Array(12).fill(0);
 
-    // Öğrenci Sayısı
     const benzersizOgrenciler = [...new Set(dersler.map(d => d.ogrenci))];
     document.getElementById("panel-toplamOgrenci").innerText = benzersizOgrenciler.length;
 
-    // Kazanç ve Grafik Hesaplamaları
     kazancKayitlari.forEach(k => {
         const d = new Date(k.tarih);
         const tutar = k.sure * k.ucret;
@@ -139,8 +137,6 @@ function panelOzetiniGuncelle() {
 
 function paneliCiz(kazancData, dersData) {
     const aylar = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
-    
-    // Kazanç Grafiği
     const ctx1 = document.getElementById('kazancChart').getContext('2d');
     if(kazancGrafik) kazancGrafik.destroy();
     kazancGrafik = new Chart(ctx1, {
@@ -156,13 +152,9 @@ function paneliCiz(kazancData, dersData) {
                 tension: 0.4 
             }]
         },
-        options: { 
-            responsive: true, 
-            maintainAspectRatio: false, // CSS yüksekliğine uyması için şart
-        }
+        options: { responsive: true, maintainAspectRatio: false }
     });
 
-    // Ders Sayısı Grafiği
     const ctx2 = document.getElementById('dersChart').getContext('2d');
     if(dersGrafik) dersGrafik.destroy();
     dersGrafik = new Chart(ctx2, {
@@ -176,15 +168,126 @@ function paneliCiz(kazancData, dersData) {
                 borderRadius: 5
             }]
         },
-        options: { 
-            responsive: true, 
-            maintainAspectRatio: false // CSS yüksekliğine uyması için şart
-        }
+        options: { responsive: true, maintainAspectRatio: false }
     });
 }
 
 /* =========================================
-   4. MEVCUT FONKSİYONLAR (DOKUNULMADI)
+   4. KAZANÇ TABLOSU (GÜNCELLENEN KISIM)
+   ========================================= */
+
+function kazancTablosuCiz() {
+    const yil = Number(document.getElementById("yilSecim").value);
+    const aylikToplam = Array(12).fill(0);
+    const ogrenciToplam = {};
+
+    kazancKayitlari.forEach(k => {
+        const tarih = new Date(k.tarih);
+        if (tarih.getFullYear() === yil) {
+            const ay = tarih.getMonth();
+            const tutar = k.sure * k.ucret;
+            if (k.odemeDurumu) aylikToplam[ay] += tutar;
+            if (!ogrenciToplam[k.ogrenci]) ogrenciToplam[k.ogrenci] = Array(12).fill(0);
+            ogrenciToplam[k.ogrenci][ay] += tutar;
+        }
+    });
+
+    // 1. Tablo Başlıklarını Güncelle (Sadece Aylara Tıklama Özelliği)
+    const theadRow = document.querySelector("#kazancTablo thead tr");
+    if (theadRow) {
+        const aylar = ["OCA", "ŞUB", "MAR", "NİS", "MAY", "HAZ", "TEM", "AĞU", "EYL", "EKİ", "KAS", "ARA"];
+        theadRow.innerHTML = `<th class="p-3 text-left bg-gray-100">ÖĞRENCİ</th>`;
+        aylar.forEach((ayAd, index) => {
+            const th = document.createElement("th");
+            th.innerText = ayAd;
+            th.className = "cursor-pointer hover:bg-blue-600 hover:text-white transition p-2 bg-gray-50 text-blue-600 font-black text-center";
+            // SADECE BURASI TIKLANABİLİR:
+            th.onclick = () => ayDetayiniGoster(index, yil);
+            theadRow.appendChild(th);
+        });
+    }
+
+    const tbody = document.querySelector("#kazancTablo tbody");
+    if(!tbody) return;
+    tbody.innerHTML = "";
+
+    // 2. Toplam Satırı (Tıklama özelliği yok)
+    const toplamSatir = document.createElement("tr");
+    toplamSatir.className = "font-bold bg-gray-100 border-b";
+    toplamSatir.innerHTML = `<td class="p-3 text-left">GENEL TOPLAM</td>`;
+    aylikToplam.forEach(t => {
+        toplamSatir.innerHTML += `<td class="p-2 text-center text-gray-700">${t > 0 ? '₺' + t.toFixed(0) : '-'}</td>`;
+    });
+    tbody.appendChild(toplamSatir);
+
+    // 3. Öğrenci Satırları (Tıklama özelliği yok)
+    Object.keys(ogrenciToplam).forEach(o => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-gray-50 border-b border-gray-100 transition";
+        tr.innerHTML = `<td class="p-3 text-left font-medium text-gray-800">${o}</td>`;
+        ogrenciToplam[o].forEach(t => {
+            tr.innerHTML += `<td class="p-2 text-center text-gray-600">${t > 0 ? '₺' + t.toFixed(0) : '-'}</td>`;
+        });
+        tbody.appendChild(tr);
+    });
+}
+
+function ayDetayiniGoster(ayIndex, yil) {
+    const modal = document.getElementById('ayModalArka');
+    const liste = document.getElementById('ayKayitListe');
+    const baslik = document.getElementById('ayModalBaslik');
+    const aylar = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+
+    if(!modal || !liste) return;
+
+    liste.innerHTML = "";
+    modal.style.display = "flex";
+    baslik.innerText = `${aylar[ayIndex]} ${yil} - Tüm Kayıtlar`;
+
+    const filtreliKayitlar = kazancKayitlari.filter(k => {
+        const d = new Date(k.tarih);
+        return d.getMonth() === ayIndex && d.getFullYear() === yil;
+    }).sort((a,b) => new Date(a.tarih) - new Date(b.tarih));
+
+    if (filtreliKayitlar.length === 0) {
+        liste.innerHTML = `<div class="p-8 text-center text-gray-400">Bu ayda herhangi bir ders kaydı bulunmuyor.</div>`;
+        return;
+    }
+
+    filtreliKayitlar.forEach(k => {
+        const tutar = k.sure * k.ucret;
+        const kart = document.createElement("div");
+        kart.className = "flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 shadow-sm mb-2";
+        kart.innerHTML = `
+            <div class="flex flex-col">
+                <span class="text-[10px] font-bold text-blue-500 uppercase tracking-tight">${k.tarih}</span>
+                <span class="font-bold text-gray-800 text-sm">${k.ogrenci} - ${k.sure} Saat Ders</span>
+                <span class="text-[10px] ${k.odemeDurumu ? 'text-green-500' : 'text-orange-500'} font-bold">
+                    ${k.odemeDurumu ? '● ÖDEME ALINDI' : '○ ÖDEME BEKLİYOR'}
+                </span>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="font-black text-gray-900">₺${tutar}</span>
+                <button onclick="kazancKaydiSil('${k.id}')" class="p-2 text-gray-300 hover:text-red-500 transition">🗑️</button>
+            </div>
+        `;
+        liste.appendChild(kart);
+    });
+}
+
+function ayModalKapat() {
+    document.getElementById('ayModalArka').style.display = "none";
+}
+
+function kazancKaydiSil(id) {
+    if(confirm("Bu ders kaydını silmek istediğinize emin misiniz?")) {
+        database.ref(`kullanicilar/${aktifKullaniciId}/kazanclar/${id}`).remove()
+            .then(() => ayModalKapat());
+    }
+}
+
+/* =========================================
+   5. DERS PROGRAMI VE DİĞER FONKSİYONLAR
    ========================================= */
 
 function dersEkle() {
@@ -212,13 +315,11 @@ function dersCiz(ders) {
     dersBlok.className = "ders-blok";
     dersBlok.innerHTML = `${ders.ogrenci}<br><small>${ders.ucret} ₺ / sa</small>`;
     dersBlok.dataset.id = ders.id;
-    dersBlok.dataset.ogrenci = ders.ogrenci;
-    dersBlok.dataset.ucret = ders.ucret;
 
     dersBlok.style.left = (hucreRect.left - tabloRect.left) + "px";
     dersBlok.style.top = (hucreRect.top - tabloRect.top) + "px";
-    dersBlok.style.width = hucreRect.width + "px";
-    dersBlok.style.height = (hucreYukseklik * parcaSayisi) + "px";
+    dersBlok.style.width = (hucreRect.width - 2) + "px";
+    dersBlok.style.height = (hucreYukseklik * parcaSayisi - 2) + "px";
     dersBlok.onclick = function () { secimModalAc(this); };
     document.querySelector("table").appendChild(dersBlok);
 }
@@ -238,7 +339,7 @@ function secimKapat() {
 
 function secimSil() {
     if (!aktifBlok) return;
-    if(confirm("Bu dersi silmek istiyor musunuz?")) {
+    if(confirm("Bu dersi programdan silmek istiyor musunuz?")) {
         database.ref(`kullanicilar/${aktifKullaniciId}/dersler/${aktifBlok.dataset.id}`).remove();
         secimKapat();
     }
@@ -261,38 +362,6 @@ function kazancEkle() {
     alert("Ders kaydedildi!");
 }
 
-function kazancTablosuCiz() {
-    const yil = Number(document.getElementById("yilSecim").value);
-    const aylikToplam = Array(12).fill(0);
-    const ogrenciToplam = {};
-
-    kazancKayitlari.forEach(k => {
-        const tarih = new Date(k.tarih);
-        if (tarih.getFullYear() === yil && k.odemeDurumu) {
-            const ay = tarih.getMonth();
-            const tutar = k.sure * k.ucret;
-            aylikToplam[ay] += tutar;
-            if (!ogrenciToplam[k.ogrenci]) ogrenciToplam[k.ogrenci] = Array(12).fill(0);
-            ogrenciToplam[k.ogrenci][ay] += tutar;
-        }
-    });
-
-    const tbody = document.querySelector("#kazancTablo tbody");
-    if(!tbody) return;
-    tbody.innerHTML = "";
-    const toplamSatir = document.createElement("tr");
-    toplamSatir.innerHTML = "<th>Toplam</th>";
-    aylikToplam.forEach(t => { toplamSatir.innerHTML += `<td>${t.toFixed(0)}₺</td>`; });
-    tbody.appendChild(toplamSatir);
-
-    Object.keys(ogrenciToplam).forEach(o => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${o}</td>`;
-        ogrenciToplam[o].forEach(t => { tr.innerHTML += `<td>${t.toFixed(0)}₺</td>`; });
-        tbody.appendChild(tr);
-    });
-}
-
 function ogrencileriYukle() {
     const select = document.getElementById("kazancOgrenci");
     if(!select) return;
@@ -307,5 +376,5 @@ function ogrencileriYukle() {
     if(mevcutSecim) select.value = mevcutSecim;
 }
 
-// Rapor ve Modal kapatma gibi diğer küçük fonksiyonları aynen koruyabilirsin.
+function raporOgrencileriYukle() {}
 function secimDuzenle() { alert("Düzenleme için lütfen takvim üzerinden modalı kullanın."); secimKapat(); }
