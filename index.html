@@ -3,14 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Haftalık Ders Programı</title>
-    <link rel="stylesheet" href="style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="style.css">
+    
     <link rel="manifest" href="manifest.json">
-
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="DersTakip">
     <link rel="apple-touch-icon" href="ikon.png">
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
+
     <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -18,218 +24,231 @@
         });
     }
     </script>
-
 </head>
 <body>
 
-<div class="menu">
-    <button onclick="sayfaGoster('takvim')">📅 Haftalık Takvim</button>
-    <button onclick="sayfaGoster('kazanc')">💰 Aylık Kazanç</button>
-    <button onclick="sayfaGoster('rapor')">📄 PDF Rapor</button> </div>
-</div>
-
-<!-- ================= TAKVİM SAYFASI ================= -->
-<div id="takvimSayfa">
-
-    <h1>Haftalık Ders Programı</h1>
-
-    <div class="form">
-        <input type="text" id="ogrenci" placeholder="Öğrenci Adı">
-        <input type="text" id="ucret" placeholder="Ücret">
-
-        <select id="gun">
-            <option value="1">Pazartesi</option>
-            <option value="2">Salı</option>
-            <option value="3">Çarşamba</option>
-            <option value="4">Perşembe</option>
-            <option value="5">Cuma</option>
-            <option value="6">Cumartesi</option>
-            <option value="7">Pazar</option>
-        </select>
-
-        <select id="baslangic">
-            <option value="13">13:00</option>
-            <option value="13.5">13:30</option>
-            <option value="14">14:00</option>
-            <option value="14.5">14:30</option>
-            <option value="15">15:00</option>
-            <option value="15.5">15:30</option>
-            <option value="16">16:00</option>
-            <option value="16.5">16:30</option>
-            <option value="17">17:00</option>
-            <option value="17.5">17:30</option>
-            <option value="18">18:00</option>
-            <option value="18.5">18:30</option>
-            <option value="19">19:00</option>
-            <option value="19.5">19:30</option>
-            <option value="20">20:00</option>
-            <option value="20.5">20:30</option>
-            <option value="21">21:00</option>
-            <option value="21.5">21:30</option>
-            <option value="22">22:00</option>
-        </select>
-
-        <select id="sure">
-            <option value="1">1 Saat</option>
-            <option value="1.5">1.5 Saat</option>
-            <option value="2">2 Saat</option>
-        </select>
-
-        <button onclick="dersEkle()">Dersi Ekle</button>
-    </div>
-    <!-- Tabloyu kapsayıcıya alıyoruz -->
-    <div class="table-container"></div>
-    <table>
-        <tr>
-            <th>Saat</th>
-            <th>Pzt</th>
-            <th>Sal</th>
-            <th>Çar</th>
-            <th>Per</th>
-            <th>Cum</th>
-            <th>Cmt</th>
-            <th>Paz</th>
-        </tr>
-
-        <script>
-            for (let s = 13; s < 22; s += 0.5) {
-                const bas = s % 1 === 0 ? `${s}:00` : `${Math.floor(s)}:30`;
-                const bit = s % 1 === 0 ? `${s}:30` : `${Math.floor(s)+1}:00`;
-
-                document.write("<tr>");
-                document.write(`<td>${bas} - ${bit}</td>`);
-
-                for (let g = 1; g <= 7; g++) {
-                    document.write(`<td id="hucre-${g}-${s}"></td>`);
-                }
-                document.write("</tr>");
-            }
-        </script>
-    </table>
+    <div id="loginSayfa" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh;">
+        <img src="ikon.png" width="100" style="margin-bottom:20px; border-radius:15px;">
+        <h2>Ders Takip Sistemi</h2>
+        <p>Verilerinize erişmek için giriş yapın.</p>
+        <button onclick="googleIleGiris()" style="background:#b0c3e2; color:white; padding:12px 24px; border:none; border-radius:5px; cursor:pointer; font-weight:bold; display:flex; align-items:center; gap:10px;">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
+            Google ile Giriş Yap
+        </button>
     </div>
 
+    <div id="anaUygulama" style="display:none;">
 
-    <!-- 🔹 SEÇİM MODALI -->
-    <div id="secimModalArka" class="modal-arka">
-        <div class="modal">
-            <h3>Ders İşlemleri</h3>
-            <div class="modal-butonlar">
-                <button onclick="secimDuzenle()">Düzenle</button>
-                <button class="iptal" onclick="secimSil()">Sil</button>
+        <div class="menu">
+            <button onclick="sayfaGoster('takvim')">📅 Takvim</button>
+            <button onclick="sayfaGoster('kazanc')">💰 Kazanç</button>
+            <button onclick="sayfaGoster('rapor')">📄 Rapor</button>
+            <button onclick="cikisYap()" style="background:#e74c3c; float:right; font-size:12px;">Çıkış</button>
+        </div>
+
+        <div id="takvimSayfa">
+            <h1>Haftalık Ders Programı</h1>
+
+            <div class="form">
+                <input type="text" id="ogrenci" placeholder="Öğrenci Adı">
+                <input type="text" id="ucret" placeholder="Ücret">
+
+                <select id="gun">
+                    <option value="1">Pazartesi</option>
+                    <option value="2">Salı</option>
+                    <option value="3">Çarşamba</option>
+                    <option value="4">Perşembe</option>
+                    <option value="5">Cuma</option>
+                    <option value="6">Cumartesi</option>
+                    <option value="7">Pazar</option>
+                </select>
+
+                <select id="baslangic">
+                    <option value="09">09:00</option>
+                    <option value="09.5">09:30</option>
+                    <option value="10">10:00</option>
+                    <option value="10.5">10:30</option>
+                    <option value="11">11:00</option>
+                    <option value="11.5">11:30</option>
+                    <option value="12">12:00</option>
+                    <option value="12.5">12:30</option>
+                    <option value="13">13:00</option>
+                    <option value="13.5">13:30</option>
+                    <option value="14">14:00</option>
+                    <option value="14.5">14:30</option>
+                    <option value="15">15:00</option>
+                    <option value="15.5">15:30</option>
+                    <option value="16">16:00</option>
+                    <option value="16.5">16:30</option>
+                    <option value="17">17:00</option>
+                    <option value="17.5">17:30</option>
+                    <option value="18">18:00</option>
+                    <option value="18.5">18:30</option>
+                    <option value="19">19:00</option>
+                    <option value="19.5">19:30</option>
+                    <option value="20">20:00</option>
+                    <option value="20.5">20:30</option>
+                    <option value="21">21:00</option>
+                    <option value="21.5">21:30</option>
+                    <option value="22">22:00</option>
+                </select>
+
+                <select id="sure">
+                    <option value="1">1 Saat</option>
+                    <option value="1.5">1.5 Saat</option>
+                    <option value="2">2 Saat</option>
+                </select>
+
+                <button onclick="dersEkle()">Dersi Ekle</button>
             </div>
-            <br>
-            <button onclick="secimKapat()">İptal</button>
-        </div>
-    </div>
 
-    <!-- 🔹 DÜZENLEME MODALI -->
-    <div id="modalArkaPlan" class="modal-arka">
-        <div class="modal">
-            <h3>Dersi Düzenle</h3>
-            <input type="text" id="modalOgrenci" placeholder="Öğrenci Adı">
-            <input type="number" id="modalUcret" placeholder="Saatlik Ücret">
-            <div class="modal-butonlar">
-                <button onclick="modalKaydet()">Kaydet</button>
-                <button class="iptal" onclick="modalKapat()">İptal</button>
+            <div class="table-container">
+                <table>
+                    <tr>
+                        <th>Saat</th>
+                        <th>Pzt</th>
+                        <th>Sal</th>
+                        <th>Çar</th>
+                        <th>Per</th>
+                        <th>Cum</th>
+                        <th>Cmt</th>
+                        <th>Paz</th>
+                    </tr>
+                    <script>
+                        for (let s = 13; s < 22; s += 0.5) {
+                            const bas = s % 1 === 0 ? `${s}:00` : `${Math.floor(s)}:30`;
+                            const bit = s % 1 === 0 ? `${s}:30` : `${Math.floor(s)+1}:00`;
+
+                            document.write("<tr>");
+                            document.write(`<td>${bas} - ${bit}</td>`);
+
+                            for (let g = 1; g <= 7; g++) {
+                                document.write(`<td id="hucre-${g}-${s}"></td>`);
+                            }
+                            document.write("</tr>");
+                        }
+                    </script>
+                </table>
+            </div>
+
+            <div id="secimModalArka" class="modal-arka">
+                <div class="modal">
+                    <h3>Ders İşlemleri</h3>
+                    <div class="modal-butonlar">
+                        <button onclick="secimDuzenle()">Düzenle</button>
+                        <button class="iptal" onclick="secimSil()">Sil</button>
+                    </div>
+                    <br>
+                    <button onclick="secimKapat()">İptal</button>
+                </div>
+            </div>
+
+            <div id="modalArkaPlan" class="modal-arka">
+                <div class="modal">
+                    <h3>Dersi Düzenle</h3>
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <input type="text" id="modalOgrenci" placeholder="Öğrenci Adı">
+                        <input type="number" id="modalUcret" placeholder="Saatlik Ücret">
+                    </div>
+                    <div class="modal-butonlar" style="margin-top:15px;">
+                        <button onclick="modalKaydet()">Kaydet</button>
+                        <button class="iptal" onclick="modalKapat()">İptal</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-</div>
+        <div id="kazancSayfa" style="display:none">
+            <h1>Aylık Kazanç</h1>
 
-<!-- ================= KAZANÇ SAYFASI ================= -->
-<div id="kazancSayfa" style="display:none">
+            <div class="form">
+                <select id="kazancOgrenci">
+                    <option value="">Öğrenci Seç</option>
+                </select>
 
-    <h1>Aylık Kazanç</h1>
+                <input type="date" id="kazancTarih">
+                <input type="number" id="kazancSure" placeholder="Ders Süresi (saat)" step="0.5">
+                <label style="font-size:13px; display: block; margin: 10px 0; cursor:pointer;">
+                    <input type="checkbox" id="kazancOdeme"> Ödeme Alındı
+                </label>
+                <button onclick="kazancEkle()">Ders Kaydet</button>
+            </div>
 
-    <div class="form">
-        <select id="kazancOgrenci">
-            <option value="">Öğrenci Seç</option>
-        </select>
-
-        <input type="date" id="kazancTarih">
-        <input type="number" id="kazancSure" placeholder="Ders Süresi (saat)" step="0.5">
-        <label style="font-size:13px; display: block; margin: 10px 0;">
-            <input type="checkbox" id="kazancOdeme"> Ödeme Alındı
-        </label>
-        <button onclick="kazancEkle()">Ders Kaydet</button>
-    </div>
-
-    <select id="yilSecim" onchange="kazancTablosuCiz()">
-        <option value="2026">2026</option>
-        <option value="2027">2027</option>
-        <option value="2028">2028</option>
-    </select>
-
-    <table id="kazancTablo" border="1" style="margin-top:20px; width:100%; text-align:center;">
-        <thead>
-        <tr>
-            <th>Ay</th>
-            <th onclick="ayDetayAc(0)">Ocak</th>
-            <th onclick="ayDetayAc(1)">Şubat</th>
-            <th onclick="ayDetayAc(2)">Mart</th>
-            <th onclick="ayDetayAc(3)">Nisan</th>
-            <th onclick="ayDetayAc(4)">Mayıs</th>
-            <th onclick="ayDetayAc(5)">Haziran</th>
-            <th onclick="ayDetayAc(6)">Temmuz</th>
-            <th onclick="ayDetayAc(7)">Ağustos</th>
-            <th onclick="ayDetayAc(8)">Eylül</th>
-            <th onclick="ayDetayAc(9)">Ekim</th>
-            <th onclick="ayDetayAc(10)">Kasım</th>
-            <th onclick="ayDetayAc(11)">Aralık</th>
-        </tr>
-        </thead>
-
-        <tbody>
-            <tr id="kazancSatir">
-                <th>Toplam</th>
-            </tr>
-        </tbody>
-    </table>
-    
-    <!-- 🔹 AY DETAY MODALI -->
-    <div id="ayModalArka" class="modal-arka">
-        <div class="modal" style="width:600px; max-height:80vh; overflow:auto;">
-            <h3 id="ayModalBaslik"></h3>
-
-            <div id="ayKayitListe"></div>
-
-            <br>
-            <button onclick="ayModalKapat()">Kapat</button>
-        </div>
-    </div>
-
-
-    <ul id="kazancListe"></ul>
-</div>
-
-<!-- ================= PDF SAYFASI ================= -->
-
-<div id="raporSayfa" style="display:none">
-    <h1>Ders Raporu Oluştur</h1>
-    <div class="form no-print">
-        <select id="raporYil">
-            <option value="2026">2026</option>
-            <option value="2027">2027</option>
-        </select>
-        <select id="raporAy">
-            <option value="hepsi">Tüm Aylar</option>
-            <option value="0">Ocak</option>
-            <option value="1">Şubat</option>
+            <select id="yilSecim" onchange="kazancTablosuCiz()" style="margin-top:10px; width:100%; padding:8px;">
+                <option value="2026">2026</option>
+                <option value="2027">2027</option>
+                <option value="2028">2028</option>
             </select>
-        <select id="raporOgrenci">
-            <option value="hepsi">Tüm Öğrenciler</option>
-        </select>
-        <button onclick="raporOlustur()">Raporu Hazırla</button>
-        <button style="background:#27ae60; color:white;" onclick="window.print()">PDF Olarak İndir</button>
-    </div>
 
-    <div id="raporOnizleme" class="rapor-alan">
+            <table id="kazancTablo" border="1" style="margin-top:20px; width:100%; text-align:center;">
+                <thead>
+                    <tr>
+                        <th>Ay</th>
+                        <th onclick="ayDetayAc(0)">Ocak</th>
+                        <th onclick="ayDetayAc(1)">Şubat</th>
+                        <th onclick="ayDetayAc(2)">Mart</th>
+                        <th onclick="ayDetayAc(3)">Nisan</th>
+                        <th onclick="ayDetayAc(4)">Mayıs</th>
+                        <th onclick="ayDetayAc(5)">Haziran</th>
+                        <th onclick="ayDetayAc(6)">Temmuz</th>
+                        <th onclick="ayDetayAc(7)">Ağustos</th>
+                        <th onclick="ayDetayAc(8)">Eylül</th>
+                        <th onclick="ayDetayAc(9)">Ekim</th>
+                        <th onclick="ayDetayAc(10)">Kasım</th>
+                        <th onclick="ayDetayAc(11)">Aralık</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="kazancSatir">
+                        <th>Toplam</th>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div id="ayModalArka" class="modal-arka">
+                <div class="modal" style="width:90%; max-width:600px; max-height:80vh; overflow:auto;">
+                    <h3 id="ayModalBaslik"></h3>
+                    <div id="ayKayitListe"></div>
+                    <br>
+                    <button onclick="ayModalKapat()">Kapat</button>
+                </div>
+            </div>
+            <ul id="kazancListe"></ul>
         </div>
-</div>
 
-<!-- 🔥 SCRIPT EN ALTTA -->
-<script src="script.js"></script>
+        <div id="raporSayfa" style="display:none">
+            <h1>Ders Raporu Oluştur</h1>
+            <div class="form no-print">
+                <select id="raporYil">
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                </select>
+                <select id="raporAy">
+                    <option value="hepsi">Tüm Aylar</option>
+                    <option value="0">Ocak</option>
+                    <option value="1">Şubat</option>
+                    <option value="2">Mart</option>
+                    <option value="3">Nisan</option>
+                    <option value="4">Mayıs</option>
+                    <option value="5">Haziran</option>
+                    <option value="6">Temmuz</option>
+                    <option value="7">Ağustos</option>
+                    <option value="8">Eylül</option>
+                    <option value="9">Ekim</option>
+                    <option value="10">Kasım</option>
+                    <option value="11">Aralık</option>
+                </select>
+                <select id="raporOgrenci">
+                    <option value="hepsi">Tüm Öğrenciler</option>
+                </select>
+                <button onclick="raporOlustur()">Raporu Hazırla</button>
+                <button style="background:#27ae60; color:white;" onclick="window.print()">PDF Olarak İndir</button>
+            </div>
+
+            <div id="raporOnizleme" class="rapor-alan"></div>
+        </div>
+
+    </div> <script src="script.js"></script>
 
 </body>
 </html>
