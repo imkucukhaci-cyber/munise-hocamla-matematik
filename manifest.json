@@ -1,0 +1,16 @@
+{
+  "short_name": "DersTakip",
+  "name": "Öğretmen Ders ve Kazanç Takibi",
+  "icons": [
+    {
+      "src": "ikon.png", 
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#2c3e50",
+  "background_color": "#f4f6f8"
+}
