@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Özel Ders Takip - Munise Hoca</title>
+    <title>Ders Takip - Munise Hoca</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -74,8 +74,8 @@
                 </svg>
             </div>
             <div class="flex flex-col leading-tight">
-                <span class="font-black text-xl tracking-tighter text-gray-800">ÖZEL<span class="text-blue-600">DERSİM</span></span>
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ders ve Kazanç Yönetim Merkezi</span>
+                <span class="font-black text-xl tracking-tighter text-gray-800">DERS<span class="text-blue-600">TAKİP</span></span>
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Munise Hoca</span>
             </div>
         </div>
         <button onclick="cikisYap()" class="bg-red-50 text-red-600 text-xs font-bold px-3 py-2 rounded-lg border border-red-100 hover:bg-red-100 transition">Güvenli Çıkış</button>
@@ -91,45 +91,45 @@
         <main class="max-w-7xl mx-auto p-4 lg:p-8">
 
             <div id="panelSayfa" class="sayfa-bolum">
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
     
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center border-l-4 border-l-blue-400">
+    <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center border-l-4 border-l-blue-400">
         <div>
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Toplam Öğrenci</p>
-            <h3 id="panel-toplamOgrenci" class="text-3xl font-black text-gray-800 tracking-tighter">0</h3>
+            <p class="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Öğrenciler</p>
+            <h3 id="panel-toplamOgrenci" class="text-2xl md:text-3xl font-black text-gray-800 tracking-tighter">0</h3>
         </div>
-        <div class="w-12 h-12 bg-blue-50/50 rounded-full flex items-center justify-center text-blue-500 font-bold border border-blue-100">
-            👤
+        <div class="hidden md:flex w-10 h-10 md:w-12 md:h-12 bg-blue-50/50 rounded-full items-center justify-center text-blue-500 text-lg border border-blue-100">
+            👥
         </div>
     </div>
 
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center border-l-4 border-l-indigo-400">
+    <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center border-l-4 border-l-indigo-400">
         <div>
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Bu Ay Ders</p>
-            <h3 id="panel-buAyDers" class="text-3xl font-black text-gray-800 tracking-tighter">0</h3>
+            <p class="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Dersler</p>
+            <h3 id="panel-buAyDers" class="text-2xl md:text-3xl font-black text-gray-800 tracking-tighter">0</h3>
         </div>
-        <div class="w-12 h-12 bg-indigo-50/50 rounded-full flex items-center justify-center text-indigo-500 font-bold border border-indigo-100">
-            📂
+        <div class="hidden md:flex w-10 h-10 md:w-12 md:h-12 bg-indigo-50/50 rounded-full items-center justify-center text-indigo-500 text-lg border border-indigo-100">
+            ✏️
         </div>
     </div>
 
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center border-l-4 border-l-emerald-400">
+    <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center border-l-4 border-l-emerald-400">
         <div>
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Bu Ay Kazanç</p>
-            <h3 id="panel-kazanc" class="text-3xl font-black text-gray-800 tracking-tighter">₺0</h3>
+            <p class="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Kazanç</p>
+            <h3 id="panel-kazanc" class="text-2xl md:text-3xl font-black text-gray-800 tracking-tighter">₺0</h3>
         </div>
-        <div class="w-12 h-12 bg-emerald-50/50 rounded-full flex items-center justify-center text-emerald-500 font-bold border border-emerald-100">
+        <div class="hidden md:flex w-10 h-10 md:w-12 md:h-12 bg-emerald-50/50 rounded-full items-center justify-center text-emerald-500 text-lg border border-emerald-100">
             ₺
         </div>
     </div>
 
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center border-l-4 border-l-rose-400">
+    <div class="bg-white p-4 md:p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center border-l-4 border-l-rose-300">
         <div>
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Bekleyen Ödeme</p>
-            <h3 id="panel-bekleyen" class="text-3xl font-black text-rose-600 tracking-tighter">₺0</h3>
+            <p class="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Bekleyen</p>
+            <h3 id="panel-bekleyen" class="text-2xl md:text-3xl font-black text-rose-500 tracking-tighter uppercase">₺0</h3>
         </div>
-        <div class="w-12 h-12 bg-rose-50/50 rounded-full flex items-center justify-center text-rose-500 font-bold border border-rose-100">
-            !
+        <div class="hidden md:flex w-10 h-10 md:w-12 md:h-12 bg-rose-50/40 rounded-full items-center justify-center text-rose-400 text-xl border border-rose-100">
+            ⌛
         </div>
     </div>
 
