@@ -155,6 +155,8 @@ function panelOzetiniGuncelle() {
 
 function paneliCiz(kazancData, dersData) {
     const aylar = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+    
+    // Kazanç Grafiği (Line Chart - Soft Blue)
     const ctx1 = document.getElementById('kazancChart').getContext('2d');
     if(kazancGrafik) kazancGrafik.destroy();
     kazancGrafik = new Chart(ctx1, {
@@ -162,17 +164,31 @@ function paneliCiz(kazancData, dersData) {
         data: {
             labels: aylar,
             datasets: [{ 
-                label: 'Kazanç (₺)', 
+                label: 'Kazanç', 
                 data: kazancData, 
-                borderColor: '#4F46E5', 
-                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                borderColor: '#60a5fa', // Soft Mavi
+                backgroundColor: 'rgba(96, 165, 250, 0.05)', // Çok hafif dolgu
+                borderWidth: 3,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#60a5fa',
+                pointBorderWidth: 2,
+                pointRadius: 4,
                 fill: true,
                 tension: 0.4 
             }]
         },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }, // Lejantı gizle (daha minimal)
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#f3f4f6' }, border: { display: false } },
+                x: { grid: { display: false }, border: { display: false } }
+            }
+        }
     });
 
+    // Ders Grafiği (Bar Chart - Soft Indigo)
     const ctx2 = document.getElementById('dersChart').getContext('2d');
     if(dersGrafik) dersGrafik.destroy();
     dersGrafik = new Chart(ctx2, {
@@ -182,14 +198,23 @@ function paneliCiz(kazancData, dersData) {
             datasets: [{ 
                 label: 'Ders Sayısı', 
                 data: dersData, 
-                backgroundColor: '#3B82F6',
-                borderRadius: 5
+                backgroundColor: 'rgba(129, 140, 248, 0.4)', // Pastel İndigo
+                hoverBackgroundColor: 'rgba(129, 140, 248, 0.7)',
+                borderRadius: 8,
+                barThickness: 20
             }]
         },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#f3f4f6' }, border: { display: false } },
+                x: { grid: { display: false }, border: { display: false } }
+            }
+        }
     });
 }
-
 /* =========================================
    4. KAZANÇ TABLOSU (GÜNCELLENEN KISIM)
    ========================================= */
