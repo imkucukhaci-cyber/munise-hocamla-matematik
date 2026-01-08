@@ -50,8 +50,12 @@ function googleIleGiris() {
 }
 
 function cikisYap() {
-    auth.signOut();
-    location.reload();
+    if(confirm("Çıkış yapmak istediğinize emin misiniz?")) {
+        auth.signOut().then(() => {
+            // Başarılı çıkış sonrası giriş sayfasına temiz bir dönüş
+            window.location.reload();
+        });
+    }
 }
 
 function sayfaGoster(sayfa) {
