@@ -41,27 +41,23 @@ th {
    ========================================= */
 /* Bu kısım JS'deki hesaplamanın doğru çalışması için değişmemeli */
 .ders-blok {
-    position: absolute;
-    background-color: #dbeafe; /* Hafif mavi */
-    border: 1.5px solid #3b82f6; /* Modern mavi */
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
     border-radius: 8px;
-    padding: 4px;
-    font-weight: 700;
-    font-size: 11px;
-    text-align: center;
-    box-sizing: border-box;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: transform 0.1s;
-    z-index: 10;
+    text-align: center;
 }
 
 .ders-blok:hover {
-    transform: scale(1.02);
-    z-index: 20;
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 20 !important;
+    filter: brightness(1.1);
 }
 
 .ders-blok small {

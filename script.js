@@ -71,8 +71,14 @@ function sayfaGoster(sayfa) {
         aktifBtn.classList.add('border-blue-600', 'text-blue-600', 'font-bold');
     }
 
+    // TAKVİM SAYFASINA GEÇİNCE YERLEŞİMİ TETİKLE
+    if (sayfa === "takvim") {
+        tabloyuTemizle();
+        dersler.forEach(ders => dersCiz(ders));
+    }
+    
     if (sayfa === "rapor") raporOgrencileriYukle();
-    if (sayfa === "kazanc" || sayfa === "takvim") ogrencileriYukle();
+    if (sayfa === "kazanc") ogrencileriYukle();
 }
 
 /* =========================================
@@ -302,34 +308,52 @@ function dersEkle() {
     document.getElementById("ogrenci").value = "";
 }
 
-// script.js içindeki dersCiz fonksiyonunu bu şekilde güncelleyin:
+// Ders Çiz fonksiyonunu kesin çözümle güncelle
 function dersCiz(ders) {
-    // Tablonun ve hücrelerin DOM'da tam oluştuğundan emin olmak için 50ms bekletiyoruz
+    // 100ms gecikme DOM'un (tablonun) render edilmesine izin verir
     setTimeout(() => {
-        const ilkHucre = document.getElementById(`hucre-${ders.gun}-${ders.baslangic}`);
-        if (!ilkHucre) return;
-
-        const hucreRect = ilkHucre.getBoundingClientRect();
+        const hucre = document.getElementById(`hucre-${ders.gun}-${ders.baslangic}`);
         const tablo = document.querySelector("table");
-        const tabloRect = tablo.getBoundingClientRect();
-        const hucreYukseklik = ilkHucre.offsetHeight;
+        
+        if (!hucre || !tablo) return;
+
+        // Koordinatları hesapla (Tablonun kendi offset değerlerini kullanıyoruz)
+        const topPos = hucre.offsetTop;
+        const leftPos = hucre.offsetLeft;
+        const width = hucre.offsetWidth;
+        const height = hucre.offsetHeight;
         const parcaSayisi = ders.sure / 0.5;
 
         const dersBlok = document.createElement("div");
-        dersBlok.className = "ders-blok";
-        dersBlok.innerHTML = `${ders.ogrenci}<br><small>${ders.ucret} ₺ / sa</small>`;
+        dersBlok.className = "ders-blok animate-in fade-in zoom-in duration-300"; // Küçük bir giriş efekti
+        dersBlok.innerHTML = `
+            <div class="flex flex-col h-full justify-center px-1 overflow-hidden">
+                <span class="font-black text-[11px] leading-none mb-0.5 truncate">${ders.ogrenci}</span>
+                <span class="text-[9px] font-bold opacity-80 uppercase leading-none">${ders.ucret} ₺</span>
+            </div>
+        `;
         dersBlok.dataset.id = ders.id;
 
-        // Koordinatları tabloya göre hesapla
-        // Scroll durumunu (window.scrollY) hesaba katmak için tabloRect.top kullanıyoruz
-        dersBlok.style.left = (hucreRect.left - tabloRect.left) + "px";
-        dersBlok.style.top = (hucreRect.top - tabloRect.top) + "px";
-        dersBlok.style.width = (hucreRect.width - 2) + "px";
-        dersBlok.style.height = (hucreYukseklik * parcaSayisi - 2) + "px";
+        // Stil Atamaları
+        Object.assign(dersBlok.style, {
+            position: "absolute",
+            top: (topPos + 1) + "px",
+            left: (leftPos + 1) + "px",
+            width: (width - 2) + "px",
+            height: (height * parcaSayisi - 2) + "px",
+            zIndex: "10",
+            pointerEvents: "auto"
+        });
         
-        dersBlok.onclick = function () { secimModalAc(this); };
+        dersBlok.onclick = function (e) { 
+            e.stopPropagation();
+            secimModalAc(this); 
+        };
+        
+        // Önemli: Bloğu tabloya değil, tablonun parent'ına veya bağıl bir alana eklemek gerekebilir 
+        // ama mevcut yapında tablo relative olduğu için tablonun içine ekliyoruz.
         tablo.appendChild(dersBlok);
-    }, 50); // 50 milisaniye gecikme koordinatların doğru alınmasını sağlar
+    }, 100);
 }
 
 function tabloyuTemizle() {

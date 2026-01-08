@@ -32,21 +32,30 @@
 
     <div id="anaUygulama" style="display:none;">
 
-        <header class="bg-white border-b sticky top-0 z-50 shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <div class="p-2 bg-blue-600 rounded-lg text-white shadow-md">🎓</div>
-                    <span class="font-bold text-xl tracking-tight">DersTakip</span>
-                </div>
-                <button onclick="cikisYap()" class="bg-red-50 text-red-600 text-xs font-bold px-3 py-2 rounded-lg border border-red-100 hover:bg-red-100 transition">Güvenli Çıkış</button>
+<header class="bg-white border-b sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="relative w-10 h-10 flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl shadow-lg overflow-hidden">
+                <svg viewBox="0 0 100 100" class="w-7 h-7 fill-white">
+                    <path d="M25 20 C 50 20, 75 35, 75 55 C 75 75, 50 85, 25 85 Z" opacity="0.3"></path>
+                    <path d="M30 25 L30 80 L45 80 C 65 80, 75 70, 75 52 C 75 35, 65 25, 45 25 Z"></path>
+                    <path d="M30 45 L40 52 L30 59 Z" fill="#4F46E5"></path>
+                </svg>
             </div>
-            <nav class="max-w-7xl mx-auto px-4 flex gap-6 overflow-x-auto no-scrollbar">
-                <button onclick="sayfaGoster('panel')" id="nav-panel" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Panel</button>
-                <button onclick="sayfaGoster('takvim')" id="nav-takvim" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Öğrenciler</button>
-                <button onclick="sayfaGoster('kazanc')" id="nav-kazanc" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Dersler</button>
-                <button onclick="sayfaGoster('rapor')" id="nav-rapor" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Raporlar</button>
-            </nav>
-        </header>
+            <div class="flex flex-col leading-tight">
+                <span class="font-black text-xl tracking-tighter text-gray-800">DERS<span class="text-blue-600">TAKİP</span></span>
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Munise Hoca</span>
+            </div>
+        </div>
+        <button onclick="cikisYap()" class="bg-red-50 text-red-600 text-xs font-bold px-3 py-2 rounded-lg border border-red-100 hover:bg-red-100 transition">Güvenli Çıkış</button>
+    </div>
+    <nav class="max-w-7xl mx-auto px-4 flex gap-6 overflow-x-auto no-scrollbar">
+        <button onclick="sayfaGoster('panel')" id="nav-panel" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Panel</button>
+        <button onclick="sayfaGoster('takvim')" id="nav-takvim" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Program</button>
+        <button onclick="sayfaGoster('kazanc')" id="nav-kazanc" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Ders İşle</button>
+        <button onclick="sayfaGoster('rapor')" id="nav-rapor" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Raporlar</button>
+    </nav>
+</header>
 
         <main class="max-w-7xl mx-auto p-4 lg:p-8">
 
