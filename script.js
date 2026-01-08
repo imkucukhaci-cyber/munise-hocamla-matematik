@@ -123,13 +123,19 @@ function panelOzetiniGuncelle() {
         const tutar = k.sure * k.ucret;
         
         if (d.getFullYear() === buYil) {
-            aylikKazancVerisi[d.getMonth()] += tutar;
-            aylikDersVerisi[d.getMonth()] += 1;
+            // GRAFİKLER: Sadece ödemesi alınanları kazanç grafiğine ekle
+            if (k.odemeDurumu) {
+                aylikKazancVerisi[d.getMonth()] += tutar;
+            }
+            aylikDersVerisi[d.getMonth()] += 1; // Ders sayısı her halükarda artar
 
             if (d.getMonth() === buAy) {
-                buAyKazanc += tutar;
                 buAyDersSayisi += 1;
-                if (!k.odemeDurumu) bekleyenOdeme += tutar;
+                if (k.odemeDurumu) {
+                    buAyKazanc += tutar; // Sadece ödenenler "Bu Ay Kazanç"a
+                } else {
+                    bekleyenOdeme += tutar; // Ödenmeyenler "Bekleyen"e
+                }
             }
         }
     });
@@ -192,9 +198,13 @@ function kazancTablosuCiz() {
         if (tarih.getFullYear() === yil) {
             const ay = tarih.getMonth();
             const tutar = k.sure * k.ucret;
-            if (k.odemeDurumu) aylikToplam[ay] += tutar;
-            if (!ogrenciToplam[k.ogrenci]) ogrenciToplam[k.ogrenci] = Array(12).fill(0);
-            ogrenciToplam[k.ogrenci][ay] += tutar;
+            
+            // SADECE ÖDEME ALINDIysa hem genel toplama hem öğrenci toplamına ekle
+            if (k.odemeDurumu) {
+                aylikToplam[ay] += tutar;
+                if (!ogrenciToplam[k.ogrenci]) ogrenciToplam[k.ogrenci] = Array(12).fill(0);
+                ogrenciToplam[k.ogrenci][ay] += tutar;
+            }
         }
     });
 
@@ -244,36 +254,36 @@ function ayDetayiniGoster(ayIndex, yil) {
     const baslik = document.getElementById('ayModalBaslik');
     const aylar = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
 
-    if(!modal || !liste) return;
-
     liste.innerHTML = "";
     modal.style.display = "flex";
-    baslik.innerText = `${aylar[ayIndex]} ${yil} - Tüm Kayıtlar`;
+    baslik.innerText = `${aylar[ayIndex]} ${yil} Detayı`;
 
     const filtreliKayitlar = kazancKayitlari.filter(k => {
         const d = new Date(k.tarih);
         return d.getMonth() === ayIndex && d.getFullYear() === yil;
-    }).sort((a,b) => new Date(a.tarih) - new Date(b.tarih));
-
-    if (filtreliKayitlar.length === 0) {
-        liste.innerHTML = `<div class="p-8 text-center text-gray-400">Bu ayda herhangi bir ders kaydı bulunmuyor.</div>`;
-        return;
-    }
+    }).sort((a,b) => new Date(b.tarih) - new Date(a.tarih)); // Yeni ders en üstte
 
     filtreliKayitlar.forEach(k => {
         const tutar = k.sure * k.ucret;
         const kart = document.createElement("div");
-        kart.className = "flex items-center justify-between p-4 bg-white rounded-xl border border-gray-100 shadow-sm mb-2";
+        kart.className = `flex items-center justify-between p-4 rounded-xl border mb-2 transition-all ${k.odemeDurumu ? 'bg-green-50 border-green-100' : 'bg-white border-gray-100 shadow-sm'}`;
+        
         kart.innerHTML = `
-            <div class="flex flex-col">
-                <span class="text-[10px] font-bold text-blue-500 uppercase tracking-tight">${k.tarih}</span>
-                <span class="font-bold text-gray-800 text-sm">${k.ogrenci} - ${k.sure} Saat Ders</span>
-                <span class="text-[10px] ${k.odemeDurumu ? 'text-green-500' : 'text-orange-500'} font-bold">
-                    ${k.odemeDurumu ? '● ÖDEME ALINDI' : '○ ÖDEME BEKLİYOR'}
-                </span>
+            <div class="flex flex-col gap-1">
+                <span class="text-[10px] font-bold text-gray-400 uppercase leading-none">${k.tarih}</span>
+                <span class="font-black text-gray-800">${k.ogrenci}</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-gray-500">${k.sure} Saat / ₺${tutar}</span>
+                    ${!k.odemeDurumu ? 
+                        `<button onclick="odemeDurumuGuncelle('${k.id}', true)" class="bg-orange-500 text-white text-[9px] px-2 py-1 rounded-lg font-black hover:bg-orange-600 transition shadow-sm animate-pulse">ÖDEME AL</button>` : 
+                        `<span class="text-green-600 text-[10px] font-black italic">✓ TAHSİL EDİLDİ</span>`
+                    }
+                </div>
             </div>
-            <div class="flex items-center gap-3">
-                <span class="font-black text-gray-900">₺${tutar}</span>
+            <div class="flex items-center gap-2">
+                ${k.odemeDurumu ? 
+                    `<button onclick="odemeDurumuGuncelle('${k.id}', false)" class="p-2 text-gray-300 hover:text-orange-500 transition" title="Ödemeyi Geri Al">↩</button>` : ''
+                }
                 <button onclick="kazancKaydiSil('${k.id}')" class="p-2 text-gray-300 hover:text-red-500 transition">🗑️</button>
             </div>
         `;
@@ -281,6 +291,15 @@ function ayDetayiniGoster(ayIndex, yil) {
     });
 }
 
+// YENİ FONKSİYON: Firebase'de ödeme durumunu şak diye günceller
+function odemeDurumuGuncelle(kayitId, yeniDurum) {
+    database.ref(`kullanicilar/${aktifKullaniciId}/kazanclar/${kayitId}`).update({
+        odemeDurumu: yeniDurum
+    }).then(() => {
+        // Modal içindeki listeyi yenilemek için mevcut ay ve yılı tekrar gönderiyoruz
+        // Not: kazancTablosuCiz zaten .on('value') sayesinde otomatik çalışacak.
+    });
+}
 function ayModalKapat() {
     document.getElementById('ayModalArka').style.display = "none";
 }
