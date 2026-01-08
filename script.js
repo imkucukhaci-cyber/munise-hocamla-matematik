@@ -22,6 +22,8 @@ let kazancKayitlari = [];
 let aktifBlok = null; 
 let kazancGrafik = null;
 let dersGrafik = null;
+let modalAcikAy = null;
+let modalAcikYil = null;
 
 /* =========================================
    2. GİRİŞ VE NAVİGASYON
@@ -249,6 +251,10 @@ function kazancTablosuCiz() {
 }
 
 function ayDetayiniGoster(ayIndex, yil) {
+    // Hangi ayın açık olduğunu hafızaya alıyoruz
+    modalAcikAy = ayIndex;
+    modalAcikYil = yil;
+
     const modal = document.getElementById('ayModalArka');
     const liste = document.getElementById('ayKayitListe');
     const baslik = document.getElementById('ayModalBaslik');
@@ -261,47 +267,51 @@ function ayDetayiniGoster(ayIndex, yil) {
     const filtreliKayitlar = kazancKayitlari.filter(k => {
         const d = new Date(k.tarih);
         return d.getMonth() === ayIndex && d.getFullYear() === yil;
-    }).sort((a,b) => new Date(b.tarih) - new Date(a.tarih)); // Yeni ders en üstte
+    }).sort((a,b) => new Date(b.tarih) - new Date(a.tarih));
+
+    if (filtreliKayitlar.length === 0) {
+        liste.innerHTML = `<div class="p-8 text-center text-gray-400 font-bold italic text-sm">Bu ayda henüz bir kayıt yok.</div>`;
+        return;
+    }
 
     filtreliKayitlar.forEach(k => {
         const tutar = k.sure * k.ucret;
         const kart = document.createElement("div");
-        kart.className = `flex items-center justify-between p-4 rounded-xl border mb-2 transition-all ${k.odemeDurumu ? 'bg-green-50 border-green-100' : 'bg-white border-gray-100 shadow-sm'}`;
+        // Dinamik sınıf: Ödenmişse yeşil çerçeve, ödenmemişse gölgeli beyaz
+        kart.className = `flex items-center justify-between p-4 rounded-xl border mb-2 transition-all duration-300 ${k.odemeDurumu ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100 shadow-sm'}`;
         
         kart.innerHTML = `
             <div class="flex flex-col gap-1">
-                <span class="text-[10px] font-bold text-gray-400 uppercase leading-none">${k.tarih}</span>
+                <span class="text-[10px] font-bold text-gray-400 uppercase">${k.tarih}</span>
                 <span class="font-black text-gray-800">${k.ogrenci}</span>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-gray-500">${k.sure} Saat / ₺${tutar}</span>
+                    <span class="text-xs font-bold text-gray-500">${k.sure} Sa / ₺${tutar}</span>
                     ${!k.odemeDurumu ? 
-                        `<button onclick="odemeDurumuGuncelle('${k.id}', true)" class="bg-orange-500 text-white text-[9px] px-2 py-1 rounded-lg font-black hover:bg-orange-600 transition shadow-sm animate-pulse">ÖDEME AL</button>` : 
+                        `<button onclick="odemeDurumuGuncelle('${k.id}', true)" class="bg-orange-500 text-white text-[10px] px-2 py-1 rounded-lg font-black hover:bg-orange-600 transition shadow-sm animate-pulse">ÖDEME AL</button>` : 
                         `<span class="text-green-600 text-[10px] font-black italic">✓ TAHSİL EDİLDİ</span>`
                     }
                 </div>
             </div>
             <div class="flex items-center gap-2">
                 ${k.odemeDurumu ? 
-                    `<button onclick="odemeDurumuGuncelle('${k.id}', false)" class="p-2 text-gray-300 hover:text-orange-500 transition" title="Ödemeyi Geri Al">↩</button>` : ''
+                    `<button onclick="odemeDurumuGuncelle('${k.id}', false)" class="p-2 text-gray-300 hover:text-orange-500 transition text-lg" title="Geri Al">↩</button>` : ''
                 }
-                <button onclick="kazancKaydiSil('${k.id}')" class="p-2 text-gray-300 hover:text-red-500 transition">🗑️</button>
+                <button onclick="kazancKaydiSil('${k.id}')" class="p-2 text-gray-300 hover:text-red-500 transition text-lg">🗑️</button>
             </div>
         `;
         liste.appendChild(kart);
     });
 }
 
-// YENİ FONKSİYON: Firebase'de ödeme durumunu şak diye günceller
 function odemeDurumuGuncelle(kayitId, yeniDurum) {
     database.ref(`kullanicilar/${aktifKullaniciId}/kazanclar/${kayitId}`).update({
         odemeDurumu: yeniDurum
     }).then(() => {
-        // Modal içindeki listeyi yenilemek için mevcut ay ve yılı tekrar gönderiyoruz
-        // Not: kazancTablosuCiz zaten .on('value') sayesinde otomatik çalışacak.
+        // Firebase güncellendiğinde modalı kapatmadan içeriği yeniliyoruz!
+        if(modalAcikAy !== null) {
+            ayDetayiniGoster(modalAcikAy, modalAcikYil);
+        }
     });
-}
-function ayModalKapat() {
-    document.getElementById('ayModalArka').style.display = "none";
 }
 
 function kazancKaydiSil(id) {
@@ -427,5 +437,112 @@ function ogrencileriYukle() {
     if(mevcutSecim) select.value = mevcutSecim;
 }
 
-function raporOgrencileriYukle() {}
-function secimDuzenle() { alert("Düzenleme için lütfen takvim üzerinden modalı kullanın."); secimKapat(); }
+// Rapor sayfasındaki öğrenci listesini günceller
+function raporOgrencileriYukle() {
+    const select = document.getElementById("raporFiltreOgrenci");
+    if(!select) return;
+    select.innerHTML = `<option value="all">Tüm Öğrenciler</option>`;
+    const ogrenciler = [...new Set(dersler.map(d => d.ogrenci))];
+    ogrenciler.forEach(o => {
+        const opt = document.createElement("option");
+        opt.value = o; opt.textContent = o;
+        select.appendChild(opt);
+    });
+}
+
+function raporUret() {
+    const seciliOgrenci = document.getElementById("raporFiltreOgrenci").value;
+    const seciliYil = document.getElementById("raporFiltreYil").value;
+    const seciliAy = document.getElementById("raporFiltreAy").value;
+    const onizleme = document.getElementById("raporOnizleme");
+
+    // Verileri Filtrele
+    let filtrelenmis = kazancKayitlari.filter(k => {
+        const d = new Date(k.tarih);
+        const ogrenciUygun = seciliOgrenci === "all" || k.ogrenci === seciliOgrenci;
+        const yilUygun = seciliYil === "all" || d.getFullYear().toString() === seciliYil;
+        const ayUygun = seciliAy === "all" || d.getMonth().toString() === seciliAy;
+        return ogrenciUygun && yilUygun && ayUygun;
+    });
+
+    // Tarihe göre sırala
+    filtrelenmis.sort((a, b) => new Date(a.tarih) - new Date(b.tarih));
+
+    // Raporu Oluştur
+    let toplamSaat = 0;
+    let toplamKazanc = 0;
+    let raporHTML = `
+        <div class="max-w-4xl mx-auto">
+            <div class="flex justify-between items-start border-b-2 border-gray-100 pb-6 mb-6">
+                <div>
+                    <h1 class="text-2xl font-black text-gray-800 uppercase tracking-tighter">DERS TAKİP RAPORU</h1>
+                    <p class="text-sm text-gray-500 font-bold">${new Date().toLocaleDateString('tr-TR')} tarihinde oluşturuldu</p>
+                </div>
+                <div class="text-right">
+                    <p class="font-black text-blue-600 uppercase text-lg">Munise Hoca</p>
+                    <p class="text-xs text-gray-400 font-bold">Özel Ders Yönetim Sistemi</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 mb-8">
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">Toplam Ders</p>
+                    <p class="text-xl font-black text-gray-800">${filtrelenmis.length} Adet</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">Toplam Süre</p>
+                    <p id="raporToplamSaat" class="text-xl font-black text-blue-600">0 Saat</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">Toplam Tutar</p>
+                    <p id="raporToplamTutar" class="text-xl font-black text-green-600">₺0</p>
+                </div>
+            </div>
+
+            <table class="w-full text-sm border-collapse">
+                <thead>
+                    <tr class="text-left border-b-2 border-gray-100 text-gray-400">
+                        <th class="py-3 font-bold text-[10px] uppercase">Tarih</th>
+                        <th class="py-3 font-bold text-[10px] uppercase">Öğrenci</th>
+                        <th class="py-3 font-bold text-[10px] uppercase text-center">Süre</th>
+                        <th class="py-3 font-bold text-[10px] uppercase text-center">Durum</th>
+                        <th class="py-3 font-bold text-[10px] uppercase text-right">Ücret</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+    `;
+
+    filtrelenmis.forEach(k => {
+        const tutar = k.sure * k.ucret;
+        toplamSaat += k.sure;
+        toplamKazanc += tutar;
+
+        raporHTML += `
+            <tr>
+                <td class="py-4 font-bold text-gray-600">${new Date(k.tarih).toLocaleDateString('tr-TR')}</td>
+                <td class="py-4 font-black text-gray-800">${k.ogrenci}</td>
+                <td class="py-4 text-center font-bold text-gray-600">${k.sure} Sa</td>
+                <td class="py-4 text-center">
+                    <span class="text-[9px] font-black px-2 py-1 rounded-full ${k.odemeDurumu ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}">
+                        ${k.odemeDurumu ? 'ÖDENDİ' : 'BEKLİYOR'}
+                    </span>
+                </td>
+                <td class="py-4 text-right font-black text-gray-800">₺${tutar}</td>
+            </tr>
+        `;
+    });
+
+    raporHTML += `
+                </tbody>
+            </table>
+            
+            <div class="mt-12 pt-6 border-t border-dashed border-gray-200 text-center">
+                <p class="text-xs text-gray-400 font-medium italic">Bu rapor Munise Hoca Ders Takip sistemi tarafından otomatik olarak üretilmiştir.</p>
+            </div>
+        </div>
+    `;
+
+    onizleme.innerHTML = raporHTML;
+    document.getElementById("raporToplamSaat").innerText = toplamSaat + " Saat";
+    document.getElementById("raporToplamTutar").innerText = "₺" + toplamKazanc;
+}function secimDuzenle() { alert("Düzenleme için lütfen takvim üzerinden modalı kullanın."); secimKapat(); }

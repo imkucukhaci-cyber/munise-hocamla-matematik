@@ -100,15 +100,17 @@ th {
 /* =========================================
    4. YAZDIRMA (PRINT) AYARLARI
    ========================================= */
+
 @media print {
-    header, .no-print, .form, button, nav { 
-        display: none !important; 
+    .no-print, header, nav, button {
+        display: none !important;
     }
-    body { background: white; padding: 0; }
-    .rapor-alan { display: block !important; width: 100% !important; }
-    table { width: 100% !important; border-collapse: collapse; }
-    th, td { border: 1px solid #000 !important; color: black; }
+    body { background: white !important; }
+    #raporOnizleme { border: none !important; shadow: none !important; padding: 0 !important; }
+    .sayfa-bolum { display: block !important; }
+    #panelSayfa, #takvimSayfa, #kazancSayfa { display: none !important; }
 }
+
 
 /* Mobil için Kaydırma İpucu */
 @media (max-width: 768px) {
