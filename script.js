@@ -315,11 +315,35 @@ function odemeDurumuGuncelle(kayitId, yeniDurum) {
 }
 
 function kazancKaydiSil(id) {
-    if(confirm("Bu ders kaydını silmek istediğinize emin misiniz?")) {
+    if(confirm("Bu ders kaydını silmek istediğinize emin misiniz? Bu işlem geri alınamaz.")) {
         database.ref(`kullanicilar/${aktifKullaniciId}/kazanclar/${id}`).remove()
-            .then(() => ayModalKapat());
+            .then(() => {
+                // SİLME İŞLEMİ BAŞARILI OLUNCA:
+                if(modalAcikAy !== null) {
+                    // Listeyi anında yenile (Modal açık kalır, kayıt şak diye listeden kaybolur)
+                    ayDetayiniGoster(modalAcikAy, modalAcikYil);
+                }
+                console.log("Kayıt başarıyla silindi.");
+            })
+            .catch((hata) => {
+                alert("Silme işlemi sırasında bir hata oluştu: " + hata.message);
+            });
     }
 }
+
+/* =========================================
+   MODAL KAPATMA FONKSİYONU
+   ========================================= */
+function ayModalKapat() {
+    const modal = document.getElementById('ayModalArka');
+    if (modal) {
+        modal.style.display = "none";
+        // Temizlik: Hafızadaki ay/yıl bilgisini sıfırlıyoruz
+        modalAcikAy = null;
+        modalAcikYil = null;
+    }
+}
+
 
 /* =========================================
    5. DERS PROGRAMI VE DİĞER FONKSİYONLAR
