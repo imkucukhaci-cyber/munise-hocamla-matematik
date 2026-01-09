@@ -34,8 +34,11 @@ auth.onAuthStateChanged((user) => {
         aktifKullaniciId = user.uid;
         document.getElementById("loginSayfa").style.display = "none";
         document.getElementById("anaUygulama").style.display = "block";
-        verileriBuluttanDinle(); 
-        sayfaGoster('panel');
+        
+        // ÖNCE AYARLARI KONTROL ET
+        ayarKontrol(); 
+        
+        verileriBuluttanDinle();
     } else {
         aktifKullaniciId = null;
         document.getElementById("loginSayfa").style.display = "flex";
@@ -599,3 +602,60 @@ function raporUret() {
     document.getElementById("raporToplamSaat").innerText = toplamSaat + " Saat";
     document.getElementById("raporToplamTutar").innerText = "₺" + toplamKazanc;
 }function secimDuzenle() { alert("Düzenleme için lütfen takvim üzerinden modalı kullanın."); secimKapat(); }
+
+// Tatil günü buton seçimi için yardımcı fonksiyon
+function gunSec(btn) {
+    btn.classList.toggle('bg-red-500');
+    btn.classList.toggle('text-white');
+    btn.classList.toggle('border-red-500');
+}
+
+// AYARLARI KAYDET
+function ayarlariKaydet() {
+    const hocaAd = document.getElementById("prefHocaAd").value;
+    const brans = document.getElementById("prefBrans").value;
+    const basla = document.getElementById("prefMesaiBasla").value;
+    const bitis = document.getElementById("prefMesaiBitis").value;
+    const hedef = document.getElementById("prefHedef").value;
+
+    // Seçili tatil günlerini al
+    const tatiller = [];
+    document.querySelectorAll('.gun-btn.bg-red-500').forEach(btn => tatiller.push(btn.innerText));
+
+    // Çoklu seçilen süre ve düzeyleri al
+    const sureler = Array.from(document.getElementById("prefSureler").selectedOptions).map(o => o.value);
+    const duzeyler = Array.from(document.getElementById("prefDuzeyler").selectedOptions).map(o => o.value);
+
+    if(!hocaAd || !brans || !basla || !bitis || sureer.length == 0) {
+        alert("Lütfen zorunlu alanları (Ad, Branş, Saatler, Süreler) doldurun!");
+        return;
+    }
+
+    const ayarlar = {
+        hocaAd, brans, mesai: { basla, bitis },
+        tatiller, sureler, duzeyler, hedef: hedef || 0,
+        kurulumTamam: true
+    };
+
+    database.ref(`kullanicilar/${aktifKullaniciId}/ayarlar`).set(ayarlar).then(() => {
+        alert("Profiliniz güncellendi!");
+        location.reload(); // Uygulamayı yeni ayarlarla başlatmak için
+    });
+}
+
+// AYARLARI KONTROL ET VE YÖNLENDİR
+function ayarKontrol() {
+    database.ref(`kullanicilar/${aktifKullaniciId}/ayarlar`).once('value', (snapshot) => {
+        const ayar = snapshot.val();
+        if (!ayar || !ayar.kurulumTamam) {
+            // Eğer ayar yoksa her şeyi gizle sadece tercihleri göster
+            document.querySelectorAll('section, div[id$="Sayfa"]').forEach(s => s.style.display = "none");
+            document.getElementById("nav-bar")?.style.display = "none"; // Navigasyonu gizle
+            document.getElementById("tercihlerSayfa").style.display = "block";
+        } else {
+            // Ayarlar tamamsa normal panele git
+            document.getElementById("nav-bar")?.style.display = "flex";
+            sayfaGoster('panel');
+        }
+    });
+}
