@@ -142,19 +142,21 @@
                 <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Munise Hoca</span>
             </div>
         </div>
-<div class="flex items-center gap-3">
-    <button onclick="tercihleriAc()" class="bg-blue-100 hover:bg-blue-200 text-blue-600 p-2 rounded-xl transition duration-300 flex items-center gap-2" title="Profil Ayarları">
-        <span class="text-xl">⚙️</span>
-        <span class="hidden md:inline font-bold text-sm">Ayarlar</span>
-    </button>
 
-    <button onclick="cikisYap()" ... >
-        ...
-    </button>
-</div>
-        <button onclick="cikisYap()" class="bg-red-50 text-red-600 text-xs font-bold px-3 py-2 rounded-lg border border-red-100 hover:bg-red-100 transition">Güvenli Çıkış</button>
+        <div class="flex items-center gap-3">
+            <button onclick="tercihleriAc()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs md:text-sm font-bold px-4 py-2 rounded-xl transition duration-300 flex items-center gap-2 group">
+                <span class="group-hover:rotate-90 transition-transform duration-500">⚙️</span>
+                <span class="hidden md:inline">Tercihlerim</span>
+            </button>
+
+            <button onclick="cikisYap()" class="bg-red-50 text-red-600 text-xs md:text-sm font-bold px-4 py-2 rounded-xl border border-red-100 hover:bg-red-100 transition flex items-center gap-2">
+                <span>Güvenli Çıkış</span>
+                <span>🚪</span>
+            </button>
+        </div>
     </div>
-    <nav class="max-w-7xl mx-auto px-4 flex gap-6 overflow-x-auto no-scrollbar">
+
+    <nav id="nav-bar" class="max-w-7xl mx-auto px-4 flex gap-6 overflow-x-auto no-scrollbar pt-2">
         <button onclick="sayfaGoster('panel')" id="nav-panel" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Panel</button>
         <button onclick="sayfaGoster('takvim')" id="nav-takvim" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Program</button>
         <button onclick="sayfaGoster('kazanc')" id="nav-kazanc" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Ders İşle</button>
