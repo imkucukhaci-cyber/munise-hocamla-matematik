@@ -24,6 +24,8 @@ let kazancGrafik = null;
 let dersGrafik = null;
 let modalAcikAy = null;
 let modalAcikYil = null;
+let globalAyarlar = null; 
+
 
 /* =========================================
    2. GİRİŞ VE NAVİGASYON
@@ -34,13 +36,15 @@ auth.onAuthStateChanged((user) => {
         aktifKullaniciId = user.uid;
         document.getElementById("loginSayfa").style.display = "none";
         document.getElementById("anaUygulama").style.display = "block";
-        verileriBuluttanDinle(); 
-        sayfaGoster('panel');
+        // ÖNCE AYARLARI KONTROL ET
+        ayarKontrolVeBaslat();
+
     } else {
         aktifKullaniciId = null;
+        globalAyarlar = null;
+
         document.getElementById("loginSayfa").style.display = "flex";
         document.getElementById("anaUygulama").style.display = "none";
-        tabloyuTemizle();
     }
 });
 
@@ -58,34 +62,109 @@ function cikisYap() {
     }
 }
 
-function sayfaGoster(sayfa) {
-    const sayfalar = ["panelSayfa", "takvimSayfa", "kazancSayfa", "raporSayfa"];
-    sayfalar.forEach(s => {
-        const el = document.getElementById(s);
-        if(el) el.style.display = "none";
-    });
-    
-    document.getElementById(sayfa + "Sayfa").style.display = "block";
+function ayarKontrolVeBaslat() {
+    database.ref(`kullanicilar/${aktifKullaniciId}/ayarlar`).once('value', (snapshot) => {
+        globalAyarlar = snapshot.val();
 
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('border-blue-600', 'text-blue-600', 'font-bold');
-        btn.classList.add('border-transparent', 'text-gray-500');
-    });
-    const aktifBtn = document.getElementById("nav-" + sayfa);
-    if(aktifBtn) {
-        aktifBtn.classList.remove('border-transparent', 'text-gray-500');
-        aktifBtn.classList.add('border-blue-600', 'text-blue-600', 'font-bold');
-    }
+        const header = document.querySelector("header");
+        const tercihSayfasi = document.getElementById("tercihlerSayfa");
+        const navBar = document.getElementById("nav-bar");
 
-    // TAKVİM SAYFASINA GEÇİNCE YERLEŞİMİ TETİKLE
-    if (sayfa === "takvim") {
-        tabloyuTemizle();
-        dersler.forEach(ders => dersCiz(ders));
-    }
-    
-    if (sayfa === "rapor") raporOgrencileriYukle();
-    if (sayfa === "kazanc") ogrencileriYukle();
+        if (!globalAyarlar || !globalAyarlar.kurulumTamam) {
+            // AYAR YOKSA: Header ve Nav gizle, Tercihleri aç
+            if(header) header.style.display = "none";
+            if(navBar) navBar.style.display = "none";
+            
+            // Tüm sayfaları gizle
+            document.querySelectorAll('.sayfa-bolum').forEach(el => el.style.display = 'none');
+            
+            tercihSayfasi.style.display = "flex"; 
+        } else {
+            // AYAR VARSA: Normal akış
+            if(header) header.style.display = "block";
+            if(navBar) navBar.style.display = "flex";
+            tercihSayfasi.style.display = "none";
+            verileriBuluttanDinle(); 
+            sayfaGoster('panel');
+        }
+    });
 }
+
+// --- YENİLENMİŞ SAYFA GÖSTER FONKSİYONU ---
+function sayfaGoster(sayfaId) {
+    // 1. Tüm sayfaları gizle
+    document.querySelectorAll('.sayfa-bolum').forEach(div => {
+        div.style.display = 'none';
+    });
+
+    // 2. İstenen sayfayı göster
+    const secilenSayfa = document.getElementById(sayfaId + 'Sayfa');
+    if (secilenSayfa) {
+        secilenSayfa.style.display = 'block';
+    }
+
+    // 3. Alt Menü Butonlarını Güncelle
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        const colorClass = btn.dataset.color; 
+        const bgClass = btn.dataset.bg;       
+        
+        // Aktiflik sınıflarını temizle
+        if (colorClass) btn.classList.remove(colorClass);
+        if (bgClass) btn.classList.remove(bgClass);
+        btn.classList.remove('active', 'shadow-sm');
+        
+        // Pasif hale getir (Gri yap)
+        btn.classList.add('text-gray-400');
+        
+        // Animasyon için scale sıfırla
+        const svg = btn.querySelector('svg');
+        if(svg) {
+            svg.classList.remove('scale-110');
+            svg.style.stroke = ""; 
+        }
+        
+        // Yazı stili sıfırla - Sadece varsa uygula
+        const span = btn.querySelector('span');
+        if(span) {
+            span.classList.remove('font-bold', 'text-gray-800');
+            // Yazı rengini griye çevir
+            if(colorClass) span.classList.remove(colorClass);
+        }
+    });
+
+    // 4. Aktif Butonu Boya
+    const aktifBtn = document.getElementById('nav-' + sayfaId);
+    if (aktifBtn) {
+        const activeColor = aktifBtn.dataset.color;
+        const activeBg = aktifBtn.dataset.bg;
+
+        aktifBtn.classList.remove('text-gray-400');
+        aktifBtn.classList.add('active', activeColor, activeBg, 'shadow-sm');
+        
+        const svg = aktifBtn.querySelector('svg');
+        if(svg) svg.classList.add('scale-110');
+        
+        const span = aktifBtn.querySelector('span');
+        if(span) {
+            span.classList.add('font-bold');
+            // Yazı rengini de ikon rengiyle aynı yap
+            span.classList.remove('text-gray-400');
+            span.classList.add(activeColor);
+        }
+    }
+
+    // Sayfa özel yüklemeler
+    if (sayfaId === "takvim") {
+        takvimOlustur();
+        setTimeout(() => {
+            dersler.forEach(ders => dersCiz(ders));
+        }, 50);
+    }
+    if (sayfaId === "rapor") raporOgrencileriYukle();
+    if (sayfaId === "kazanc") ogrencileriYukle();
+    if (sayfaId === "panel") panelOzetiniGuncelle();
+}
+
 
 /* =========================================
    3. VERİ DİNLEME VE PANEL RAPORLAMA
