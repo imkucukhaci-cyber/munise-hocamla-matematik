@@ -94,16 +94,24 @@ function sayfaGoster(sayfa) {
     document.getElementById(sayfa + "Sayfa").style.display = "block";
 
     // Menü aktiflik ayarı
-// Navigasyon butonlarını güncelle (Aktif olanı mavi yap)
+
+// Menü aktiflik ayarı (RENKLİ VERSİYON)
 document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.classList.remove('text-blue-600', 'scale-110'); // Eskileri sil
-    btn.classList.add('text-gray-400'); // Pasif yap
+    // Önceki renkleri temizle (dataset'ten okuyarak veya manuel)
+    const colorClass = btn.dataset.color; 
+    btn.classList.remove('active', 'scale-110', colorClass); // Aktif rengi sil
+    btn.classList.add('text-gray-400'); // Gri yap
+    
+    // SVG içindeki stroke rengini sıfırla (CSS class'ı ile çakışmaması için)
+    const svg = btn.querySelector('svg');
+    if(svg) svg.style.stroke = "";
 });
 
 const aktifBtn = document.getElementById("nav-" + sayfa);
 if(aktifBtn) {
+    const activeColor = aktifBtn.dataset.color; // HTML'den rengi al (örn: text-violet-600)
     aktifBtn.classList.remove('text-gray-400');
-    aktifBtn.classList.add('text-blue-600', 'scale-110'); // Aktif yap
+    aktifBtn.classList.add('active', 'scale-110', activeColor); // O rengi ekle
 }
 
     if (sayfa === "takvim") {
