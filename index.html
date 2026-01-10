@@ -157,7 +157,7 @@
 
     <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group h-30 flex flex-col justify-between transition-all hover:shadow-md">
         <div class="absolute right-2 bottom-2 text-3xl opacity-20 text-gray-300 group-hover:scale-110 transition-transform duration-500 select-none pointer-events-none">
-            ✏️
+            📚
         </div>
         
         <div class="relative z-10">
@@ -170,7 +170,7 @@
 
     <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group h-30 flex flex-col justify-between transition-all hover:shadow-md">
         <div class="absolute right-2 bottom-0 text-3xl opacity-20 text-gray-300 group-hover:scale-110 transition-transform duration-500 select-none font-serif pointer-events-none">
-            ₺
+            💵
         </div>
         
         <div class="relative z-10">
@@ -196,21 +196,23 @@
 
 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                        <h4 class="font-bold text-gray-700 mb-6 flex items-center gap-2">📈 Aylık Kazanç Akışı</h4>
-                        <div class="chart-container" style="position: relative; height:300px; width:100%">
-                            <canvas id="kazancChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                        <h4 class="font-bold text-gray-700 mb-6 flex items-center gap-2">📊 Aylık Ders Yükü</h4>
-                        <div class="chart-container" style="position: relative; height:300px; width:100%">
-                            <canvas id="dersChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    
+    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col h-[350px]">
+        <h4 class="font-black text-gray-800 text-lg mb-6 tracking-tight">Aylık Kazanç</h4>
+        <div class="flex-1 w-full relative min-h-0">
+            <canvas id="kazancChart"></canvas>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm flex flex-col h-[350px]">
+        <h4 class="font-black text-gray-800 text-lg mb-6 tracking-tight">Ders Yoğunluğu</h4>
+        <div class="flex-1 w-full relative min-h-0">
+            <canvas id="dersChart"></canvas>
+        </div>
+    </div>
+
+</div>
 
             <div id="takvimSayfa" class="sayfa-bolum" style="display:none">
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">

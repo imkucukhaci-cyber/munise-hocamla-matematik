@@ -294,38 +294,78 @@ function panelOzetiniGuncelle() {
     paneliCiz(aylikKazancVerisi, aylikDersVerisi);
 }
 
+/* === script.js içindeki paneliCiz fonksiyonunu bununla değiştir === */
+
 function paneliCiz(kazancData, dersData) {
     const aylar = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
     
+    // --- 1. KAZANÇ GRAFİĞİ (Modern Line Chart) ---
     const ctx1 = document.getElementById('kazancChart').getContext('2d');
+    
+    // Gradyan (Gölge) Oluşturma
+    const gradient = ctx1.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)'); // Üstte Mavi
+    gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)'); // Altta Şeffaf
+
     if(kazancGrafik) kazancGrafik.destroy();
+    
     kazancGrafik = new Chart(ctx1, {
         type: 'line',
         data: {
             labels: aylar,
             datasets: [{ 
-                label: 'Kazanç', 
+                label: 'Kazanç (₺)', 
                 data: kazancData, 
-                borderColor: '#60a5fa', 
-                backgroundColor: 'rgba(96, 165, 250, 0.05)', 
+                borderColor: '#3b82f6', // Ana Mavi
+                backgroundColor: gradient, // Altına gradyan
                 borderWidth: 3,
-                tension: 0.4,
-                fill: true
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#3b82f6',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                fill: true, 
+                tension: 0.4 // Çizgiyi yumuşatır (kıvrımlı yapar)
             }]
         },
         options: { 
             responsive: true, 
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1f2937',
+                    padding: 12,
+                    cornerRadius: 8,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context) {
+                            return '₺' + context.parsed.y;
+                        }
+                    }
+                }
+            },
             scales: {
-                y: { beginAtZero: true, grid: { color: '#f3f4f6' }, border: { display: false } },
-                x: { grid: { display: false }, border: { display: false } }
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: '#f3f4f6', borderDash: [5, 5] }, 
+                    border: { display: false },
+                    ticks: { font: { size: 10, weight: 'bold' }, color: '#9ca3af' }
+                },
+                x: { 
+                    grid: { display: false }, 
+                    border: { display: false },
+                    ticks: { font: { size: 10 }, color: '#9ca3af' }
+                }
             }
         }
     });
 
+    // --- 2. DERS YOĞUNLUĞU (Modern Bar Chart) ---
     const ctx2 = document.getElementById('dersChart').getContext('2d');
+    
     if(dersGrafik) dersGrafik.destroy();
+    
     dersGrafik = new Chart(ctx2, {
         type: 'bar',
         data: {
@@ -333,17 +373,36 @@ function paneliCiz(kazancData, dersData) {
             datasets: [{ 
                 label: 'Ders Sayısı', 
                 data: dersData, 
-                backgroundColor: 'rgba(129, 140, 248, 0.4)', 
-                borderRadius: 6
+                backgroundColor: '#6366f1', // İndigo Rengi
+                borderRadius: 6, // Çubukların köşelerini yuvarla
+                barThickness: 12, // Çubuk inceliği
+                hoverBackgroundColor: '#4f46e5'
             }]
         },
         options: { 
             responsive: true, 
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1f2937',
+                    padding: 12,
+                    cornerRadius: 8,
+                    displayColors: false
+                }
+            },
             scales: {
-                y: { beginAtZero: true, grid: { color: '#f3f4f6' }, border: { display: false } },
-                x: { grid: { display: false }, border: { display: false } }
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: '#f3f4f6', borderDash: [5, 5] }, 
+                    border: { display: false },
+                    ticks: { font: { size: 10, weight: 'bold' }, color: '#9ca3af', stepSize: 1 }
+                },
+                x: { 
+                    grid: { display: false }, 
+                    border: { display: false },
+                    ticks: { font: { size: 10 }, color: '#9ca3af' }
+                }
             }
         }
     });
