@@ -402,35 +402,47 @@
     </div>
 </div>
 
-<nav id="nav-bar" class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 flex justify-around items-center py-2 z-40 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<nav id="nav-bar" class="fixed bottom-5 left-4 right-4 bg-white/90 backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex justify-between items-center px-6 py-3 z-50 transition-all duration-300">
     
-    <button onclick="sayfaGoster('panel')" id="nav-panel" data-color="text-blue-600" class="nav-btn flex flex-col items-center justify-center w-full py-1 gap-1 text-gray-400 transition duration-200 group">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 group-hover:text-blue-600 transition">
+    <button onclick="sayfaGoster('panel')" id="nav-panel" 
+            data-color="text-blue-600" 
+            data-bg="bg-blue-50"
+            class="nav-btn flex flex-col items-center justify-center w-full gap-1 text-gray-400 transition-all duration-300 rounded-xl py-2 group">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 transition-transform duration-300 group-active:scale-90">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
         </svg>
-        <span class="text-[10px] font-bold uppercase tracking-wide group-hover:text-blue-600">Panel</span>
+        <span class="text-[9px] font-bold uppercase tracking-wide opacity-0 group-hover:opacity-100 hidden sm:block transition-opacity">Panel</span>
     </button>
 
-    <button onclick="sayfaGoster('takvim')" id="nav-takvim" data-color="text-violet-600" class="nav-btn flex flex-col items-center justify-center w-full py-1 gap-1 text-gray-400 transition duration-200 group">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 group-hover:text-violet-600 transition">
+    <button onclick="sayfaGoster('takvim')" id="nav-takvim" 
+            data-color="text-violet-600" 
+            data-bg="bg-violet-50"
+            class="nav-btn flex flex-col items-center justify-center w-full gap-1 text-gray-400 transition-all duration-300 rounded-xl py-2 group">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 transition-transform duration-300 group-active:scale-90">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
         </svg>
-        <span class="text-[10px] font-bold uppercase tracking-wide group-hover:text-violet-600">Program</span>
+        <span class="text-[9px] font-bold uppercase tracking-wide opacity-0 group-hover:opacity-100 hidden sm:block transition-opacity">Program</span>
     </button>
 
-    <button onclick="sayfaGoster('kazanc')" id="nav-kazanc" data-color="text-emerald-600" class="nav-btn flex flex-col items-center justify-center w-full py-1 gap-1 text-gray-400 transition duration-200 group">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 group-hover:text-emerald-600 transition">
+    <button onclick="sayfaGoster('kazanc')" id="nav-kazanc" 
+            data-color="text-emerald-600" 
+            data-bg="bg-emerald-50"
+            class="nav-btn flex flex-col items-center justify-center w-full gap-1 text-gray-400 transition-all duration-300 rounded-xl py-2 group">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 transition-transform duration-300 group-active:scale-90">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <span class="text-[10px] font-bold uppercase tracking-wide group-hover:text-emerald-600">Ders Ekle</span>
+        <span class="text-[9px] font-bold uppercase tracking-wide opacity-0 group-hover:opacity-100 hidden sm:block transition-opacity">Ders Ekle</span>
     </button>
 
-    <button onclick="sayfaGoster('rapor')" id="nav-rapor" data-color="text-orange-500" class="nav-btn flex flex-col items-center justify-center w-full py-1 gap-1 text-gray-400 transition duration-200 group">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 group-hover:text-orange-500 transition">
+    <button onclick="sayfaGoster('rapor')" id="nav-rapor" 
+            data-color="text-orange-500" 
+            data-bg="bg-orange-50"
+            class="nav-btn flex flex-col items-center justify-center w-full gap-1 text-gray-400 transition-all duration-300 rounded-xl py-2 group">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 transition-transform duration-300 group-active:scale-90">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z" />
             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" />
         </svg>
-        <span class="text-[10px] font-bold uppercase tracking-wide group-hover:text-orange-500">Raporlar</span>
+        <span class="text-[9px] font-bold uppercase tracking-wide opacity-0 group-hover:opacity-100 hidden sm:block transition-opacity">Raporlar</span>
     </button>
 
 </nav>

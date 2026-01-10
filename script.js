@@ -94,24 +94,32 @@ function sayfaGoster(sayfa) {
     document.getElementById(sayfa + "Sayfa").style.display = "block";
 
     // Menü aktiflik ayarı
+/* === script.js -> sayfaGoster fonksiyonu içi === */
 
-// Menü aktiflik ayarı (RENKLİ VERSİYON)
+// Menü aktiflik ayarı (MODERN BACKGROUND EFEKTİ)
 document.querySelectorAll('.nav-btn').forEach(btn => {
-    // Önceki renkleri temizle (dataset'ten okuyarak veya manuel)
     const colorClass = btn.dataset.color; 
-    btn.classList.remove('active', 'scale-110', colorClass); // Aktif rengi sil
-    btn.classList.add('text-gray-400'); // Gri yap
+    const bgClass = btn.dataset.bg; // Yeni eklenen background rengi
     
-    // SVG içindeki stroke rengini sıfırla (CSS class'ı ile çakışmaması için)
+    // Aktif sınıfları temizle
+    btn.classList.remove('active', colorClass, bgClass, 'shadow-sm'); 
+    
+    // Varsayılan gri haline döndür
+    btn.classList.add('text-gray-400'); 
+    
+    // SVG stroke rengini sıfırla
     const svg = btn.querySelector('svg');
     if(svg) svg.style.stroke = "";
 });
 
 const aktifBtn = document.getElementById("nav-" + sayfa);
 if(aktifBtn) {
-    const activeColor = aktifBtn.dataset.color; // HTML'den rengi al (örn: text-violet-600)
+    const activeColor = aktifBtn.dataset.color;
+    const activeBg = aktifBtn.dataset.bg; // HTML'den bg rengini al
+    
+    // Griyi kaldır, renkleri ekle
     aktifBtn.classList.remove('text-gray-400');
-    aktifBtn.classList.add('active', 'scale-110', activeColor); // O rengi ekle
+    aktifBtn.classList.add('active', activeColor, activeBg, 'shadow-sm'); // Arkasına renkli kutu ve gölge ekle
 }
 
     if (sayfa === "takvim") {
