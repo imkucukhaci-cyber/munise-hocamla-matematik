@@ -14,6 +14,47 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="ikon.png">
 
+    <style>
+    /* Alt menü olduğu için sayfanın altını boş bırak */
+    main { padding-bottom: 100px !important; }
+
+    /* Mobil uyumlu input stili */
+    .input-mobil {
+        width: 100%;
+        padding: 12px;
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.2s;
+    }
+    .input-mobil:focus {
+        background-color: white;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    /* Mobil gün butonları */
+    .gun-btn-mobil {
+        flex: 1;
+        padding: 10px 0;
+        border-radius: 8px;
+        border: 1px solid #f3f4f6;
+        font-size: 10px;
+        font-weight: 700;
+        color: #9ca3af;
+        background: white;
+        transition: all 0.2s;
+    }
+    /* Aktif menü butonu rengi */
+    .nav-btn.text-blue-600 span { color: #2563eb; }
+    
+    /* Güvenli alan (iPhone çentiği vb için) */
+    .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+</style>
+
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
