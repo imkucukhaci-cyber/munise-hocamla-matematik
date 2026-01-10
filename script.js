@@ -1,5 +1,5 @@
 /* =========================================
-   1. FIREBASE AYARLARI VE GLOBAL DEĞİŞKENLER
+   1. FIREBASE AYARLARI VE BAŞLATMA
    ========================================= */
 const firebaseConfig = {
     apiKey: "AIzaSyB3XiXrKxkIhnuGL_rDyBVUY25P2T20u-4",
@@ -12,10 +12,7 @@ const firebaseConfig = {
     measurementId: "G-BVGCFJ7Z3K"
 };
 
-// Firebase başlatma kontrolü
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
+firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
 
@@ -27,10 +24,9 @@ let kazancGrafik = null;
 let dersGrafik = null;
 let modalAcikAy = null;
 let modalAcikYil = null;
-let globalAyarlar = null; 
 
 /* =========================================
-   2. GİRİŞ, KONTROL VE NAVİGASYON
+   2. GİRİŞ VE NAVİGASYON
    ========================================= */
 
 auth.onAuthStateChanged((user) => {
@@ -38,44 +34,15 @@ auth.onAuthStateChanged((user) => {
         aktifKullaniciId = user.uid;
         document.getElementById("loginSayfa").style.display = "none";
         document.getElementById("anaUygulama").style.display = "block";
-        
-        // ÖNCE AYARLARI KONTROL ET
-        ayarKontrolVeBaslat();
+        verileriBuluttanDinle(); 
+        sayfaGoster('panel');
     } else {
         aktifKullaniciId = null;
-        globalAyarlar = null;
         document.getElementById("loginSayfa").style.display = "flex";
         document.getElementById("anaUygulama").style.display = "none";
+        tabloyuTemizle();
     }
 });
-
-function ayarKontrolVeBaslat() {
-    database.ref(`kullanicilar/${aktifKullaniciId}/ayarlar`).once('value', (snapshot) => {
-        globalAyarlar = snapshot.val();
-
-        const header = document.querySelector("header");
-        const tercihSayfasi = document.getElementById("tercihlerSayfa");
-        const navBar = document.getElementById("nav-bar");
-
-        if (!globalAyarlar || !globalAyarlar.kurulumTamam) {
-            // AYAR YOKSA: Header ve Nav gizle, Tercihleri aç
-            if(header) header.style.display = "none";
-            if(navBar) navBar.style.display = "none";
-            
-            // Tüm sayfaları gizle
-            document.querySelectorAll('.sayfa-bolum').forEach(el => el.style.display = 'none');
-            
-            tercihSayfasi.style.display = "flex"; 
-        } else {
-            // AYAR VARSA: Normal akış
-            if(header) header.style.display = "block";
-            if(navBar) navBar.style.display = "flex";
-            tercihSayfasi.style.display = "none";
-            verileriBuluttanDinle(); 
-            sayfaGoster('panel');
-        }
-    });
-}
 
 function googleIleGiris() {
     const provider = new firebase.auth.GoogleAuthProvider();
@@ -84,183 +51,44 @@ function googleIleGiris() {
 
 function cikisYap() {
     if(confirm("Çıkış yapmak istediğinize emin misiniz?")) {
-        auth.signOut().then(() => window.location.reload());
+        auth.signOut().then(() => {
+            // Başarılı çıkış sonrası giriş sayfasına temiz bir dönüş
+            window.location.reload();
+        });
     }
 }
 
-// --- YENİLENMİŞ SAYFA GÖSTER FONKSİYONU ---
-function sayfaGoster(sayfaId) {
-    // 1. Tüm sayfaları gizle
-    document.querySelectorAll('.sayfa-bolum').forEach(div => {
-        div.style.display = 'none';
+function sayfaGoster(sayfa) {
+    const sayfalar = ["panelSayfa", "takvimSayfa", "kazancSayfa", "raporSayfa"];
+    sayfalar.forEach(s => {
+        const el = document.getElementById(s);
+        if(el) el.style.display = "none";
     });
-
-    // 2. İstenen sayfayı göster
-    const secilenSayfa = document.getElementById(sayfaId + 'Sayfa');
-    if (secilenSayfa) {
-        secilenSayfa.style.display = 'block';
-    }
-
-    // 3. Alt Menü Butonlarını Güncelle
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        const colorClass = btn.dataset.color; 
-        const bgClass = btn.dataset.bg;       
-        
-        // Aktiflik sınıflarını temizle
-        if (colorClass) btn.classList.remove(colorClass);
-        if (bgClass) btn.classList.remove(bgClass);
-        btn.classList.remove('active', 'shadow-sm');
-        
-        // Pasif hale getir (Gri yap)
-        btn.classList.add('text-gray-400');
-        
-        // Animasyon için scale sıfırla
-        const svg = btn.querySelector('svg');
-        if(svg) {
-            svg.classList.remove('scale-110');
-            svg.style.stroke = ""; 
-        }
-        
-        // Yazı stili sıfırla - Sadece varsa uygula
-        const span = btn.querySelector('span');
-        if(span) {
-            span.classList.remove('font-bold', 'text-gray-800');
-            // Yazı rengini griye çevir
-            if(colorClass) span.classList.remove(colorClass);
-        }
-    });
-
-    // 4. Aktif Butonu Boya
-    const aktifBtn = document.getElementById('nav-' + sayfaId);
-    if (aktifBtn) {
-        const activeColor = aktifBtn.dataset.color;
-        const activeBg = aktifBtn.dataset.bg;
-
-        aktifBtn.classList.remove('text-gray-400');
-        aktifBtn.classList.add('active', activeColor, activeBg, 'shadow-sm');
-        
-        const svg = aktifBtn.querySelector('svg');
-        if(svg) svg.classList.add('scale-110');
-        
-        const span = aktifBtn.querySelector('span');
-        if(span) {
-            span.classList.add('font-bold');
-            // Yazı rengini de ikon rengiyle aynı yap
-            span.classList.remove('text-gray-400');
-            span.classList.add(activeColor);
-        }
-    }
-
-    // Sayfa özel yüklemeler
-    if (sayfaId === "takvim") {
-        takvimOlustur();
-        setTimeout(() => {
-            dersler.forEach(ders => dersCiz(ders));
-        }, 50);
-    }
-    if (sayfaId === "rapor") raporOgrencileriYukle();
-    if (sayfaId === "kazanc") ogrencileriYukle();
-    if (sayfaId === "panel") panelOzetiniGuncelle();
-}
-
-/* =========================================
-   3. TERCİHLER VE AYAR KAYDETME
-   ========================================= */
-
-function gunSec(btn) {
-    // Butona basınca seçildi efekti ver (Mavi)
-    if (btn.classList.contains('bg-blue-600')) {
-        // Seçimi kaldır
-        btn.classList.remove('bg-blue-600', 'text-white', 'secili-tatil');
-        btn.classList.add('bg-white', 'text-gray-400');
-    } else {
-        // Seç
-        btn.classList.remove('bg-white', 'text-gray-400');
-        btn.classList.add('bg-blue-600', 'text-white', 'secili-tatil');
-    }
-}
-
-function ayarlariKaydet() {
-    const hocaAd = document.getElementById("prefHocaAd").value;
-    const brans = document.getElementById("prefBrans").value;
-    const basla = document.getElementById("prefMesaiBasla").value;
-    const bitis = document.getElementById("prefMesaiBitis").value;
     
-    // Seçili tatil günlerini topla
-    const tatiller = [];
-    document.querySelectorAll('.secili-tatil').forEach(btn => {
-        tatiller.push(Number(btn.dataset.gun));
-    });
+    document.getElementById(sayfa + "Sayfa").style.display = "block";
 
-    if(!hocaAd || !brans) {
-        alert("Lütfen adınızı ve branşınızı giriniz.");
-        return;
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('border-blue-600', 'text-blue-600', 'font-bold');
+        btn.classList.add('border-transparent', 'text-gray-500');
+    });
+    const aktifBtn = document.getElementById("nav-" + sayfa);
+    if(aktifBtn) {
+        aktifBtn.classList.remove('border-transparent', 'text-gray-500');
+        aktifBtn.classList.add('border-blue-600', 'text-blue-600', 'font-bold');
     }
 
-    if(Number(basla) >= Number(bitis)) {
-        alert("Mesai başlangıç saati, bitiş saatinden önce olmalıdır.");
-        return;
+    // TAKVİM SAYFASINA GEÇİNCE YERLEŞİMİ TETİKLE
+    if (sayfa === "takvim") {
+        tabloyuTemizle();
+        dersler.forEach(ders => dersCiz(ders));
     }
-
-    const yeniAyarlar = {
-        ad: hocaAd,
-        brans: brans,
-        mesaiBasla: Number(basla),
-        mesaiBitis: Number(bitis),
-        tatilGunleri: tatiller,
-        kurulumTamam: true
-    };
-
-    database.ref(`kullanicilar/${aktifKullaniciId}/ayarlar`).set(yeniAyarlar).then(() => {
-        alert("Ayarlar kaydedildi!");
-        tercihKapat();
-        window.location.reload(); 
-    });
+    
+    if (sayfa === "rapor") raporOgrencileriYukle();
+    if (sayfa === "kazanc") ogrencileriYukle();
 }
 
 /* =========================================
-   4. DİNAMİK TAKVİM OLUŞTURMA
-   ========================================= */
-
-function takvimOlustur() {
-    const tbody = document.getElementById("takvimBody");
-    if(!tbody) return;
-    tbody.innerHTML = ""; 
-
-    const basla = globalAyarlar ? globalAyarlar.mesaiBasla : 13;
-    const bitis = globalAyarlar ? globalAyarlar.mesaiBitis : 22;
-    const tatiller = globalAyarlar ? (globalAyarlar.tatilGunleri || []) : [];
-
-    for (let s = basla; s < bitis; s += 0.5) {
-        const basSaatStr = s % 1 === 0 ? `${s}:00` : `${Math.floor(s)}:30`;
-        
-        let rowHtml = `<tr class='border-b last:border-0'>`;
-        rowHtml += `<td class='p-3 font-bold bg-gray-50 text-gray-400 text-xs border-r text-center align-top'>${basSaatStr}</td>`;
-        
-        for (let g = 1; g <= 7; g++) {
-            const tatilMi = tatiller.includes(g);
-            const bgClass = tatilMi ? "bg-gray-100" : "";
-            rowHtml += `<td id="hucre-${g}-${s}" class="p-0 border-r min-h-[50px] relative ${bgClass}"></td>`;
-        }
-        rowHtml += "</tr>";
-        tbody.innerHTML += rowHtml;
-    }
-
-    const saatSelect = document.getElementById("baslangic");
-    if(saatSelect) {
-        saatSelect.innerHTML = "";
-        for (let s = basla; s < bitis; s += 0.5) {
-             const text = s % 1 === 0 ? `${s}:00` : `${Math.floor(s)}:30`;
-             const opt = document.createElement("option");
-             opt.value = s;
-             opt.text = text;
-             saatSelect.appendChild(opt);
-        }
-    }
-}
-
-/* =========================================
-   5. VERİLERİ ÇEKME & GRAFİKLER
+   3. VERİ DİNLEME VE PANEL RAPORLAMA
    ========================================= */
 
 function verileriBuluttanDinle() {
@@ -269,11 +97,8 @@ function verileriBuluttanDinle() {
     database.ref(`kullanicilar/${aktifKullaniciId}/dersler`).on('value', (snapshot) => {
         const veri = snapshot.val();
         dersler = veri ? Object.keys(veri).map(key => ({ id: key, ...veri[key] })) : [];
-        
-        if(document.getElementById("takvimSayfa").style.display !== "none") {
-            tabloyuTemizle();
-            dersler.forEach(ders => dersCiz(ders));
-        }
+        tabloyuTemizle();
+        dersler.forEach(ders => dersCiz(ders));
         panelOzetiniGuncelle();
     });
 
@@ -297,88 +122,75 @@ function panelOzetiniGuncelle() {
     const aylikDersVerisi = Array(12).fill(0);
 
     const benzersizOgrenciler = [...new Set(dersler.map(d => d.ogrenci))];
-    const toplamOgrenciEl = document.getElementById("panel-toplamOgrenci");
-    if(toplamOgrenciEl) toplamOgrenciEl.innerText = benzersizOgrenciler.length;
+    document.getElementById("panel-toplamOgrenci").innerText = benzersizOgrenciler.length;
 
     kazancKayitlari.forEach(k => {
         const d = new Date(k.tarih);
         const tutar = k.sure * k.ucret;
         
         if (d.getFullYear() === buYil) {
+            // GRAFİKLER: Sadece ödemesi alınanları kazanç grafiğine ekle
             if (k.odemeDurumu) {
                 aylikKazancVerisi[d.getMonth()] += tutar;
             }
-            aylikDersVerisi[d.getMonth()] += 1;
+            aylikDersVerisi[d.getMonth()] += 1; // Ders sayısı her halükarda artar
 
             if (d.getMonth() === buAy) {
                 buAyDersSayisi += 1;
-                if (k.odemeDurumu) buAyKazanc += tutar;
-                else bekleyenOdeme += tutar;
+                if (k.odemeDurumu) {
+                    buAyKazanc += tutar; // Sadece ödenenler "Bu Ay Kazanç"a
+                } else {
+                    bekleyenOdeme += tutar; // Ödenmeyenler "Bekleyen"e
+                }
             }
         }
     });
 
-    const elBuAyDers = document.getElementById("panel-buAyDers");
-    const elKazanc = document.getElementById("panel-kazanc");
-    const elBekleyen = document.getElementById("panel-bekleyen");
-
-    if(elBuAyDers) elBuAyDers.innerText = buAyDersSayisi;
-    if(elKazanc) elKazanc.innerText = "₺" + buAyKazanc.toFixed(0);
-    if(elBekleyen) elBekleyen.innerText = "₺" + bekleyenOdeme.toFixed(0);
+    document.getElementById("panel-buAyDers").innerText = buAyDersSayisi;
+    document.getElementById("panel-kazanc").innerText = "₺" + buAyKazanc.toFixed(0);
+    document.getElementById("panel-bekleyen").innerText = "₺" + bekleyenOdeme.toFixed(0);
 
     paneliCiz(aylikKazancVerisi, aylikDersVerisi);
 }
 
-// --- YENİLENMİŞ GRAFİK ÇİZİM FONKSİYONU ---
 function paneliCiz(kazancData, dersData) {
-    if(!document.getElementById('kazancChart')) return;
-
     const aylar = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
     
-    // 1. KAZANÇ GRAFİĞİ
+    // Kazanç Grafiği (Line Chart - Soft Blue)
     const ctx1 = document.getElementById('kazancChart').getContext('2d');
-    
-    const gradient = ctx1.createLinearGradient(0, 0, 0, 300);
-    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)'); 
-    gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)'); 
-
     if(kazancGrafik) kazancGrafik.destroy();
-    
     kazancGrafik = new Chart(ctx1, {
         type: 'line',
         data: {
             labels: aylar,
             datasets: [{ 
-                label: 'Kazanç (₺)', 
+                label: 'Kazanç', 
                 data: kazancData, 
-                borderColor: '#3b82f6', 
-                backgroundColor: gradient, 
+                borderColor: '#60a5fa', // Soft Mavi
+                backgroundColor: 'rgba(96, 165, 250, 0.05)', // Çok hafif dolgu
                 borderWidth: 3,
                 pointBackgroundColor: '#ffffff',
-                pointBorderColor: '#3b82f6',
+                pointBorderColor: '#60a5fa',
                 pointBorderWidth: 2,
                 pointRadius: 4,
-                pointHoverRadius: 6,
-                fill: true, 
+                fill: true,
                 tension: 0.4 
             }]
         },
         options: { 
             responsive: true, 
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            plugins: { legend: { display: false } }, // Lejantı gizle (daha minimal)
             scales: {
-                y: { beginAtZero: true, grid: { borderDash: [5, 5] }, border: { display: false } },
+                y: { beginAtZero: true, grid: { color: '#f3f4f6' }, border: { display: false } },
                 x: { grid: { display: false }, border: { display: false } }
             }
         }
     });
 
-    // 2. DERS GRAFİĞİ
+    // Ders Grafiği (Bar Chart - Soft Indigo)
     const ctx2 = document.getElementById('dersChart').getContext('2d');
-    
     if(dersGrafik) dersGrafik.destroy();
-    
     dersGrafik = new Chart(ctx2, {
         type: 'bar',
         data: {
@@ -386,9 +198,10 @@ function paneliCiz(kazancData, dersData) {
             datasets: [{ 
                 label: 'Ders Sayısı', 
                 data: dersData, 
-                backgroundColor: '#6366f1', 
-                borderRadius: 6, 
-                barThickness: 12
+                backgroundColor: 'rgba(129, 140, 248, 0.4)', // Pastel İndigo
+                hoverBackgroundColor: 'rgba(129, 140, 248, 0.7)',
+                borderRadius: 8,
+                barThickness: 20
             }]
         },
         options: { 
@@ -396,22 +209,18 @@ function paneliCiz(kazancData, dersData) {
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                y: { beginAtZero: true, grid: { borderDash: [5, 5] }, border: { display: false } },
+                y: { beginAtZero: true, grid: { color: '#f3f4f6' }, border: { display: false } },
                 x: { grid: { display: false }, border: { display: false } }
             }
         }
     });
 }
-
 /* =========================================
-   6. KAZANÇ TABLOSU & MODALLAR
+   4. KAZANÇ TABLOSU (GÜNCELLENEN KISIM)
    ========================================= */
 
 function kazancTablosuCiz() {
-    const yilElement = document.getElementById("yilSecim");
-    if(!yilElement) return;
-    
-    const yil = Number(yilElement.value);
+    const yil = Number(document.getElementById("yilSecim").value);
     const aylikToplam = Array(12).fill(0);
     const ogrenciToplam = {};
 
@@ -420,6 +229,8 @@ function kazancTablosuCiz() {
         if (tarih.getFullYear() === yil) {
             const ay = tarih.getMonth();
             const tutar = k.sure * k.ucret;
+            
+            // SADECE ÖDEME ALINDIysa hem genel toplama hem öğrenci toplamına ekle
             if (k.odemeDurumu) {
                 aylikToplam[ay] += tutar;
                 if (!ogrenciToplam[k.ogrenci]) ogrenciToplam[k.ogrenci] = Array(12).fill(0);
@@ -428,10 +239,26 @@ function kazancTablosuCiz() {
         }
     });
 
+    // 1. Tablo Başlıklarını Güncelle (Sadece Aylara Tıklama Özelliği)
+    const theadRow = document.querySelector("#kazancTablo thead tr");
+    if (theadRow) {
+        const aylar = ["OCA", "ŞUB", "MAR", "NİS", "MAY", "HAZ", "TEM", "AĞU", "EYL", "EKİ", "KAS", "ARA"];
+        theadRow.innerHTML = `<th class="p-3 text-left bg-gray-100">ÖĞRENCİ</th>`;
+        aylar.forEach((ayAd, index) => {
+            const th = document.createElement("th");
+            th.innerText = ayAd;
+            th.className = "cursor-pointer hover:bg-blue-600 hover:text-white transition p-2 bg-gray-50 text-blue-600 font-black text-center";
+            // SADECE BURASI TIKLANABİLİR:
+            th.onclick = () => ayDetayiniGoster(index, yil);
+            theadRow.appendChild(th);
+        });
+    }
+
     const tbody = document.querySelector("#kazancTablo tbody");
     if(!tbody) return;
     tbody.innerHTML = "";
 
+    // 2. Toplam Satırı (Tıklama özelliği yok)
     const toplamSatir = document.createElement("tr");
     toplamSatir.className = "font-bold bg-gray-100 border-b";
     toplamSatir.innerHTML = `<td class="p-3 text-left">GENEL TOPLAM</td>`;
@@ -440,6 +267,7 @@ function kazancTablosuCiz() {
     });
     tbody.appendChild(toplamSatir);
 
+    // 3. Öğrenci Satırları (Tıklama özelliği yok)
     Object.keys(ogrenciToplam).forEach(o => {
         const tr = document.createElement("tr");
         tr.className = "hover:bg-gray-50 border-b border-gray-100 transition";
@@ -452,8 +280,10 @@ function kazancTablosuCiz() {
 }
 
 function ayDetayiniGoster(ayIndex, yil) {
+    // Hangi ayın açık olduğunu hafızaya alıyoruz
     modalAcikAy = ayIndex;
     modalAcikYil = yil;
+
     const modal = document.getElementById('ayModalArka');
     const liste = document.getElementById('ayKayitListe');
     const baslik = document.getElementById('ayModalBaslik');
@@ -463,54 +293,89 @@ function ayDetayiniGoster(ayIndex, yil) {
     modal.style.display = "flex";
     baslik.innerText = `${aylar[ayIndex]} ${yil} Detayı`;
 
-    const filtreli = kazancKayitlari.filter(k => {
+    const filtreliKayitlar = kazancKayitlari.filter(k => {
         const d = new Date(k.tarih);
         return d.getMonth() === ayIndex && d.getFullYear() === yil;
     }).sort((a,b) => new Date(b.tarih) - new Date(a.tarih));
 
-    if (filtreli.length === 0) {
-        liste.innerHTML = `<div class="text-center p-8 text-gray-400">Kayıt yok.</div>`;
+    if (filtreliKayitlar.length === 0) {
+        liste.innerHTML = `<div class="p-8 text-center text-gray-400 font-bold italic text-sm">Bu ayda henüz bir kayıt yok.</div>`;
         return;
     }
 
-    filtreli.forEach(k => {
+    filtreliKayitlar.forEach(k => {
         const tutar = k.sure * k.ucret;
         const kart = document.createElement("div");
-        kart.className = `flex items-center justify-between p-4 rounded-xl border mb-2 ${k.odemeDurumu ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100'}`;
+        // Dinamik sınıf: Ödenmişse yeşil çerçeve, ödenmemişse gölgeli beyaz
+        kart.className = `flex items-center justify-between p-4 rounded-xl border mb-2 transition-all duration-300 ${k.odemeDurumu ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100 shadow-sm'}`;
+        
         kart.innerHTML = `
-            <div>
-                <div class="font-bold text-gray-800">${k.ogrenci}</div>
-                <div class="text-xs text-gray-500">${k.tarih} | ${k.sure} Saat | ₺${tutar}</div>
+            <div class="flex flex-col gap-1">
+                <span class="text-[10px] font-bold text-gray-400 uppercase">${k.tarih}</span>
+                <span class="font-black text-gray-800">${k.ogrenci}</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-gray-500">${k.sure} Sa / ₺${tutar}</span>
+                    ${!k.odemeDurumu ? 
+                        `<button onclick="odemeDurumuGuncelle('${k.id}', true)" class="bg-orange-500 text-white text-[10px] px-2 py-1 rounded-lg font-black hover:bg-orange-600 transition shadow-sm animate-pulse">ÖDEME AL</button>` : 
+                        `<span class="text-green-600 text-[10px] font-black italic">✓ TAHSİL EDİLDİ</span>`
+                    }
+                </div>
             </div>
-            <div class="flex gap-2">
-                <button onclick="odemeDurumuGuncelle('${k.id}', ${!k.odemeDurumu})" class="text-xs font-bold px-3 py-1 rounded-lg ${k.odemeDurumu ? 'bg-gray-200 text-gray-600' : 'bg-green-600 text-white'}">
-                    ${k.odemeDurumu ? 'İptal Et' : 'Öde'}
-                </button>
-                <button onclick="kazancKaydiSil('${k.id}')" class="text-gray-400 hover:text-red-500 px-2">🗑️</button>
+            <div class="flex items-center gap-2">
+                ${k.odemeDurumu ? 
+                    `<button onclick="odemeDurumuGuncelle('${k.id}', false)" class="p-2 text-gray-300 hover:text-orange-500 transition text-lg" title="Geri Al">↩</button>` : ''
+                }
+                <button onclick="kazancKaydiSil('${k.id}')" class="p-2 text-gray-300 hover:text-red-500 transition text-lg">🗑️</button>
             </div>
         `;
         liste.appendChild(kart);
     });
 }
 
-function odemeDurumuGuncelle(id, durum) {
-    database.ref(`kullanicilar/${aktifKullaniciId}/kazanclar/${id}`).update({ odemeDurumu: durum })
-        .then(() => ayDetayiniGoster(modalAcikAy, modalAcikYil));
+function odemeDurumuGuncelle(kayitId, yeniDurum) {
+    database.ref(`kullanicilar/${aktifKullaniciId}/kazanclar/${kayitId}`).update({
+        odemeDurumu: yeniDurum
+    }).then(() => {
+        // Firebase güncellendiğinde modalı kapatmadan içeriği yeniliyoruz!
+        if(modalAcikAy !== null) {
+            ayDetayiniGoster(modalAcikAy, modalAcikYil);
+        }
+    });
 }
 
 function kazancKaydiSil(id) {
-    if(confirm("Silmek istediğinize emin misiniz?")) {
+    if(confirm("Bu ders kaydını silmek istediğinize emin misiniz? Bu işlem geri alınamaz.")) {
         database.ref(`kullanicilar/${aktifKullaniciId}/kazanclar/${id}`).remove()
-            .then(() => ayDetayiniGoster(modalAcikAy, modalAcikYil));
+            .then(() => {
+                // SİLME İŞLEMİ BAŞARILI OLUNCA:
+                if(modalAcikAy !== null) {
+                    // Listeyi anında yenile (Modal açık kalır, kayıt şak diye listeden kaybolur)
+                    ayDetayiniGoster(modalAcikAy, modalAcikYil);
+                }
+                console.log("Kayıt başarıyla silindi.");
+            })
+            .catch((hata) => {
+                alert("Silme işlemi sırasında bir hata oluştu: " + hata.message);
+            });
     }
 }
 
+/* =========================================
+   MODAL KAPATMA FONKSİYONU
+   ========================================= */
 function ayModalKapat() {
-    document.getElementById('ayModalArka').style.display = "none";
+    const modal = document.getElementById('ayModalArka');
+    if (modal) {
+        modal.style.display = "none";
+        // Temizlik: Hafızadaki ay/yıl bilgisini sıfırlıyoruz
+        modalAcikAy = null;
+        modalAcikYil = null;
+    }
 }
 
+
 /* =========================================
-   7. DERS EKLEME & ÇİZME
+   5. DERS PROGRAMI VE DİĞER FONKSİYONLAR
    ========================================= */
 
 function dersEkle() {
@@ -520,51 +385,57 @@ function dersEkle() {
     const baslangic = parseFloat(document.getElementById("baslangic").value);
     const sure = parseFloat(document.getElementById("sure").value);
 
-    if (globalAyarlar && globalAyarlar.tatilGunleri && globalAyarlar.tatilGunleri.includes(Number(gun))) {
-        alert("Seçtiğiniz gün tatil olarak ayarlanmış! Ders ekleyemezsiniz.");
-        return;
-    }
-
-    if (!ogrenci || !ucret) { alert("Eksik bilgi girdiniz."); return; }
+    if (!ogrenci || !ucret) { alert("Lütfen öğrenci adı ve ücret giriniz."); return; }
     database.ref(`kullanicilar/${aktifKullaniciId}/dersler`).push({ ogrenci, ucret, gun, baslangic, sure });
     document.getElementById("ogrenci").value = "";
 }
 
+// Ders Çiz fonksiyonunu kesin çözümle güncelle
 function dersCiz(ders) {
-    const hucre = document.getElementById(`hucre-${ders.gun}-${ders.baslangic}`);
-    
-    if (!hucre) return;
+    // 100ms gecikme DOM'un (tablonun) render edilmesine izin verir
+    setTimeout(() => {
+        const hucre = document.getElementById(`hucre-${ders.gun}-${ders.baslangic}`);
+        const tablo = document.querySelector("table");
+        
+        if (!hucre || !tablo) return;
 
-    const topPos = hucre.offsetTop;
-    const leftPos = hucre.offsetLeft;
-    const width = hucre.offsetWidth;
-    const height = hucre.offsetHeight;
-    const parcaSayisi = ders.sure / 0.5;
+        // Koordinatları hesapla (Tablonun kendi offset değerlerini kullanıyoruz)
+        const topPos = hucre.offsetTop;
+        const leftPos = hucre.offsetLeft;
+        const width = hucre.offsetWidth;
+        const height = hucre.offsetHeight;
+        const parcaSayisi = ders.sure / 0.5;
 
-    const dersBlok = document.createElement("div");
-    dersBlok.className = "ders-blok animate-in fade-in zoom-in duration-300 shadow-md hover:shadow-xl transition-all cursor-pointer";
-    dersBlok.innerHTML = `
-        <div class="flex flex-col h-full justify-center px-2 bg-blue-100 border-l-4 border-blue-600 rounded-r-md overflow-hidden">
-            <span class="font-black text-[10px] md:text-xs leading-tight text-blue-900 truncate">${ders.ogrenci}</span>
-            <span class="text-[9px] font-bold text-blue-500">${ders.ucret} ₺</span>
-        </div>
-    `;
-    dersBlok.dataset.id = ders.id;
+        const dersBlok = document.createElement("div");
+        dersBlok.className = "ders-blok animate-in fade-in zoom-in duration-300"; // Küçük bir giriş efekti
+        dersBlok.innerHTML = `
+            <div class="flex flex-col h-full justify-center px-1 overflow-hidden">
+                <span class="font-black text-[11px] leading-none mb-0.5 truncate">${ders.ogrenci}</span>
+                <span class="text-[9px] font-bold opacity-80 uppercase leading-none">${ders.ucret} ₺</span>
+            </div>
+        `;
+        dersBlok.dataset.id = ders.id;
 
-    // Hücre içine göre göreceli konumlandırma
-    dersBlok.style.position = "absolute";
-    dersBlok.style.top = "0px";
-    dersBlok.style.left = "0px";
-    dersBlok.style.width = "100%";
-    dersBlok.style.height = `calc(${parcaSayisi * 100}% + ${parcaSayisi - 1}px)`;
-    dersBlok.style.zIndex = "20";
-    
-    dersBlok.onclick = function (e) { 
-        e.stopPropagation();
-        secimModalAc(this); 
-    };
-    
-    hucre.appendChild(dersBlok);
+        // Stil Atamaları
+        Object.assign(dersBlok.style, {
+            position: "absolute",
+            top: (topPos + 1) + "px",
+            left: (leftPos + 1) + "px",
+            width: (width - 2) + "px",
+            height: (height * parcaSayisi - 2) + "px",
+            zIndex: "10",
+            pointerEvents: "auto"
+        });
+        
+        dersBlok.onclick = function (e) { 
+            e.stopPropagation();
+            secimModalAc(this); 
+        };
+        
+        // Önemli: Bloğu tabloya değil, tablonun parent'ına veya bağıl bir alana eklemek gerekebilir 
+        // ama mevcut yapında tablo relative olduğu için tablonun içine ekliyoruz.
+        tablo.appendChild(dersBlok);
+    }, 100);
 }
 
 function tabloyuTemizle() {
@@ -582,7 +453,7 @@ function secimKapat() {
 
 function secimSil() {
     if (!aktifBlok) return;
-    if(confirm("Dersi silmek istediğinize emin misiniz?")) {
+    if(confirm("Bu dersi programdan silmek istiyor musunuz?")) {
         database.ref(`kullanicilar/${aktifKullaniciId}/dersler/${aktifBlok.dataset.id}`).remove();
         secimKapat();
     }
@@ -594,20 +465,21 @@ function kazancEkle() {
     const sure = parseFloat(document.getElementById("kazancSure").value);
     const odemeAlindi = document.getElementById("kazancOdeme").checked;
 
-    if (!ogrenci || !tarih || !sure) { alert("Eksik bilgi."); return; }
-    
+    if (!ogrenci || !tarih || !sure) { alert("Lütfen tüm alanları doldurun."); return; }
+
     const dersProg = dersler.find(d => d.ogrenci === ogrenci);
     const ucret = dersProg ? Number(dersProg.ucret) : 0;
 
     database.ref(`kullanicilar/${aktifKullaniciId}/kazanclar`).push({
         ogrenci, tarih, sure, ucret, odemeDurumu: odemeAlindi
     });
-    alert("Ders işlendi olarak kaydedildi!");
+    alert("Ders kaydedildi!");
 }
 
 function ogrencileriYukle() {
     const select = document.getElementById("kazancOgrenci");
     if(!select) return;
+    const mevcutSecim = select.value;
     select.innerHTML = `<option value="">Öğrenci Seç</option>`;
     const ogrenciler = [...new Set(dersler.map(d => d.ogrenci))];
     ogrenciler.forEach(o => {
@@ -615,8 +487,10 @@ function ogrencileriYukle() {
         opt.value = o; opt.textContent = o;
         select.appendChild(opt);
     });
+    if(mevcutSecim) select.value = mevcutSecim;
 }
 
+// Rapor sayfasındaki öğrenci listesini günceller
 function raporOgrencileriYukle() {
     const select = document.getElementById("raporFiltreOgrenci");
     if(!select) return;
@@ -635,61 +509,93 @@ function raporUret() {
     const seciliAy = document.getElementById("raporFiltreAy").value;
     const onizleme = document.getElementById("raporOnizleme");
 
+    // Verileri Filtrele
     let filtrelenmis = kazancKayitlari.filter(k => {
         const d = new Date(k.tarih);
         const ogrenciUygun = seciliOgrenci === "all" || k.ogrenci === seciliOgrenci;
         const yilUygun = seciliYil === "all" || d.getFullYear().toString() === seciliYil;
         const ayUygun = seciliAy === "all" || d.getMonth().toString() === seciliAy;
         return ogrenciUygun && yilUygun && ayUygun;
-    }).sort((a, b) => new Date(a.tarih) - new Date(b.tarih));
+    });
 
+    // Tarihe göre sırala
+    filtrelenmis.sort((a, b) => new Date(a.tarih) - new Date(b.tarih));
+
+    // Raporu Oluştur
     let toplamSaat = 0;
     let toplamKazanc = 0;
-    
-    let html = `<table class="w-full text-sm text-left"><thead><tr class="text-gray-400 border-b"><th>Tarih</th><th>Öğrenci</th><th>Süre</th><th>Tutar</th></tr></thead><tbody>`;
-    
+    let raporHTML = `
+        <div class="max-w-4xl mx-auto">
+            <div class="flex justify-between items-start border-b-2 border-gray-100 pb-6 mb-6">
+                <div>
+                    <h1 class="text-2xl font-black text-gray-800 uppercase tracking-tighter">DERS TAKİP RAPORU</h1>
+                    <p class="text-sm text-gray-500 font-bold">${new Date().toLocaleDateString('tr-TR')} tarihinde oluşturuldu</p>
+                </div>
+                <div class="text-right">
+                    <p class="font-black text-blue-600 uppercase text-lg">Munise Hoca</p>
+                    <p class="text-xs text-gray-400 font-bold">Özel Ders Yönetim Sistemi</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 mb-8">
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">Toplam Ders</p>
+                    <p class="text-xl font-black text-gray-800">${filtrelenmis.length} Adet</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">Toplam Süre</p>
+                    <p id="raporToplamSaat" class="text-xl font-black text-blue-600">0 Saat</p>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">Toplam Tutar</p>
+                    <p id="raporToplamTutar" class="text-xl font-black text-green-600">₺0</p>
+                </div>
+            </div>
+
+            <table class="w-full text-sm border-collapse">
+                <thead>
+                    <tr class="text-left border-b-2 border-gray-100 text-gray-400">
+                        <th class="py-3 font-bold text-[10px] uppercase">Tarih</th>
+                        <th class="py-3 font-bold text-[10px] uppercase">Öğrenci</th>
+                        <th class="py-3 font-bold text-[10px] uppercase text-center">Süre</th>
+                        <th class="py-3 font-bold text-[10px] uppercase text-center">Durum</th>
+                        <th class="py-3 font-bold text-[10px] uppercase text-right">Ücret</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+    `;
+
     filtrelenmis.forEach(k => {
         const tutar = k.sure * k.ucret;
         toplamSaat += k.sure;
         toplamKazanc += tutar;
-        html += `<tr class="border-b"><td class="py-2">${k.tarih}</td><td class="font-bold">${k.ogrenci}</td><td>${k.sure}</td><td class="text-right">₺${tutar}</td></tr>`;
-    });
-    html += `</tbody></table>`;
-    
-    onizleme.innerHTML = html;
-}
 
-/* =========================================
-   8. AYARLARI DÜZENLEME VE GÜNCELLEME
-   ========================================= */
-
-function tercihleriAc() {
-    if (!globalAyarlar) return;
-
-    document.getElementById("prefHocaAd").value = globalAyarlar.ad || "";
-    document.getElementById("prefBrans").value = globalAyarlar.brans || "";
-    document.getElementById("prefMesaiBasla").value = globalAyarlar.mesaiBasla || "13";
-    document.getElementById("prefMesaiBitis").value = globalAyarlar.mesaiBitis || "22";
-
-    document.querySelectorAll('.gun-btn-mobil').forEach(btn => {
-        btn.classList.remove('bg-blue-600', 'text-white', 'secili-tatil');
-        btn.classList.add('bg-white', 'text-gray-400');
+        raporHTML += `
+            <tr>
+                <td class="py-4 font-bold text-gray-600">${new Date(k.tarih).toLocaleDateString('tr-TR')}</td>
+                <td class="py-4 font-black text-gray-800">${k.ogrenci}</td>
+                <td class="py-4 text-center font-bold text-gray-600">${k.sure} Sa</td>
+                <td class="py-4 text-center">
+                    <span class="text-[9px] font-black px-2 py-1 rounded-full ${k.odemeDurumu ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}">
+                        ${k.odemeDurumu ? 'ÖDENDİ' : 'BEKLİYOR'}
+                    </span>
+                </td>
+                <td class="py-4 text-right font-black text-gray-800">₺${tutar}</td>
+            </tr>
+        `;
     });
 
-    if (globalAyarlar.tatilGunleri) {
-        globalAyarlar.tatilGunleri.forEach(gunIndex => {
-            const btn = document.querySelector(`.gun-btn-mobil[data-gun="${gunIndex}"]`);
-            if (btn) {
-                btn.classList.add('bg-blue-600', 'text-white', 'secili-tatil');
-                btn.classList.remove('bg-white', 'text-gray-400');
-            }
-        });
-    }
+    raporHTML += `
+                </tbody>
+            </table>
+            
+            <div class="mt-12 pt-6 border-t border-dashed border-gray-200 text-center">
+                <p class="text-xs text-gray-400 font-medium italic">Bu rapor Munise Hoca Ders Takip sistemi tarafından otomatik olarak üretilmiştir.</p>
+            </div>
+        </div>
+    `;
 
-    document.getElementById("tercihlerSayfa").style.display = "flex";
-}
-
-function tercihKapat() {
-    document.getElementById("tercihlerSayfa").style.display = "none";
-    sayfaGoster('panel');
-}
+    onizleme.innerHTML = raporHTML;
+    document.getElementById("raporToplamSaat").innerText = toplamSaat + " Saat";
+    document.getElementById("raporToplamTutar").innerText = "₺" + toplamKazanc;
+}function secimDuzenle() { alert("Düzenleme için lütfen takvim üzerinden modalı kullanın."); secimKapat(); }
