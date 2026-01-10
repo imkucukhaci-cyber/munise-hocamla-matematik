@@ -94,15 +94,17 @@ function sayfaGoster(sayfa) {
     document.getElementById(sayfa + "Sayfa").style.display = "block";
 
     // Menü aktiflik ayarı
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('border-blue-600', 'text-blue-600', 'font-bold');
-        btn.classList.add('border-transparent', 'text-gray-500');
-    });
-    const aktifBtn = document.getElementById("nav-" + sayfa);
-    if(aktifBtn) {
-        aktifBtn.classList.remove('border-transparent', 'text-gray-500');
-        aktifBtn.classList.add('border-blue-600', 'text-blue-600', 'font-bold');
-    }
+// Navigasyon butonlarını güncelle (Aktif olanı mavi yap)
+document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.classList.remove('text-blue-600', 'scale-110'); // Eskileri sil
+    btn.classList.add('text-gray-400'); // Pasif yap
+});
+
+const aktifBtn = document.getElementById("nav-" + sayfa);
+if(aktifBtn) {
+    aktifBtn.classList.remove('text-gray-400');
+    aktifBtn.classList.add('text-blue-600', 'scale-110'); // Aktif yap
+}
 
     if (sayfa === "takvim") {
         // Takvimi her açışta ayara göre yeniden oluştur

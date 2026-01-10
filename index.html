@@ -14,6 +14,47 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="ikon.png">
 
+    <style>
+    /* Alt menü olduğu için sayfanın altını boş bırak */
+    main { padding-bottom: 100px !important; }
+
+    /* Mobil uyumlu input stili */
+    .input-mobil {
+        width: 100%;
+        padding: 12px;
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.2s;
+    }
+    .input-mobil:focus {
+        background-color: white;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    /* Mobil gün butonları */
+    .gun-btn-mobil {
+        flex: 1;
+        padding: 10px 0;
+        border-radius: 8px;
+        border: 1px solid #f3f4f6;
+        font-size: 10px;
+        font-weight: 700;
+        color: #9ca3af;
+        background: white;
+        transition: all 0.2s;
+    }
+    /* Aktif menü butonu rengi */
+    .nav-btn.text-blue-600 span { color: #2563eb; }
+    
+    /* Güvenli alan (iPhone çentiği vb için) */
+    .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+</style>
+
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
@@ -66,37 +107,21 @@
 
 
 
-<header class="bg-white border-b sticky top-0 z-50 shadow-sm">
+<header class="bg-white/90 backdrop-blur-md border-b sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <div class="relative w-9 h-9 flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl shadow-lg overflow-hidden">
-                <span class="text-white font-black text-lg">M</span>
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black text-sm shadow-md">
+                MH
             </div>
-            <div class="flex flex-col leading-tight">
-                <span class="font-black text-lg tracking-tighter text-gray-800">DERS<span class="text-blue-600">TAKİP</span></span>
-                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Munise Hoca</span>
-            </div>
+            <span class="font-black text-lg text-gray-800 tracking-tight">Ders<span class="text-blue-600">Takip</span></span>
         </div>
 
-<div class="flex items-center gap-2">
-    <button onclick="tercihleriAc()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 py-1.5 px-3 rounded-lg border border-indigo-100 transition flex items-center gap-1.5 group">
-        <span class="text-sm group-hover:rotate-90 transition-transform duration-500">⚙️</span>
-        <span class="hidden md:inline font-bold text-[10px] uppercase tracking-wide">Tercihler</span>
-    </button>
-
-    <button onclick="cikisYap()" class="bg-red-50 hover:bg-red-100 text-red-500 py-1.5 px-3 rounded-lg border border-red-100 transition flex items-center gap-1.5">
-        <span class="text-sm">🚪</span> 
-        <span class="hidden md:inline font-bold text-[10px] uppercase tracking-wide">Çıkış</span>
-    </button>
-</div>
+        <button onclick="cikisYap()" class="text-red-500 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+            </svg>
+        </button>
     </div>
-
-    <nav id="nav-bar" class="max-w-7xl mx-auto px-4 flex gap-6 overflow-x-auto no-scrollbar pt-2 pb-1">
-        <button onclick="sayfaGoster('panel')" id="nav-panel" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all whitespace-nowrap">Panel</button>
-        <button onclick="sayfaGoster('takvim')" id="nav-takvim" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all whitespace-nowrap">Program</button>
-        <button onclick="sayfaGoster('kazanc')" id="nav-kazanc" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all whitespace-nowrap">Ders İşle</button>
-        <button onclick="sayfaGoster('rapor')" id="nav-rapor" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all whitespace-nowrap">Raporlar</button>
-    </nav>
 </header>
 
         <main class="max-w-7xl mx-auto p-4 lg:p-8">
@@ -319,61 +344,85 @@
         </div>
     </div>
 
-<div id="tercihlerSayfa" class="fixed inset-0 z-[9999] h-screen w-screen bg-gray-900/80 backdrop-blur-sm grid place-items-center p-4 overflow-y-auto" style="display:none;">
+<div id="tercihlerSayfa" class="fixed inset-0 z-[100] bg-white md:bg-gray-900/80 md:backdrop-blur-sm flex items-center justify-center p-0 md:p-4" style="display:none;">
     
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-gray-100 relative transform transition-all scale-100 my-auto">
+    <div class="bg-white w-full h-full md:h-auto md:max-w-lg md:rounded-3xl shadow-none md:shadow-2xl overflow-y-auto relative flex flex-col">
         
-        <div class="bg-blue-600 px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-2 text-white">
-                <span class="text-lg">⚙️</span>
-                <h2 class="text-sm font-black tracking-wide">Profil Ayarları</h2>
-            </div>
-            <button onclick="tercihKapat()" class="bg-white/20 hover:bg-white/30 text-white w-7 h-7 rounded-full flex items-center justify-center transition text-xs font-bold">✕</button>
+        <div class="bg-gray-50 border-b p-4 flex justify-between items-center sticky top-0 z-10">
+            <h2 class="text-lg font-black text-gray-800">⚙️ Ayarlar</h2>
+            <button onclick="tercihKapat()" class="bg-gray-200 text-gray-600 w-8 h-8 rounded-full flex items-center justify-center font-bold">✕</button>
         </div>
         
-        <div class="p-5 space-y-4">
+        <div class="p-6 space-y-6 flex-1">
+            <div class="space-y-1">
+                <label class="text-xs font-bold text-gray-400 uppercase">Öğretmen Adı</label>
+                <input type="text" id="prefHocaAd" class="input-mobil">
+            </div>
             
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="text-[9px] font-bold text-gray-400 uppercase pl-1 block mb-1">İsim Soyisim</label>
-                    <input type="text" id="prefHocaAd" class="w-full p-2 bg-gray-50 rounded-lg text-xs font-bold border border-gray-200 focus:border-blue-500 outline-none">
-                </div>
-                <div>
-                    <label class="text-[9px] font-bold text-gray-400 uppercase pl-1 block mb-1">Branş</label>
-                    <input type="text" id="prefBrans" class="w-full p-2 bg-gray-50 rounded-lg text-xs font-bold border border-gray-200 focus:border-blue-500 outline-none">
-                </div>
+            <div class="space-y-1">
+                <label class="text-xs font-bold text-gray-400 uppercase">Branş</label>
+                <input type="text" id="prefBrans" class="input-mobil">
             </div>
 
-            <div class="p-3 bg-blue-50/50 rounded-xl border border-blue-100">
-                <h3 class="font-black text-blue-800 text-[10px] mb-2 flex items-center gap-1">⏰ Mesai Saatleri</h3>
+            <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                <h3 class="font-bold text-blue-900 text-xs mb-3">ÇALIŞMA SAATLERİ</h3>
                 <div class="flex items-center gap-3">
-                    <select id="prefMesaiBasla" class="flex-1 p-2 rounded-lg font-bold text-xs border border-blue-200 bg-white text-center"><option value="9">09:00</option><option value="10">10:00</option><option value="11">11:00</option><option value="12">12:00</option><option value="13">13:00</option><option value="14">14:00</option></select>
-                    <span class="text-gray-400 font-bold text-xs">-</span>
-                    <select id="prefMesaiBitis" class="flex-1 p-2 rounded-lg font-bold text-xs border border-blue-200 bg-white text-center"><option value="17">17:00</option><option value="18">18:00</option><option value="19">19:00</option><option value="20">20:00</option><option value="21">21:00</option><option value="22">22:00</option></select>
+                    <select id="prefMesaiBasla" class="input-mobil bg-white text-center"><option value="9">09:00</option><option value="10">10:00</option><option value="11">11:00</option><option value="12">12:00</option><option value="13">13:00</option><option value="14">14:00</option></select>
+                    <span class="text-gray-400">-</span>
+                    <select id="prefMesaiBitis" class="input-mobil bg-white text-center"><option value="17">17:00</option><option value="18">18:00</option><option value="19">19:00</option><option value="20">20:00</option><option value="21">21:00</option><option value="22">22:00</option></select>
                 </div>
             </div>
 
             <div>
-                <label class="text-[9px] font-bold text-gray-400 uppercase block mb-1 pl-1">Tatil Günleri</label>
-                <div class="flex gap-1" id="prefGunler">
-                    <button onclick="gunSec(this)" data-gun="1" class="gun-btn flex-1 py-2 rounded-md border border-gray-200 text-[9px] font-bold text-gray-400 bg-white hover:border-blue-400 transition">Pzt</button>
-                    <button onclick="gunSec(this)" data-gun="2" class="gun-btn flex-1 py-2 rounded-md border border-gray-200 text-[9px] font-bold text-gray-400 bg-white hover:border-blue-400 transition">Sal</button>
-                    <button onclick="gunSec(this)" data-gun="3" class="gun-btn flex-1 py-2 rounded-md border border-gray-200 text-[9px] font-bold text-gray-400 bg-white hover:border-blue-400 transition">Çar</button>
-                    <button onclick="gunSec(this)" data-gun="4" class="gun-btn flex-1 py-2 rounded-md border border-gray-200 text-[9px] font-bold text-gray-400 bg-white hover:border-blue-400 transition">Per</button>
-                    <button onclick="gunSec(this)" data-gun="5" class="gun-btn flex-1 py-2 rounded-md border border-gray-200 text-[9px] font-bold text-gray-400 bg-white hover:border-blue-400 transition">Cum</button>
-                    <button onclick="gunSec(this)" data-gun="6" class="gun-btn flex-1 py-2 rounded-md border border-gray-200 text-[9px] font-bold text-gray-400 bg-white hover:border-blue-400 transition">Cmt</button>
-                    <button onclick="gunSec(this)" data-gun="7" class="gun-btn flex-1 py-2 rounded-md border border-gray-200 text-[9px] font-bold text-red-300 bg-white hover:border-red-400 transition">Paz</button>
+                <label class="text-xs font-bold text-gray-400 uppercase mb-2 block">Tatil Günleri</label>
+                <div class="flex justify-between gap-1" id="prefGunler">
+                    <button onclick="gunSec(this)" data-gun="1" class="gun-btn-mobil">Pzt</button>
+                    <button onclick="gunSec(this)" data-gun="2" class="gun-btn-mobil">Sal</button>
+                    <button onclick="gunSec(this)" data-gun="3" class="gun-btn-mobil">Çar</button>
+                    <button onclick="gunSec(this)" data-gun="4" class="gun-btn-mobil">Per</button>
+                    <button onclick="gunSec(this)" data-gun="5" class="gun-btn-mobil">Cum</button>
+                    <button onclick="gunSec(this)" data-gun="6" class="gun-btn-mobil">Cmt</button>
+                    <button onclick="gunSec(this)" data-gun="7" class="gun-btn-mobil text-red-400">Paz</button>
                 </div>
             </div>
+        </div>
 
-            <button onclick="ayarlariKaydet()" class="w-full bg-gray-900 text-white font-bold py-3 rounded-xl text-xs hover:bg-black transition shadow-lg flex items-center justify-center gap-2 mt-2">
-                <span>GÜNCELLE</span> 🚀
+        <div class="p-4 border-t sticky bottom-0 bg-white">
+            <button onclick="ayarlariKaydet()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl text-sm shadow-lg shadow-blue-200 active:scale-95 transition">
+                KAYDET VE GÜNCELLE
             </button>
         </div>
     </div>
 </div>
 
+<nav id="nav-bar" class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 flex justify-around items-center py-3 z-40 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+    
+    <button onclick="sayfaGoster('panel')" id="nav-panel" class="nav-btn flex flex-col items-center gap-1 text-gray-400 w-full transition duration-200">
+        <span class="text-xl mb-0.5">🏠</span>
+        <span class="text-[9px] font-bold uppercase tracking-wide">Panel</span>
+    </button>
 
+    <button onclick="sayfaGoster('takvim')" id="nav-takvim" class="nav-btn flex flex-col items-center gap-1 text-gray-400 w-full transition duration-200">
+        <span class="text-xl mb-0.5">📅</span>
+        <span class="text-[9px] font-bold uppercase tracking-wide">Program</span>
+    </button>
+
+    <div class="relative -top-5">
+        <button onclick="sayfaGoster('kazanc')" id="nav-kazanc" class="bg-blue-600 text-white w-14 h-14 rounded-full shadow-lg shadow-blue-300 flex items-center justify-center transform active:scale-95 transition border-4 border-white nav-btn">
+            <span class="text-2xl">➕</span>
+        </button>
+    </div>
+
+    <button onclick="sayfaGoster('rapor')" id="nav-rapor" class="nav-btn flex flex-col items-center gap-1 text-gray-400 w-full transition duration-200">
+        <span class="text-xl mb-0.5">📊</span>
+        <span class="text-[9px] font-bold uppercase tracking-wide">Rapor</span>
+    </button>
+
+    <button onclick="tercihleriAc()" class="nav-btn flex flex-col items-center gap-1 text-gray-400 w-full transition duration-200">
+        <span class="text-xl mb-0.5">⚙️</span>
+        <span class="text-[9px] font-bold uppercase tracking-wide">Ayarlar</span>
+    </button>
+</nav>
     <script src="script.js"></script>
     <script>
         // Service Worker Kaydı
