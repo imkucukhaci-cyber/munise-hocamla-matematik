@@ -165,9 +165,63 @@ function sayfaGoster(sayfaId) {
     if (sayfaId === "panel") panelOzetiniGuncelle();
 }
 
+/* =========================================
+   3. TERCİHLER VE AYAR KAYDETME
+   ========================================= */
+
+function gunSec(btn) {
+    // Butona basınca seçildi efekti ver (Mavi)
+    if (btn.classList.contains('bg-blue-600')) {
+        // Seçimi kaldır
+        btn.classList.remove('bg-blue-600', 'text-white', 'secili-tatil');
+        btn.classList.add('bg-white', 'text-gray-400');
+    } else {
+        // Seç
+        btn.classList.remove('bg-white', 'text-gray-400');
+        btn.classList.add('bg-blue-600', 'text-white', 'secili-tatil');
+    }
+}
+
+function ayarlariKaydet() {
+    const hocaAd = document.getElementById("prefHocaAd").value;
+    const brans = document.getElementById("prefBrans").value;
+    const basla = document.getElementById("prefMesaiBasla").value;
+    const bitis = document.getElementById("prefMesaiBitis").value;
+    
+    // Seçili tatil günlerini topla
+    const tatiller = [];
+    document.querySelectorAll('.secili-tatil').forEach(btn => {
+        tatiller.push(Number(btn.dataset.gun));
+    });
+
+    if(!hocaAd || !brans) {
+        alert("Lütfen adınızı ve branşınızı giriniz.");
+        return;
+    }
+
+    if(Number(basla) >= Number(bitis)) {
+        alert("Mesai başlangıç saati, bitiş saatinden önce olmalıdır.");
+        return;
+    }
+
+    const yeniAyarlar = {
+        ad: hocaAd,
+        brans: brans,
+        mesaiBasla: Number(basla),
+        mesaiBitis: Number(bitis),
+        tatilGunleri: tatiller,
+        kurulumTamam: true
+    };
+
+    database.ref(`kullanicilar/${aktifKullaniciId}/ayarlar`).set(yeniAyarlar).then(() => {
+        alert("Ayarlar kaydedildi!");
+        tercihKapat();
+        window.location.reload(); 
+    });
+}
 
 /* =========================================
-   3. VERİ DİNLEME VE PANEL RAPORLAMA
+   4. VERİ DİNLEME VE PANEL RAPORLAMA
    ========================================= */
 
 function verileriBuluttanDinle() {
