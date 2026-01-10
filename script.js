@@ -407,11 +407,14 @@ function paneliCiz(kazancData, dersData) {
 }
 
 /* =========================================
-   4. KAZANÇ TABLOSU (GÜNCELLENEN KISIM)
+   6. KAZANÇ TABLOSU & MODALLAR
    ========================================= */
 
 function kazancTablosuCiz() {
-    const yil = Number(document.getElementById("yilSecim").value);
+    const yilElement = document.getElementById("yilSecim");
+    if(!yilElement) return;
+    
+    const yil = Number(yilElement.value);
     const aylikToplam = Array(12).fill(0);
     const ogrenciToplam = {};
 
@@ -420,8 +423,6 @@ function kazancTablosuCiz() {
         if (tarih.getFullYear() === yil) {
             const ay = tarih.getMonth();
             const tutar = k.sure * k.ucret;
-            
-            // SADECE ÖDEME ALINDIysa hem genel toplama hem öğrenci toplamına ekle
             if (k.odemeDurumu) {
                 aylikToplam[ay] += tutar;
                 if (!ogrenciToplam[k.ogrenci]) ogrenciToplam[k.ogrenci] = Array(12).fill(0);
@@ -430,26 +431,10 @@ function kazancTablosuCiz() {
         }
     });
 
-    // 1. Tablo Başlıklarını Güncelle (Sadece Aylara Tıklama Özelliği)
-    const theadRow = document.querySelector("#kazancTablo thead tr");
-    if (theadRow) {
-        const aylar = ["OCA", "ŞUB", "MAR", "NİS", "MAY", "HAZ", "TEM", "AĞU", "EYL", "EKİ", "KAS", "ARA"];
-        theadRow.innerHTML = `<th class="p-3 text-left bg-gray-100">ÖĞRENCİ</th>`;
-        aylar.forEach((ayAd, index) => {
-            const th = document.createElement("th");
-            th.innerText = ayAd;
-            th.className = "cursor-pointer hover:bg-blue-600 hover:text-white transition p-2 bg-gray-50 text-blue-600 font-black text-center";
-            // SADECE BURASI TIKLANABİLİR:
-            th.onclick = () => ayDetayiniGoster(index, yil);
-            theadRow.appendChild(th);
-        });
-    }
-
     const tbody = document.querySelector("#kazancTablo tbody");
     if(!tbody) return;
     tbody.innerHTML = "";
 
-    // 2. Toplam Satırı (Tıklama özelliği yok)
     const toplamSatir = document.createElement("tr");
     toplamSatir.className = "font-bold bg-gray-100 border-b";
     toplamSatir.innerHTML = `<td class="p-3 text-left">GENEL TOPLAM</td>`;
@@ -458,7 +443,6 @@ function kazancTablosuCiz() {
     });
     tbody.appendChild(toplamSatir);
 
-    // 3. Öğrenci Satırları (Tıklama özelliği yok)
     Object.keys(ogrenciToplam).forEach(o => {
         const tr = document.createElement("tr");
         tr.className = "hover:bg-gray-50 border-b border-gray-100 transition";
@@ -471,10 +455,8 @@ function kazancTablosuCiz() {
 }
 
 function ayDetayiniGoster(ayIndex, yil) {
-    // Hangi ayın açık olduğunu hafızaya alıyoruz
     modalAcikAy = ayIndex;
     modalAcikYil = yil;
-
     const modal = document.getElementById('ayModalArka');
     const liste = document.getElementById('ayKayitListe');
     const baslik = document.getElementById('ayModalBaslik');
@@ -484,86 +466,51 @@ function ayDetayiniGoster(ayIndex, yil) {
     modal.style.display = "flex";
     baslik.innerText = `${aylar[ayIndex]} ${yil} Detayı`;
 
-    const filtreliKayitlar = kazancKayitlari.filter(k => {
+    const filtreli = kazancKayitlari.filter(k => {
         const d = new Date(k.tarih);
         return d.getMonth() === ayIndex && d.getFullYear() === yil;
     }).sort((a,b) => new Date(b.tarih) - new Date(a.tarih));
 
-    if (filtreliKayitlar.length === 0) {
-        liste.innerHTML = `<div class="p-8 text-center text-gray-400 font-bold italic text-sm">Bu ayda henüz bir kayıt yok.</div>`;
+    if (filtreli.length === 0) {
+        liste.innerHTML = `<div class="text-center p-8 text-gray-400">Kayıt yok.</div>`;
         return;
     }
 
-    filtreliKayitlar.forEach(k => {
+    filtreli.forEach(k => {
         const tutar = k.sure * k.ucret;
         const kart = document.createElement("div");
-        // Dinamik sınıf: Ödenmişse yeşil çerçeve, ödenmemişse gölgeli beyaz
-        kart.className = `flex items-center justify-between p-4 rounded-xl border mb-2 transition-all duration-300 ${k.odemeDurumu ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100 shadow-sm'}`;
-        
+        kart.className = `flex items-center justify-between p-4 rounded-xl border mb-2 ${k.odemeDurumu ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100'}`;
         kart.innerHTML = `
-            <div class="flex flex-col gap-1">
-                <span class="text-[10px] font-bold text-gray-400 uppercase">${k.tarih}</span>
-                <span class="font-black text-gray-800">${k.ogrenci}</span>
-                <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-gray-500">${k.sure} Sa / ₺${tutar}</span>
-                    ${!k.odemeDurumu ? 
-                        `<button onclick="odemeDurumuGuncelle('${k.id}', true)" class="bg-orange-500 text-white text-[10px] px-2 py-1 rounded-lg font-black hover:bg-orange-600 transition shadow-sm animate-pulse">ÖDEME AL</button>` : 
-                        `<span class="text-green-600 text-[10px] font-black italic">✓ TAHSİL EDİLDİ</span>`
-                    }
-                </div>
+            <div>
+                <div class="font-bold text-gray-800">${k.ogrenci}</div>
+                <div class="text-xs text-gray-500">${k.tarih} | ${k.sure} Saat | ₺${tutar}</div>
             </div>
-            <div class="flex items-center gap-2">
-                ${k.odemeDurumu ? 
-                    `<button onclick="odemeDurumuGuncelle('${k.id}', false)" class="p-2 text-gray-300 hover:text-orange-500 transition text-lg" title="Geri Al">↩</button>` : ''
-                }
-                <button onclick="kazancKaydiSil('${k.id}')" class="p-2 text-gray-300 hover:text-red-500 transition text-lg">🗑️</button>
+            <div class="flex gap-2">
+                <button onclick="odemeDurumuGuncelle('${k.id}', ${!k.odemeDurumu})" class="text-xs font-bold px-3 py-1 rounded-lg ${k.odemeDurumu ? 'bg-gray-200 text-gray-600' : 'bg-green-600 text-white'}">
+                    ${k.odemeDurumu ? 'İptal Et' : 'Öde'}
+                </button>
+                <button onclick="kazancKaydiSil('${k.id}')" class="text-gray-400 hover:text-red-500 px-2">🗑️</button>
             </div>
         `;
         liste.appendChild(kart);
     });
 }
 
-function odemeDurumuGuncelle(kayitId, yeniDurum) {
-    database.ref(`kullanicilar/${aktifKullaniciId}/kazanclar/${kayitId}`).update({
-        odemeDurumu: yeniDurum
-    }).then(() => {
-        // Firebase güncellendiğinde modalı kapatmadan içeriği yeniliyoruz!
-        if(modalAcikAy !== null) {
-            ayDetayiniGoster(modalAcikAy, modalAcikYil);
-        }
-    });
+function odemeDurumuGuncelle(id, durum) {
+    database.ref(`kullanicilar/${aktifKullaniciId}/kazanclar/${id}`).update({ odemeDurumu: durum })
+        .then(() => ayDetayiniGoster(modalAcikAy, modalAcikYil));
 }
 
 function kazancKaydiSil(id) {
-    if(confirm("Bu ders kaydını silmek istediğinize emin misiniz? Bu işlem geri alınamaz.")) {
+    if(confirm("Silmek istediğinize emin misiniz?")) {
         database.ref(`kullanicilar/${aktifKullaniciId}/kazanclar/${id}`).remove()
-            .then(() => {
-                // SİLME İŞLEMİ BAŞARILI OLUNCA:
-                if(modalAcikAy !== null) {
-                    // Listeyi anında yenile (Modal açık kalır, kayıt şak diye listeden kaybolur)
-                    ayDetayiniGoster(modalAcikAy, modalAcikYil);
-                }
-                console.log("Kayıt başarıyla silindi.");
-            })
-            .catch((hata) => {
-                alert("Silme işlemi sırasında bir hata oluştu: " + hata.message);
-            });
+            .then(() => ayDetayiniGoster(modalAcikAy, modalAcikYil));
     }
 }
 
-/* =========================================
-   MODAL KAPATMA FONKSİYONU
-   ========================================= */
 function ayModalKapat() {
-    const modal = document.getElementById('ayModalArka');
-    if (modal) {
-        modal.style.display = "none";
-        // Temizlik: Hafızadaki ay/yıl bilgisini sıfırlıyoruz
-        modalAcikAy = null;
-        modalAcikYil = null;
-    }
+    document.getElementById('ayModalArka').style.display = "none";
 }
-
 
 /* =========================================
    5. DERS PROGRAMI VE DİĞER FONKSİYONLAR
