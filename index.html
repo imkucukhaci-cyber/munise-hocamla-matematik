@@ -109,13 +109,19 @@
 
 <header class="bg-white/90 backdrop-blur-md border-b sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black text-sm shadow-md">
-                MH
-            </div>
-            <span class="font-black text-lg text-gray-800 tracking-tight">Ders<span class="text-blue-600">Takip</span></span>
-        </div>
-
+<div class="flex items-center gap-2.5 group cursor-pointer">
+    
+    <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200/50 transform group-hover:scale-105 transition-all duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+            <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32L19.513 8.199z" />
+        </svg>
+    </div>
+    
+    <div class="flex flex-col leading-none">
+        <span class="font-black text-xl text-gray-800 tracking-tight group-hover:text-blue-600 transition-colors">Ders<span class="text-blue-600">Takip</span></span>
+        <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Profesyonel Asistan</span>
+    </div>
+</div>
 <div class="flex items-center gap-2">
     <button onclick="tercihleriAc()" class="h-9 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-3 rounded-lg transition flex items-center gap-1.5 group">
         <span class="text-sm group-hover:rotate-90 transition-transform duration-500">⚙️</span>
