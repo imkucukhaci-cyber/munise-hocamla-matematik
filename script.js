@@ -12,7 +12,7 @@ const firebaseConfig = {
     measurementId: "G-BVGCFJ7Z3K"
 };
 
-// Firebase başlatma kontrolü (Hata almamak için)
+// Firebase başlatma kontrolü
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
@@ -65,7 +65,7 @@ function ayarKontrolVeBaslat() {
             // Tüm sayfaları gizle
             document.querySelectorAll('.sayfa-bolum').forEach(el => el.style.display = 'none');
             
-            tercihSayfasi.style.display = "flex"; // Modal olarak aç
+            tercihSayfasi.style.display = "flex"; 
         } else {
             // AYAR VARSA: Normal akış
             if(header) header.style.display = "block";
@@ -101,10 +101,10 @@ function sayfaGoster(sayfaId) {
         secilenSayfa.style.display = 'block';
     }
 
-    // 3. Alt Menü Butonlarını Güncelle (Yeni Pill Tasarımı)
+    // 3. Alt Menü Butonlarını Güncelle
     document.querySelectorAll('.nav-btn').forEach(btn => {
-        const colorClass = btn.dataset.color; // HTML'den gelen text-rengi
-        const bgClass = btn.dataset.bg;       // HTML'den gelen bg-rengi
+        const colorClass = btn.dataset.color; 
+        const bgClass = btn.dataset.bg;       
         
         // Aktiflik sınıflarını temizle
         btn.classList.remove('active', colorClass, bgClass, 'shadow-sm');
@@ -116,13 +116,7 @@ function sayfaGoster(sayfaId) {
         const svg = btn.querySelector('svg');
         if(svg) {
             svg.classList.remove('scale-110');
-            svg.style.stroke = ""; // Varsa inline stili temizle
-        }
-        
-        // Yazıları gizle/göster (opacity ile)
-        const span = btn.querySelector('span');
-        if(span) {
-            span.classList.remove('text-gray-800');
+            svg.style.stroke = ""; 
         }
     });
 
@@ -132,17 +126,11 @@ function sayfaGoster(sayfaId) {
         const activeColor = aktifBtn.dataset.color;
         const activeBg = aktifBtn.dataset.bg;
 
-        // Griyi kaldır, özel renkleri ekle
         aktifBtn.classList.remove('text-gray-400');
         aktifBtn.classList.add('active', activeColor, activeBg, 'shadow-sm');
         
-        // İkonu hafif büyüt
         const svg = aktifBtn.querySelector('svg');
         if(svg) svg.classList.add('scale-110');
-        
-        // Yazıyı belirginleştir
-        const span = aktifBtn.querySelector('span');
-        if(span) span.classList.add('font-bold');
     }
 
     // Sayfa özel yüklemeler
@@ -165,26 +153,13 @@ function gunSec(btn) {
     // Butona basınca seçildi efekti ver (Mavi)
     if (btn.classList.contains('bg-blue-600')) {
         // Seçimi kaldır
-        btn.classList.remove('bg-blue-600', 'text-white');
+        btn.classList.remove('bg-blue-600', 'text-white', 'secili-tatil');
         btn.classList.add('bg-white', 'text-gray-400');
-        btn.classList.remove('secili-tatil');
     } else {
         // Seç
         btn.classList.remove('bg-white', 'text-gray-400');
-        btn.classList.add('bg-blue-600', 'text-white');
-        btn.classList.add('secili-tatil');
+        btn.classList.add('bg-blue-600', 'text-white', 'secili-tatil');
     }
-}
-
-function ayarKontrolVeBaslat() {
-    database.ref(`kullanicilar/${aktifKullaniciId}/ayarlar`).once('value', (snapshot) => {
-        globalAyarlar = snapshot.val();
-        
-        // Eğer ayarlar yoksa modalı aç
-        if (!globalAyarlar || !globalAyarlar.kurulumTamam) {
-             document.getElementById("tercihlerSayfa").style.display = "flex";
-        }
-    });
 }
 
 function ayarlariKaydet() {
@@ -231,6 +206,7 @@ function ayarlariKaydet() {
 
 function takvimOlustur() {
     const tbody = document.getElementById("takvimBody");
+    if(!tbody) return;
     tbody.innerHTML = ""; 
 
     const basla = globalAyarlar ? globalAyarlar.mesaiBasla : 13;
@@ -697,4 +673,5 @@ function tercihleriAc() {
 
 function tercihKapat() {
     document.getElementById("tercihlerSayfa").style.display = "none";
+    sayfaGoster('panel');
 }
