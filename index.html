@@ -402,27 +402,35 @@
     </div>
 </div>
 
-<nav id="nav-bar" class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 flex justify-around items-center py-3 z-40 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<nav id="nav-bar" class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 flex justify-around items-center py-2 z-40 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
     
-    <button onclick="sayfaGoster('panel')" id="nav-panel" class="nav-btn flex flex-col items-center gap-1 text-gray-400 w-full transition duration-200">
-        <span class="text-xl mb-0.5">🏠</span>
-        <span class="text-[9px] font-bold uppercase tracking-wide">Panel</span>
+    <button onclick="sayfaGoster('panel')" id="nav-panel" class="nav-btn flex flex-col items-center justify-center w-full py-1 gap-1 text-gray-400 transition duration-200 group">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 group-hover:text-blue-500 transition">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+        </svg>
+        <span class="text-[10px] font-bold uppercase tracking-wide group-hover:text-blue-500">Panel</span>
     </button>
 
-    <button onclick="sayfaGoster('takvim')" id="nav-takvim" class="nav-btn flex flex-col items-center gap-1 text-gray-400 w-full transition duration-200">
-        <span class="text-xl mb-0.5">📅</span>
-        <span class="text-[9px] font-bold uppercase tracking-wide">Program</span>
+    <button onclick="sayfaGoster('takvim')" id="nav-takvim" class="nav-btn flex flex-col items-center justify-center w-full py-1 gap-1 text-gray-400 transition duration-200 group">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 group-hover:text-blue-500 transition">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+        </svg>
+        <span class="text-[10px] font-bold uppercase tracking-wide group-hover:text-blue-500">Program</span>
     </button>
 
-    <div class="relative -top-5">
-        <button onclick="sayfaGoster('kazanc')" id="nav-kazanc" class="bg-blue-600 text-white w-14 h-14 rounded-full shadow-lg shadow-blue-300 flex items-center justify-center transform active:scale-95 transition border-4 border-white nav-btn">
-            <span class="text-2xl">➕</span>
-        </button>
-    </div>
+    <button onclick="sayfaGoster('kazanc')" id="nav-kazanc" class="nav-btn flex flex-col items-center justify-center w-full py-1 gap-1 text-gray-400 transition duration-200 group">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 group-hover:text-blue-500 transition">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        <span class="text-[10px] font-bold uppercase tracking-wide group-hover:text-blue-500">Ders Ekle</span>
+    </button>
 
-    <button onclick="sayfaGoster('rapor')" id="nav-rapor" class="nav-btn flex flex-col items-center gap-1 text-gray-400 w-full transition duration-200">
-        <span class="text-xl mb-0.5">📊</span>
-        <span class="text-[9px] font-bold uppercase tracking-wide">Rapor</span>
+    <button onclick="sayfaGoster('rapor')" id="nav-rapor" class="nav-btn flex flex-col items-center justify-center w-full py-1 gap-1 text-gray-400 transition duration-200 group">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 group-hover:text-blue-500 transition">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" />
+        </svg>
+        <span class="text-[10px] font-bold uppercase tracking-wide group-hover:text-blue-500">Raporlar</span>
     </button>
 
 </nav>
