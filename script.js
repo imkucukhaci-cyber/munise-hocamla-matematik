@@ -513,7 +513,7 @@ function ayModalKapat() {
 }
 
 /* =========================================
-   5. DERS PROGRAMI VE DİĞER FONKSİYONLAR
+   7. DERS EKLEME & ÇİZME
    ========================================= */
 
 function dersEkle() {
@@ -523,7 +523,12 @@ function dersEkle() {
     const baslangic = parseFloat(document.getElementById("baslangic").value);
     const sure = parseFloat(document.getElementById("sure").value);
 
-    if (!ogrenci || !ucret) { alert("Lütfen öğrenci adı ve ücret giriniz."); return; }
+    if (globalAyarlar && globalAyarlar.tatilGunleri && globalAyarlar.tatilGunleri.includes(Number(gun))) {
+        alert("Seçtiğiniz gün tatil olarak ayarlanmış! Ders ekleyemezsiniz.");
+        return;
+    }
+
+    if (!ogrenci || !ucret) { alert("Eksik bilgi girdiniz."); return; }
     database.ref(`kullanicilar/${aktifKullaniciId}/dersler`).push({ ogrenci, ucret, gun, baslangic, sure });
     document.getElementById("ogrenci").value = "";
 }
