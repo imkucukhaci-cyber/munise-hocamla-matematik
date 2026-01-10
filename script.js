@@ -107,7 +107,9 @@ function sayfaGoster(sayfaId) {
         const bgClass = btn.dataset.bg;       
         
         // Aktiflik sınıflarını temizle
-        btn.classList.remove('active', colorClass, bgClass, 'shadow-sm');
+        if(colorClass) btn.classList.remove(colorClass);
+        if(bgClass) btn.classList.remove(bgClass);
+        btn.classList.remove('active', 'shadow-sm');
         
         // Pasif hale getir (Gri yap)
         btn.classList.add('text-gray-400');
@@ -117,6 +119,12 @@ function sayfaGoster(sayfaId) {
         if(svg) {
             svg.classList.remove('scale-110');
             svg.style.stroke = ""; 
+        }
+        
+        // Yazı stili sıfırla
+        const span = btn.querySelector('span');
+        if(span) {
+            span.classList.remove('font-bold', 'text-gray-800');
         }
     });
 
@@ -131,6 +139,14 @@ function sayfaGoster(sayfaId) {
         
         const svg = aktifBtn.querySelector('svg');
         if(svg) svg.classList.add('scale-110');
+        
+        const span = aktifBtn.querySelector('span');
+        if(span) {
+            span.classList.add('font-bold');
+            // Yazı rengini de ikon rengiyle aynı yap
+            span.classList.remove('text-gray-400');
+            span.classList.add(activeColor);
+        }
     }
 
     // Sayfa özel yüklemeler
