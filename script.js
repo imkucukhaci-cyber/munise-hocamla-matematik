@@ -737,3 +737,38 @@ function raporUret() {
     document.getElementById("raporToplamSaat").innerText = toplamSaat + " Saat";
     document.getElementById("raporToplamTutar").innerText = "₺" + toplamKazanc;
 }function secimDuzenle() { alert("Düzenleme için lütfen takvim üzerinden modalı kullanın."); secimKapat(); }
+
+/* =========================================
+   8. AYARLARI DÜZENLEME VE GÜNCELLEME
+   ========================================= */
+
+function tercihleriAc() {
+    if (!globalAyarlar) return;
+
+    document.getElementById("prefHocaAd").value = globalAyarlar.ad || "";
+    document.getElementById("prefBrans").value = globalAyarlar.brans || "";
+    document.getElementById("prefMesaiBasla").value = globalAyarlar.mesaiBasla || "13";
+    document.getElementById("prefMesaiBitis").value = globalAyarlar.mesaiBitis || "22";
+
+    document.querySelectorAll('.gun-btn-mobil').forEach(btn => {
+        btn.classList.remove('bg-blue-600', 'text-white', 'secili-tatil');
+        btn.classList.add('bg-white', 'text-gray-400');
+    });
+
+    if (globalAyarlar.tatilGunleri) {
+        globalAyarlar.tatilGunleri.forEach(gunIndex => {
+            const btn = document.querySelector(`.gun-btn-mobil[data-gun="${gunIndex}"]`);
+            if (btn) {
+                btn.classList.add('bg-blue-600', 'text-white', 'secili-tatil');
+                btn.classList.remove('bg-white', 'text-gray-400');
+            }
+        });
+    }
+
+    document.getElementById("tercihlerSayfa").style.display = "flex";
+}
+
+function tercihKapat() {
+    document.getElementById("tercihlerSayfa").style.display = "none";
+    sayfaGoster('panel');
+}
