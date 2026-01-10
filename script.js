@@ -221,6 +221,48 @@ function ayarlariKaydet() {
 }
 
 /* =========================================
+   4. DİNAMİK TAKVİM OLUŞTURMA
+   ========================================= */
+
+function takvimOlustur() {
+    const tbody = document.getElementById("takvimBody");
+    if(!tbody) return;
+    tbody.innerHTML = ""; 
+
+    const basla = globalAyarlar ? globalAyarlar.mesaiBasla : 13;
+    const bitis = globalAyarlar ? globalAyarlar.mesaiBitis : 22;
+    const tatiller = globalAyarlar ? (globalAyarlar.tatilGunleri || []) : [];
+
+    for (let s = basla; s < bitis; s += 0.5) {
+        const basSaatStr = s % 1 === 0 ? `${s}:00` : `${Math.floor(s)}:30`;
+        
+        let rowHtml = `<tr class='border-b last:border-0'>`;
+        rowHtml += `<td class='p-3 font-bold bg-gray-50 text-gray-400 text-xs border-r text-center align-top'>${basSaatStr}</td>`;
+        
+        for (let g = 1; g <= 7; g++) {
+            const tatilMi = tatiller.includes(g);
+            const bgClass = tatilMi ? "bg-gray-100" : "";
+            rowHtml += `<td id="hucre-${g}-${s}" class="p-0 border-r min-h-[50px] relative ${bgClass}"></td>`;
+        }
+        rowHtml += "</tr>";
+        tbody.innerHTML += rowHtml;
+    }
+
+    const saatSelect = document.getElementById("baslangic");
+    if(saatSelect) {
+        saatSelect.innerHTML = "";
+        for (let s = basla; s < bitis; s += 0.5) {
+             const text = s % 1 === 0 ? `${s}:00` : `${Math.floor(s)}:30`;
+             const opt = document.createElement("option");
+             opt.value = s;
+             opt.text = text;
+             saatSelect.appendChild(opt);
+        }
+    }
+}
+
+
+/* =========================================
    5. VERİLERİ ÇEKME & GRAFİKLER
    ========================================= */
 
