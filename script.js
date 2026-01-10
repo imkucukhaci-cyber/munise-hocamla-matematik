@@ -221,7 +221,7 @@ function ayarlariKaydet() {
 }
 
 /* =========================================
-   4. VERİ DİNLEME VE PANEL RAPORLAMA
+   5. VERİLERİ ÇEKME & GRAFİKLER
    ========================================= */
 
 function verileriBuluttanDinle() {
@@ -230,8 +230,11 @@ function verileriBuluttanDinle() {
     database.ref(`kullanicilar/${aktifKullaniciId}/dersler`).on('value', (snapshot) => {
         const veri = snapshot.val();
         dersler = veri ? Object.keys(veri).map(key => ({ id: key, ...veri[key] })) : [];
-        tabloyuTemizle();
-        dersler.forEach(ders => dersCiz(ders));
+        
+        if(document.getElementById("takvimSayfa").style.display !== "none") {
+            tabloyuTemizle();
+            dersler.forEach(ders => dersCiz(ders));
+        }
         panelOzetiniGuncelle();
     });
 
@@ -255,86 +258,70 @@ function panelOzetiniGuncelle() {
     const aylikDersVerisi = Array(12).fill(0);
 
     const benzersizOgrenciler = [...new Set(dersler.map(d => d.ogrenci))];
-    document.getElementById("panel-toplamOgrenci").innerText = benzersizOgrenciler.length;
+    const toplamOgrenciEl = document.getElementById("panel-toplamOgrenci");
+    if(toplamOgrenciEl) toplamOgrenciEl.innerText = benzersizOgrenciler.length;
 
     kazancKayitlari.forEach(k => {
         const d = new Date(k.tarih);
         const tutar = k.sure * k.ucret;
         
         if (d.getFullYear() === buYil) {
-            // GRAFİKLER: Sadece ödemesi alınanları kazanç grafiğine ekle
             if (k.odemeDurumu) {
                 aylikKazancVerisi[d.getMonth()] += tutar;
             }
-            aylikDersVerisi[d.getMonth()] += 1; // Ders sayısı her halükarda artar
+            aylikDersVerisi[d.getMonth()] += 1;
 
             if (d.getMonth() === buAy) {
                 buAyDersSayisi += 1;
-                if (k.odemeDurumu) {
-                    buAyKazanc += tutar; // Sadece ödenenler "Bu Ay Kazanç"a
-                } else {
-                    bekleyenOdeme += tutar; // Ödenmeyenler "Bekleyen"e
-                }
+                if (k.odemeDurumu) buAyKazanc += tutar;
+                else bekleyenOdeme += tutar;
             }
         }
     });
 
-    document.getElementById("panel-buAyDers").innerText = buAyDersSayisi;
-    document.getElementById("panel-kazanc").innerText = "₺" + buAyKazanc.toFixed(0);
-    document.getElementById("panel-bekleyen").innerText = "₺" + bekleyenOdeme.toFixed(0);
+    const elBuAyDers = document.getElementById("panel-buAyDers");
+    const elKazanc = document.getElementById("panel-kazanc");
+    const elBekleyen = document.getElementById("panel-bekleyen");
+
+    if(elBuAyDers) elBuAyDers.innerText = buAyDersSayisi;
+    if(elKazanc) elKazanc.innerText = "₺" + buAyKazanc.toFixed(0);
+    if(elBekleyen) elBekleyen.innerText = "₺" + bekleyenOdeme.toFixed(0);
 
     paneliCiz(aylikKazancVerisi, aylikDersVerisi);
 }
 
+// --- YENİLENMİŞ GRAFİK ÇİZİM FONKSİYONU ---
 function paneliCiz(kazancData, dersData) {
+    if(!document.getElementById('kazancChart')) return;
+
     const aylar = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
     
-    // Kazanç Grafiği (Line Chart - Soft Blue)
+    // 1. KAZANÇ GRAFİĞİ
     const ctx1 = document.getElementById('kazancChart').getContext('2d');
+    
+    const gradient = ctx1.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)'); 
+    gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)'); 
+
     if(kazancGrafik) kazancGrafik.destroy();
+    
     kazancGrafik = new Chart(ctx1, {
         type: 'line',
         data: {
             labels: aylar,
             datasets: [{ 
-                label: 'Kazanç', 
+                label: 'Kazanç (₺)', 
                 data: kazancData, 
-                borderColor: '#60a5fa', // Soft Mavi
-                backgroundColor: 'rgba(96, 165, 250, 0.05)', // Çok hafif dolgu
+                borderColor: '#3b82f6', 
+                backgroundColor: gradient, 
                 borderWidth: 3,
                 pointBackgroundColor: '#ffffff',
-                pointBorderColor: '#60a5fa',
+                pointBorderColor: '#3b82f6',
                 pointBorderWidth: 2,
                 pointRadius: 4,
-                fill: true,
+                pointHoverRadius: 6,
+                fill: true, 
                 tension: 0.4 
-            }]
-        },
-        options: { 
-            responsive: true, 
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } }, // Lejantı gizle (daha minimal)
-            scales: {
-                y: { beginAtZero: true, grid: { color: '#f3f4f6' }, border: { display: false } },
-                x: { grid: { display: false }, border: { display: false } }
-            }
-        }
-    });
-
-    // Ders Grafiği (Bar Chart - Soft Indigo)
-    const ctx2 = document.getElementById('dersChart').getContext('2d');
-    if(dersGrafik) dersGrafik.destroy();
-    dersGrafik = new Chart(ctx2, {
-        type: 'bar',
-        data: {
-            labels: aylar,
-            datasets: [{ 
-                label: 'Ders Sayısı', 
-                data: dersData, 
-                backgroundColor: 'rgba(129, 140, 248, 0.4)', // Pastel İndigo
-                hoverBackgroundColor: 'rgba(129, 140, 248, 0.7)',
-                borderRadius: 8,
-                barThickness: 20
             }]
         },
         options: { 
@@ -342,12 +329,41 @@ function paneliCiz(kazancData, dersData) {
             maintainAspectRatio: false,
             plugins: { legend: { display: false } },
             scales: {
-                y: { beginAtZero: true, grid: { color: '#f3f4f6' }, border: { display: false } },
+                y: { beginAtZero: true, grid: { borderDash: [5, 5] }, border: { display: false } },
+                x: { grid: { display: false }, border: { display: false } }
+            }
+        }
+    });
+
+    // 2. DERS GRAFİĞİ
+    const ctx2 = document.getElementById('dersChart').getContext('2d');
+    
+    if(dersGrafik) dersGrafik.destroy();
+    
+    dersGrafik = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: aylar,
+            datasets: [{ 
+                label: 'Ders Sayısı', 
+                data: dersData, 
+                backgroundColor: '#6366f1', 
+                borderRadius: 6, 
+                barThickness: 12
+            }]
+        },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { borderDash: [5, 5] }, border: { display: false } },
                 x: { grid: { display: false }, border: { display: false } }
             }
         }
     });
 }
+
 /* =========================================
    4. KAZANÇ TABLOSU (GÜNCELLENEN KISIM)
    ========================================= */
