@@ -12,7 +12,10 @@ const firebaseConfig = {
     measurementId: "G-BVGCFJ7Z3K"
 };
 
-firebase.initializeApp(firebaseConfig);
+// Firebase başlatma kontrolü (Hata almamak için)
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const database = firebase.database();
 const auth = firebase.auth();
 
@@ -24,7 +27,7 @@ let kazancGrafik = null;
 let dersGrafik = null;
 let modalAcikAy = null;
 let modalAcikYil = null;
-let globalAyarlar = null; // Kullanıcı ayarlarını burada tutacağız
+let globalAyarlar = null; 
 
 /* =========================================
    2. GİRİŞ, KONTROL VE NAVİGASYON
@@ -50,22 +53,23 @@ function ayarKontrolVeBaslat() {
     database.ref(`kullanicilar/${aktifKullaniciId}/ayarlar`).once('value', (snapshot) => {
         globalAyarlar = snapshot.val();
 
-        // Header (Logo ve Menü) ve Tercih Sayfası Elementleri
         const header = document.querySelector("header");
         const tercihSayfasi = document.getElementById("tercihlerSayfa");
-        const digerSayfalar = ["panelSayfa", "takvimSayfa", "kazancSayfa", "raporSayfa"];
+        const navBar = document.getElementById("nav-bar");
 
         if (!globalAyarlar || !globalAyarlar.kurulumTamam) {
-            // AYAR YOKSA: Header gizle, sadece Tercih Formunu göster
+            // AYAR YOKSA: Header ve Nav gizle, Tercihleri aç
             if(header) header.style.display = "none";
-            digerSayfalar.forEach(s => {
-                const el = document.getElementById(s);
-                if(el) el.style.display = "none";
-            });
-            tercihSayfasi.style.display = "block";
+            if(navBar) navBar.style.display = "none";
+            
+            // Tüm sayfaları gizle
+            document.querySelectorAll('.sayfa-bolum').forEach(el => el.style.display = 'none');
+            
+            tercihSayfasi.style.display = "flex"; // Modal olarak aç
         } else {
             // AYAR VARSA: Normal akış
             if(header) header.style.display = "block";
+            if(navBar) navBar.style.display = "flex";
             tercihSayfasi.style.display = "none";
             verileriBuluttanDinle(); 
             sayfaGoster('panel');
@@ -84,54 +88,73 @@ function cikisYap() {
     }
 }
 
-function sayfaGoster(sayfa) {
-    const sayfalar = ["panelSayfa", "takvimSayfa", "kazancSayfa", "raporSayfa"];
-    sayfalar.forEach(s => {
-        const el = document.getElementById(s);
-        if(el) el.style.display = "none";
+// --- YENİLENMİŞ SAYFA GÖSTER FONKSİYONU ---
+function sayfaGoster(sayfaId) {
+    // 1. Tüm sayfaları gizle
+    document.querySelectorAll('.sayfa-bolum').forEach(div => {
+        div.style.display = 'none';
     });
-    
-    document.getElementById(sayfa + "Sayfa").style.display = "block";
 
-    // Menü aktiflik ayarı
-/* === script.js -> sayfaGoster fonksiyonu içi === */
+    // 2. İstenen sayfayı göster
+    const secilenSayfa = document.getElementById(sayfaId + 'Sayfa');
+    if (secilenSayfa) {
+        secilenSayfa.style.display = 'block';
+    }
 
-// Menü aktiflik ayarı (MODERN BACKGROUND EFEKTİ)
-document.querySelectorAll('.nav-btn').forEach(btn => {
-    const colorClass = btn.dataset.color; 
-    const bgClass = btn.dataset.bg; // Yeni eklenen background rengi
-    
-    // Aktif sınıfları temizle
-    btn.classList.remove('active', colorClass, bgClass, 'shadow-sm'); 
-    
-    // Varsayılan gri haline döndür
-    btn.classList.add('text-gray-400'); 
-    
-    // SVG stroke rengini sıfırla
-    const svg = btn.querySelector('svg');
-    if(svg) svg.style.stroke = "";
-});
+    // 3. Alt Menü Butonlarını Güncelle (Yeni Pill Tasarımı)
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        const colorClass = btn.dataset.color; // HTML'den gelen text-rengi
+        const bgClass = btn.dataset.bg;       // HTML'den gelen bg-rengi
+        
+        // Aktiflik sınıflarını temizle
+        btn.classList.remove('active', colorClass, bgClass, 'shadow-sm');
+        
+        // Pasif hale getir (Gri yap)
+        btn.classList.add('text-gray-400');
+        
+        // Animasyon için scale sıfırla
+        const svg = btn.querySelector('svg');
+        if(svg) {
+            svg.classList.remove('scale-110');
+            svg.style.stroke = ""; // Varsa inline stili temizle
+        }
+        
+        // Yazıları gizle/göster (opacity ile)
+        const span = btn.querySelector('span');
+        if(span) {
+            span.classList.remove('text-gray-800');
+        }
+    });
 
-const aktifBtn = document.getElementById("nav-" + sayfa);
-if(aktifBtn) {
-    const activeColor = aktifBtn.dataset.color;
-    const activeBg = aktifBtn.dataset.bg; // HTML'den bg rengini al
-    
-    // Griyi kaldır, renkleri ekle
-    aktifBtn.classList.remove('text-gray-400');
-    aktifBtn.classList.add('active', activeColor, activeBg, 'shadow-sm'); // Arkasına renkli kutu ve gölge ekle
-}
+    // 4. Aktif Butonu Boya
+    const aktifBtn = document.getElementById('nav-' + sayfaId);
+    if (aktifBtn) {
+        const activeColor = aktifBtn.dataset.color;
+        const activeBg = aktifBtn.dataset.bg;
 
-    if (sayfa === "takvim") {
-        // Takvimi her açışta ayara göre yeniden oluştur
+        // Griyi kaldır, özel renkleri ekle
+        aktifBtn.classList.remove('text-gray-400');
+        aktifBtn.classList.add('active', activeColor, activeBg, 'shadow-sm');
+        
+        // İkonu hafif büyüt
+        const svg = aktifBtn.querySelector('svg');
+        if(svg) svg.classList.add('scale-110');
+        
+        // Yazıyı belirginleştir
+        const span = aktifBtn.querySelector('span');
+        if(span) span.classList.add('font-bold');
+    }
+
+    // Sayfa özel yüklemeler
+    if (sayfaId === "takvim") {
         takvimOlustur();
         setTimeout(() => {
             dersler.forEach(ders => dersCiz(ders));
         }, 50);
     }
-    
-    if (sayfa === "rapor") raporOgrencileriYukle();
-    if (sayfa === "kazanc") ogrencileriYukle();
+    if (sayfaId === "rapor") raporOgrencileriYukle();
+    if (sayfaId === "kazanc") ogrencileriYukle();
+    if (sayfaId === "panel") panelOzetiniGuncelle();
 }
 
 /* =========================================
@@ -139,11 +162,29 @@ if(aktifBtn) {
    ========================================= */
 
 function gunSec(btn) {
-    // Butona basınca seçildi efekti ver (kırmızı)
-    btn.classList.toggle('bg-red-500');
-    btn.classList.toggle('text-white');
-    btn.classList.toggle('border-red-500');
-    btn.classList.toggle('secili-tatil'); // İşaretleyici sınıf
+    // Butona basınca seçildi efekti ver (Mavi)
+    if (btn.classList.contains('bg-blue-600')) {
+        // Seçimi kaldır
+        btn.classList.remove('bg-blue-600', 'text-white');
+        btn.classList.add('bg-white', 'text-gray-400');
+        btn.classList.remove('secili-tatil');
+    } else {
+        // Seç
+        btn.classList.remove('bg-white', 'text-gray-400');
+        btn.classList.add('bg-blue-600', 'text-white');
+        btn.classList.add('secili-tatil');
+    }
+}
+
+function ayarKontrolVeBaslat() {
+    database.ref(`kullanicilar/${aktifKullaniciId}/ayarlar`).once('value', (snapshot) => {
+        globalAyarlar = snapshot.val();
+        
+        // Eğer ayarlar yoksa modalı aç
+        if (!globalAyarlar || !globalAyarlar.kurulumTamam) {
+             document.getElementById("tercihlerSayfa").style.display = "flex";
+        }
+    });
 }
 
 function ayarlariKaydet() {
@@ -178,8 +219,9 @@ function ayarlariKaydet() {
     };
 
     database.ref(`kullanicilar/${aktifKullaniciId}/ayarlar`).set(yeniAyarlar).then(() => {
-        alert("Profiliniz başarıyla oluşturuldu!");
-        window.location.reload(); // Sayfayı yenile ki her şey otursun
+        alert("Ayarlar kaydedildi!");
+        tercihKapat();
+        window.location.reload(); 
     });
 }
 
@@ -189,32 +231,27 @@ function ayarlariKaydet() {
 
 function takvimOlustur() {
     const tbody = document.getElementById("takvimBody");
-    tbody.innerHTML = ""; // Önce temizle
+    tbody.innerHTML = ""; 
 
-    // Ayarlardan saatleri al, yoksa varsayılan yap
     const basla = globalAyarlar ? globalAyarlar.mesaiBasla : 13;
     const bitis = globalAyarlar ? globalAyarlar.mesaiBitis : 22;
     const tatiller = globalAyarlar ? (globalAyarlar.tatilGunleri || []) : [];
 
-    for (let s = basla; s < bitis + 0.1; s += 0.5) {
+    for (let s = basla; s < bitis; s += 0.5) {
         const basSaatStr = s % 1 === 0 ? `${s}:00` : `${Math.floor(s)}:30`;
         
         let rowHtml = `<tr class='border-b last:border-0'>`;
         rowHtml += `<td class='p-3 font-bold bg-gray-50 text-gray-400 text-xs border-r text-center align-top'>${basSaatStr}</td>`;
         
         for (let g = 1; g <= 7; g++) {
-            // Eğer gün tatilse gri yap
             const tatilMi = tatiller.includes(g);
             const bgClass = tatilMi ? "bg-gray-100" : "";
-            
-            // Hücre ID'si yine aynı formatta: hucre-GUN-SAAT
             rowHtml += `<td id="hucre-${g}-${s}" class="p-0 border-r min-h-[50px] relative ${bgClass}"></td>`;
         }
         rowHtml += "</tr>";
         tbody.innerHTML += rowHtml;
     }
 
-    // Dropdown (Ders ekleme) saatlerini de güncelle
     const saatSelect = document.getElementById("baslangic");
     if(saatSelect) {
         saatSelect.innerHTML = "";
@@ -239,7 +276,6 @@ function verileriBuluttanDinle() {
         const veri = snapshot.val();
         dersler = veri ? Object.keys(veri).map(key => ({ id: key, ...veri[key] })) : [];
         
-        // Eğer takvim sayfası açıksa çiz
         if(document.getElementById("takvimSayfa").style.display !== "none") {
             tabloyuTemizle();
             dersler.forEach(ders => dersCiz(ders));
@@ -267,7 +303,8 @@ function panelOzetiniGuncelle() {
     const aylikDersVerisi = Array(12).fill(0);
 
     const benzersizOgrenciler = [...new Set(dersler.map(d => d.ogrenci))];
-    document.getElementById("panel-toplamOgrenci").innerText = benzersizOgrenciler.length;
+    const toplamOgrenciEl = document.getElementById("panel-toplamOgrenci");
+    if(toplamOgrenciEl) toplamOgrenciEl.innerText = benzersizOgrenciler.length;
 
     kazancKayitlari.forEach(k => {
         const d = new Date(k.tarih);
@@ -287,25 +324,29 @@ function panelOzetiniGuncelle() {
         }
     });
 
-    document.getElementById("panel-buAyDers").innerText = buAyDersSayisi;
-    document.getElementById("panel-kazanc").innerText = "₺" + buAyKazanc.toFixed(0);
-    document.getElementById("panel-bekleyen").innerText = "₺" + bekleyenOdeme.toFixed(0);
+    const elBuAyDers = document.getElementById("panel-buAyDers");
+    const elKazanc = document.getElementById("panel-kazanc");
+    const elBekleyen = document.getElementById("panel-bekleyen");
+
+    if(elBuAyDers) elBuAyDers.innerText = buAyDersSayisi;
+    if(elKazanc) elKazanc.innerText = "₺" + buAyKazanc.toFixed(0);
+    if(elBekleyen) elBekleyen.innerText = "₺" + bekleyenOdeme.toFixed(0);
 
     paneliCiz(aylikKazancVerisi, aylikDersVerisi);
 }
 
-/* === script.js içindeki paneliCiz fonksiyonunu bununla değiştir === */
-
+// --- YENİLENMİŞ GRAFİK ÇİZİM FONKSİYONU ---
 function paneliCiz(kazancData, dersData) {
+    if(!document.getElementById('kazancChart')) return;
+
     const aylar = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
     
-    // --- 1. KAZANÇ GRAFİĞİ (Modern Line Chart) ---
+    // 1. KAZANÇ GRAFİĞİ
     const ctx1 = document.getElementById('kazancChart').getContext('2d');
     
-    // Gradyan (Gölge) Oluşturma
     const gradient = ctx1.createLinearGradient(0, 0, 0, 300);
-    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)'); // Üstte Mavi
-    gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)'); // Altta Şeffaf
+    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)'); 
+    gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)'); 
 
     if(kazancGrafik) kazancGrafik.destroy();
     
@@ -316,8 +357,8 @@ function paneliCiz(kazancData, dersData) {
             datasets: [{ 
                 label: 'Kazanç (₺)', 
                 data: kazancData, 
-                borderColor: '#3b82f6', // Ana Mavi
-                backgroundColor: gradient, // Altına gradyan
+                borderColor: '#3b82f6', 
+                backgroundColor: gradient, 
                 borderWidth: 3,
                 pointBackgroundColor: '#ffffff',
                 pointBorderColor: '#3b82f6',
@@ -325,43 +366,21 @@ function paneliCiz(kazancData, dersData) {
                 pointRadius: 4,
                 pointHoverRadius: 6,
                 fill: true, 
-                tension: 0.4 // Çizgiyi yumuşatır (kıvrımlı yapar)
+                tension: 0.4 
             }]
         },
         options: { 
             responsive: true, 
             maintainAspectRatio: false,
-            plugins: { 
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: '#1f2937',
-                    padding: 12,
-                    cornerRadius: 8,
-                    displayColors: false,
-                    callbacks: {
-                        label: function(context) {
-                            return '₺' + context.parsed.y;
-                        }
-                    }
-                }
-            },
+            plugins: { legend: { display: false } },
             scales: {
-                y: { 
-                    beginAtZero: true, 
-                    grid: { color: '#f3f4f6', borderDash: [5, 5] }, 
-                    border: { display: false },
-                    ticks: { font: { size: 10, weight: 'bold' }, color: '#9ca3af' }
-                },
-                x: { 
-                    grid: { display: false }, 
-                    border: { display: false },
-                    ticks: { font: { size: 10 }, color: '#9ca3af' }
-                }
+                y: { beginAtZero: true, grid: { borderDash: [5, 5] }, border: { display: false } },
+                x: { grid: { display: false }, border: { display: false } }
             }
         }
     });
 
-    // --- 2. DERS YOĞUNLUĞU (Modern Bar Chart) ---
+    // 2. DERS GRAFİĞİ
     const ctx2 = document.getElementById('dersChart').getContext('2d');
     
     if(dersGrafik) dersGrafik.destroy();
@@ -373,36 +392,18 @@ function paneliCiz(kazancData, dersData) {
             datasets: [{ 
                 label: 'Ders Sayısı', 
                 data: dersData, 
-                backgroundColor: '#6366f1', // İndigo Rengi
-                borderRadius: 6, // Çubukların köşelerini yuvarla
-                barThickness: 12, // Çubuk inceliği
-                hoverBackgroundColor: '#4f46e5'
+                backgroundColor: '#6366f1', 
+                borderRadius: 6, 
+                barThickness: 12
             }]
         },
         options: { 
             responsive: true, 
             maintainAspectRatio: false,
-            plugins: { 
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: '#1f2937',
-                    padding: 12,
-                    cornerRadius: 8,
-                    displayColors: false
-                }
-            },
+            plugins: { legend: { display: false } },
             scales: {
-                y: { 
-                    beginAtZero: true, 
-                    grid: { color: '#f3f4f6', borderDash: [5, 5] }, 
-                    border: { display: false },
-                    ticks: { font: { size: 10, weight: 'bold' }, color: '#9ca3af', stepSize: 1 }
-                },
-                x: { 
-                    grid: { display: false }, 
-                    border: { display: false },
-                    ticks: { font: { size: 10 }, color: '#9ca3af' }
-                }
+                y: { beginAtZero: true, grid: { borderDash: [5, 5] }, border: { display: false } },
+                x: { grid: { display: false }, border: { display: false } }
             }
         }
     });
@@ -413,7 +414,10 @@ function paneliCiz(kazancData, dersData) {
    ========================================= */
 
 function kazancTablosuCiz() {
-    const yil = Number(document.getElementById("yilSecim").value);
+    const yilElement = document.getElementById("yilSecim");
+    if(!yilElement) return;
+    
+    const yil = Number(yilElement.value);
     const aylikToplam = Array(12).fill(0);
     const ogrenciToplam = {};
 
@@ -429,19 +433,6 @@ function kazancTablosuCiz() {
             }
         }
     });
-
-    const theadRow = document.querySelector("#kazancTablo thead tr");
-    if (theadRow) {
-        const aylar = ["OCA", "ŞUB", "MAR", "NİS", "MAY", "HAZ", "TEM", "AĞU", "EYL", "EKİ", "KAS", "ARA"];
-        theadRow.innerHTML = `<th class="p-3 text-left bg-gray-100">ÖĞRENCİ</th>`;
-        aylar.forEach((ayAd, index) => {
-            const th = document.createElement("th");
-            th.innerText = ayAd;
-            th.className = "cursor-pointer hover:bg-blue-600 hover:text-white transition p-2 bg-gray-50 text-blue-600 font-black text-center";
-            th.onclick = () => ayDetayiniGoster(index, yil);
-            theadRow.appendChild(th);
-        });
-    }
 
     const tbody = document.querySelector("#kazancTablo tbody");
     if(!tbody) return;
@@ -535,7 +526,6 @@ function dersEkle() {
     const baslangic = parseFloat(document.getElementById("baslangic").value);
     const sure = parseFloat(document.getElementById("sure").value);
 
-    // Ayarları kontrol et: Tatil günü mü?
     if (globalAyarlar && globalAyarlar.tatilGunleri && globalAyarlar.tatilGunleri.includes(Number(gun))) {
         alert("Seçtiğiniz gün tatil olarak ayarlanmış! Ders ekleyemezsiniz.");
         return;
@@ -547,11 +537,9 @@ function dersEkle() {
 }
 
 function dersCiz(ders) {
-    // Tablo henüz çizilmediyse veya hücre yoksa bekleme yapma, abort et
     const hucre = document.getElementById(`hucre-${ders.gun}-${ders.baslangic}`);
-    const tablo = document.querySelector("#takvimBody");
     
-    if (!hucre || !tablo) return;
+    if (!hucre) return;
 
     const topPos = hucre.offsetTop;
     const leftPos = hucre.offsetLeft;
@@ -569,42 +557,20 @@ function dersCiz(ders) {
     `;
     dersBlok.dataset.id = ders.id;
 
-    Object.assign(dersBlok.style, {
-        position: "absolute",
-        top: (topPos + 1) + "px",
-        left: (leftPos + 1) + "px",
-        width: (width - 2) + "px",
-        height: (height * parcaSayisi - 2) + "px",
-        zIndex: "20"
-    });
+    // Hücre içine göre göreceli konumlandırma
+    dersBlok.style.position = "absolute";
+    dersBlok.style.top = "0px";
+    dersBlok.style.left = "0px";
+    dersBlok.style.width = "100%";
+    dersBlok.style.height = `calc(${parcaSayisi * 100}% + ${parcaSayisi - 1}px)`;
+    dersBlok.style.zIndex = "20";
     
     dersBlok.onclick = function (e) { 
         e.stopPropagation();
         secimModalAc(this); 
     };
     
-    // Tablonun parent'ına eklemiyoruz, direkt TD'nin içine eklersek kayma yapabilir.
-    // En sağlıklısı tablo body'sine eklemektir (pozisyon absolute olduğu için)
-    // Ancak relative parent gerekli. Tablo yapısında td içi en güvenlisi.
-    // Üstteki kodda TD relative yapıldı, o yüzden TD içine append ediyoruz:
-    // DÜZELTME: TD içine append edersek overflow hidden yiyebilir, tablo container'a ekleyelim mi?
-    // Hayır, mevcut yapıda document body veya table parent'a eklemek koordinat karmaşası yaratır.
-    // TD içine ekleyelim ama TD'nin style'ı relative olmalı.
-    
-    // Kodda td'ye relative eklemiştim: class="... relative" -> Sorun yok.
     hucre.appendChild(dersBlok);
-    
-    // Ama bekle, absolute pozisyonu top/left vererek yapıyoruz, TD içine koyarsak
-    // top:0 left:0 olması lazım.
-    // Eğer TD içine koyacaksak style şöyle güncellenmeli:
-    dersBlok.style.top = "0px";
-    dersBlok.style.left = "0px";
-    dersBlok.style.width = "100%";
-    dersBlok.style.height = (100 * parcaSayisi) + "%";
-    // Yükseklik % olarak biraz riskli olabilir (border'lar yüzünden), ama deneyelim.
-    // Yok, en garantisi piksel hesabı ve tablo üzerine koymak ama o çok kompleks.
-    // En basiti:
-    dersBlok.style.height = `calc(${parcaSayisi * 100}% + ${parcaSayisi}px)`; // Kabaca ayar
 }
 
 function tabloyuTemizle() {
@@ -703,48 +669,32 @@ function raporUret() {
    8. AYARLARI DÜZENLEME VE GÜNCELLEME
    ========================================= */
 
-/* =========================================
-   8. AYARLARI DÜZENLEME VE GÜNCELLEME
-   ========================================= */
-
 function tercihleriAc() {
     if (!globalAyarlar) return;
 
-    // 1. Verileri Doldur
     document.getElementById("prefHocaAd").value = globalAyarlar.ad || "";
     document.getElementById("prefBrans").value = globalAyarlar.brans || "";
     document.getElementById("prefMesaiBasla").value = globalAyarlar.mesaiBasla || "13";
     document.getElementById("prefMesaiBitis").value = globalAyarlar.mesaiBitis || "22";
 
-    // 2. Tatil Günlerini Boya
-    document.querySelectorAll('.gun-btn').forEach(btn => {
-        btn.classList.remove('bg-red-500', 'text-white', 'border-red-500', 'secili-tatil');
-        btn.classList.add('text-gray-400');
+    document.querySelectorAll('.gun-btn-mobil').forEach(btn => {
+        btn.classList.remove('bg-blue-600', 'text-white', 'secili-tatil');
+        btn.classList.add('bg-white', 'text-gray-400');
     });
 
     if (globalAyarlar.tatilGunleri) {
         globalAyarlar.tatilGunleri.forEach(gunIndex => {
-            const btn = document.querySelector(`.gun-btn[data-gun="${gunIndex}"]`);
+            const btn = document.querySelector(`.gun-btn-mobil[data-gun="${gunIndex}"]`);
             if (btn) {
-                btn.classList.add('bg-red-500', 'text-white', 'border-red-500', 'secili-tatil');
-                btn.classList.remove('text-gray-400');
+                btn.classList.add('bg-blue-600', 'text-white', 'secili-tatil');
+                btn.classList.remove('bg-white', 'text-gray-400');
             }
         });
     }
 
-    // 3. Sayfa Geçişi
-    document.getElementById("panelSayfa").style.display = "none";
-    document.getElementById("takvimSayfa").style.display = "none";
-    document.getElementById("kazancSayfa").style.display = "none";
-    document.getElementById("raporSayfa").style.display = "none";
-    
-    // Header'ı gizlemiyoruz, çünkü kullanıcı çıkış yapmak isteyebilir
-    document.getElementById("tercihlerSayfa").style.display = "block";
+    document.getElementById("tercihlerSayfa").style.display = "flex";
 }
 
-// Yeni Kapatma Fonksiyonu (Sağ üstteki X butonu için)
 function tercihKapat() {
-    // Ayarları kapat, panele dön
     document.getElementById("tercihlerSayfa").style.display = "none";
-    sayfaGoster('panel');
 }
