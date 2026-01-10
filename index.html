@@ -64,103 +64,107 @@
 
     <div id="anaUygulama" style="display:none;">
 
- <div id="tercihlerSayfa" class="p-4 md:p-8 max-w-3xl mx-auto" style="display:none;">
-        <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
-            <div class="bg-blue-600 p-8 text-center">
-                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-lg">⚙️</div>
-                <h2 class="text-2xl font-black text-white tracking-tight">Öğretmen Profil Ayarları</h2>
-                <p class="text-blue-100 text-sm font-medium mt-2">Ders programınızı sizin kurallarınıza göre oluşturalım.</p>
-            </div>
+<div id="tercihlerSayfa" class="p-4 md:p-6 max-w-2xl mx-auto" style="display:none;">
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+        
+        <div class="bg-blue-600 p-5 relative text-center">
             
-            <div class="p-8 space-y-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Adınız Soyadınız</label>
-                        <input type="text" id="prefHocaAd" class="w-full p-4 bg-gray-50 rounded-xl font-bold text-gray-800 focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Örn: Munise Hoca">
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">Branşınız</label>
-                        <input type="text" id="prefBrans" class="w-full p-4 bg-gray-50 rounded-xl font-bold text-gray-800 focus:ring-2 focus:ring-blue-500 outline-none transition" placeholder="Örn: Matematik">
-                    </div>
-                </div>
-
-                <div class="p-6 bg-blue-50 rounded-2xl border border-blue-100">
-                    <h3 class="font-black text-blue-800 mb-4 flex items-center gap-2">⏰ Mesai Saatleri</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-[10px] font-bold text-blue-400 uppercase">Başlangıç</label>
-                            <select id="prefMesaiBasla" class="w-full p-3 rounded-xl font-bold text-gray-700 outline-none">
-                                <option value="9">09:00</option><option value="10">10:00</option>
-                                <option value="11">11:00</option><option value="12">12:00</option>
-                                <option value="13" selected>13:00</option><option value="14">14:00</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-bold text-blue-400 uppercase">Bitiş</label>
-                            <select id="prefMesaiBitis" class="w-full p-3 rounded-xl font-bold text-gray-700 outline-none">
-                                <option value="17">17:00</option><option value="18">18:00</option>
-                                <option value="19">19:00</option><option value="20">20:00</option>
-                                <option value="21">21:00</option><option value="22" selected>22:00</option>
-                                <option value="23">23:00</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-3">Tatil Günleri (Seçmek için tıklayın)</label>
-                    <div class="flex flex-wrap gap-2" id="prefGunler">
-                        <button onclick="gunSec(this)" data-gun="1" class="gun-btn flex-1 p-3 rounded-xl border-2 border-gray-100 font-bold text-gray-400 hover:border-blue-200 transition">Pzt</button>
-                        <button onclick="gunSec(this)" data-gun="2" class="gun-btn flex-1 p-3 rounded-xl border-2 border-gray-100 font-bold text-gray-400 hover:border-blue-200 transition">Sal</button>
-                        <button onclick="gunSec(this)" data-gun="3" class="gun-btn flex-1 p-3 rounded-xl border-2 border-gray-100 font-bold text-gray-400 hover:border-blue-200 transition">Çar</button>
-                        <button onclick="gunSec(this)" data-gun="4" class="gun-btn flex-1 p-3 rounded-xl border-2 border-gray-100 font-bold text-gray-400 hover:border-blue-200 transition">Per</button>
-                        <button onclick="gunSec(this)" data-gun="5" class="gun-btn flex-1 p-3 rounded-xl border-2 border-gray-100 font-bold text-gray-400 hover:border-blue-200 transition">Cum</button>
-                        <button onclick="gunSec(this)" data-gun="6" class="gun-btn flex-1 p-3 rounded-xl border-2 border-gray-100 font-bold text-gray-400 hover:border-blue-200 transition">Cmt</button>
-                        <button onclick="gunSec(this)" data-gun="7" class="gun-btn flex-1 p-3 rounded-xl border-2 border-gray-100 font-bold text-gray-400 hover:border-blue-200 transition">Paz</button>
-                    </div>
-                </div>
-
-                <button onclick="ayarlariKaydet()" class="w-full bg-gray-900 text-white font-black py-5 rounded-2xl text-lg hover:bg-black hover:scale-[1.02] transition shadow-xl">
-                    Kurulumu Tamamla ve Başla 🚀
-                </button>
-            </div>
-        </div>
-    </div>       
-
-<header class="bg-white border-b sticky top-0 z-50 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <div class="relative w-10 h-10 flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl shadow-lg overflow-hidden">
-                <svg viewBox="0 0 100 100" class="w-7 h-7 fill-white">
-                    <path d="M25 20 C 50 20, 75 35, 75 55 C 75 75, 50 85, 25 85 Z" opacity="0.3"></path>
-                    <path d="M30 25 L30 80 L45 80 C 65 80, 75 70, 75 52 C 75 35, 65 25, 45 25 Z"></path>
-                    <path d="M30 45 L40 52 L30 59 Z" fill="#4F46E5"></path>
-                </svg>
-            </div>
-            <div class="flex flex-col leading-tight">
-                <span class="font-black text-xl tracking-tighter text-gray-800">DERS<span class="text-blue-600">TAKİP</span></span>
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Munise Hoca</span>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-3">
-            <button onclick="tercihleriAc()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs md:text-sm font-bold px-4 py-2 rounded-xl transition duration-300 flex items-center gap-2 group">
-                <span class="group-hover:rotate-90 transition-transform duration-500">⚙️</span>
-                <span class="hidden md:inline">Tercihlerim</span>
+            <button onclick="tercihKapat()" class="absolute top-4 right-4 bg-blue-500 hover:bg-blue-400 text-white w-8 h-8 rounded-full flex items-center justify-center transition shadow-md border border-blue-400">
+                ✕
             </button>
 
-            <button onclick="cikisYap()" class="bg-red-50 text-red-600 text-xs md:text-sm font-bold px-4 py-2 rounded-xl border border-red-100 hover:bg-red-100 transition flex items-center gap-2">
-                <span>Güvenli Çıkış</span>
-                <span>🚪</span>
+            <div class="inline-block p-3 rounded-full bg-blue-500/30 text-white mb-2 backdrop-blur-sm">
+                <span class="text-3xl">⚙️</span>
+            </div>
+            
+            <h2 class="text-xl font-black text-white tracking-tight">Profil Ayarları</h2>
+            <p class="text-blue-100 text-xs font-medium opacity-80">Ders düzeninizi kişiselleştirin.</p>
+        </div>
+        
+        <div class="p-6 md:p-8 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider pl-1">Adınız Soyadınız</label>
+                    <input type="text" id="prefHocaAd" class="w-full p-3 bg-gray-50 rounded-xl font-bold text-gray-700 border-2 border-transparent focus:border-blue-500 focus:bg-white outline-none transition" placeholder="Örn: Munise Hoca">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider pl-1">Branşınız</label>
+                    <input type="text" id="prefBrans" class="w-full p-3 bg-gray-50 rounded-xl font-bold text-gray-700 border-2 border-transparent focus:border-blue-500 focus:bg-white outline-none transition" placeholder="Örn: Matematik">
+                </div>
+            </div>
+
+            <div class="p-5 bg-blue-50/50 rounded-2xl border border-blue-100/50">
+                <h3 class="font-black text-blue-800 text-sm mb-3 flex items-center gap-2">⏰ Mesai Saatleri</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[9px] font-bold text-blue-400 uppercase">Başlangıç</label>
+                        <select id="prefMesaiBasla" class="w-full p-2.5 rounded-xl font-bold text-sm text-gray-700 outline-none border border-blue-100">
+                            <option value="9">09:00</option><option value="10">10:00</option>
+                            <option value="11">11:00</option><option value="12">12:00</option>
+                            <option value="13" selected>13:00</option><option value="14">14:00</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold text-blue-400 uppercase">Bitiş</label>
+                        <select id="prefMesaiBitis" class="w-full p-2.5 rounded-xl font-bold text-sm text-gray-700 outline-none border border-blue-100">
+                            <option value="17">17:00</option><option value="18">18:00</option>
+                            <option value="19">19:00</option><option value="20">20:00</option>
+                            <option value="21">21:00</option><option value="22" selected>22:00</option>
+                            <option value="23">23:00</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2 pl-1">Tatil Günleri (Ders Eklenemez)</label>
+                <div class="flex flex-wrap gap-2" id="prefGunler">
+                    <button onclick="gunSec(this)" data-gun="1" class="gun-btn flex-1 py-2 px-1 rounded-lg border border-gray-200 text-xs font-bold text-gray-400 hover:border-blue-400 hover:text-blue-500 transition">Pzt</button>
+                    <button onclick="gunSec(this)" data-gun="2" class="gun-btn flex-1 py-2 px-1 rounded-lg border border-gray-200 text-xs font-bold text-gray-400 hover:border-blue-400 hover:text-blue-500 transition">Sal</button>
+                    <button onclick="gunSec(this)" data-gun="3" class="gun-btn flex-1 py-2 px-1 rounded-lg border border-gray-200 text-xs font-bold text-gray-400 hover:border-blue-400 hover:text-blue-500 transition">Çar</button>
+                    <button onclick="gunSec(this)" data-gun="4" class="gun-btn flex-1 py-2 px-1 rounded-lg border border-gray-200 text-xs font-bold text-gray-400 hover:border-blue-400 hover:text-blue-500 transition">Per</button>
+                    <button onclick="gunSec(this)" data-gun="5" class="gun-btn flex-1 py-2 px-1 rounded-lg border border-gray-200 text-xs font-bold text-gray-400 hover:border-blue-400 hover:text-blue-500 transition">Cum</button>
+                    <button onclick="gunSec(this)" data-gun="6" class="gun-btn flex-1 py-2 px-1 rounded-lg border border-gray-200 text-xs font-bold text-gray-400 hover:border-blue-400 hover:text-blue-500 transition">Cmt</button>
+                    <button onclick="gunSec(this)" data-gun="7" class="gun-btn flex-1 py-2 px-1 rounded-lg border border-gray-200 text-xs font-bold text-red-300 hover:border-red-400 hover:text-red-500 transition">Paz</button>
+                </div>
+            </div>
+
+            <button onclick="ayarlariKaydet()" class="w-full bg-gray-900 text-white font-black py-4 rounded-xl text-md hover:bg-black hover:scale-[1.01] transition shadow-lg flex items-center justify-center gap-2">
+                <span>Ayarları Kaydet ve Güncelle</span>
+                <span>🚀</span>
             </button>
         </div>
     </div>
+</div>    
 
-    <nav id="nav-bar" class="max-w-7xl mx-auto px-4 flex gap-6 overflow-x-auto no-scrollbar pt-2">
-        <button onclick="sayfaGoster('panel')" id="nav-panel" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Panel</button>
-        <button onclick="sayfaGoster('takvim')" id="nav-takvim" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Program</button>
-        <button onclick="sayfaGoster('kazanc')" id="nav-kazanc" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Ders İşle</button>
-        <button onclick="sayfaGoster('rapor')" id="nav-rapor" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all">Raporlar</button>
+<header class="bg-white border-b sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="relative w-9 h-9 flex items-center justify-center bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl shadow-lg overflow-hidden">
+                <span class="text-white font-black text-lg">M</span>
+            </div>
+            <div class="flex flex-col leading-tight">
+                <span class="font-black text-lg tracking-tighter text-gray-800">DERS<span class="text-blue-600">TAKİP</span></span>
+                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Munise Hoca</span>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button onclick="tercihleriAc()" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 p-2.5 rounded-xl transition duration-300 flex items-center gap-2 group border border-indigo-100">
+                <span class="text-xl group-hover:rotate-90 transition-transform duration-500">⚙️</span>
+                <span class="hidden md:inline font-bold text-sm">Tercihlerim</span>
+            </button>
+
+            <button onclick="cikisYap()" class="bg-red-50 hover:bg-red-100 text-red-500 p-2.5 rounded-xl transition duration-300 flex items-center gap-2 border border-red-100" title="Güvenli Çıkış">
+                <span class="text-xl">🚪</span> <span class="hidden md:inline font-bold text-sm">Çıkış</span> </button>
+        </div>
+    </div>
+
+    <nav id="nav-bar" class="max-w-7xl mx-auto px-4 flex gap-6 overflow-x-auto no-scrollbar pt-2 pb-1">
+        <button onclick="sayfaGoster('panel')" id="nav-panel" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all whitespace-nowrap">Panel</button>
+        <button onclick="sayfaGoster('takvim')" id="nav-takvim" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all whitespace-nowrap">Program</button>
+        <button onclick="sayfaGoster('kazanc')" id="nav-kazanc" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all whitespace-nowrap">Ders İşle</button>
+        <button onclick="sayfaGoster('rapor')" id="nav-rapor" class="nav-btn py-3 px-1 border-b-2 border-transparent text-gray-500 font-bold text-sm transition-all whitespace-nowrap">Raporlar</button>
     </nav>
 </header>
 

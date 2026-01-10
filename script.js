@@ -626,59 +626,48 @@ function raporUret() {
    8. AYARLARI DÜZENLEME VE GÜNCELLEME
    ========================================= */
 
+/* =========================================
+   8. AYARLARI DÜZENLEME VE GÜNCELLEME
+   ========================================= */
+
 function tercihleriAc() {
     if (!globalAyarlar) return;
 
-    // 1. Mevcut Verileri Kutucuklara Doldur
+    // 1. Verileri Doldur
     document.getElementById("prefHocaAd").value = globalAyarlar.ad || "";
     document.getElementById("prefBrans").value = globalAyarlar.brans || "";
-    
-    // Select kutularını seçili hale getir
     document.getElementById("prefMesaiBasla").value = globalAyarlar.mesaiBasla || "13";
     document.getElementById("prefMesaiBitis").value = globalAyarlar.mesaiBitis || "22";
 
-    // 2. Tatil Günlerini Görsel Olarak İşaretle
-    // Önce temizle
+    // 2. Tatil Günlerini Boya
     document.querySelectorAll('.gun-btn').forEach(btn => {
         btn.classList.remove('bg-red-500', 'text-white', 'border-red-500', 'secili-tatil');
-        btn.classList.add('text-gray-400'); // Varsayılan renk
+        btn.classList.add('text-gray-400');
     });
 
-    // Kayıtlı günleri boya
     if (globalAyarlar.tatilGunleri) {
         globalAyarlar.tatilGunleri.forEach(gunIndex => {
             const btn = document.querySelector(`.gun-btn[data-gun="${gunIndex}"]`);
             if (btn) {
-                // Manuel tıklama efekti veriyoruz
                 btn.classList.add('bg-red-500', 'text-white', 'border-red-500', 'secili-tatil');
                 btn.classList.remove('text-gray-400');
             }
         });
     }
 
-    // 3. Diğer Sayfaları Gizle, Ayarlar Sayfasını Aç
-    const sayfalar = ["panelSayfa", "takvimSayfa", "kazancSayfa", "raporSayfa"];
-    sayfalar.forEach(s => {
-        const el = document.getElementById(s);
-        if(el) el.style.display = "none";
-    });
+    // 3. Sayfa Geçişi
+    document.getElementById("panelSayfa").style.display = "none";
+    document.getElementById("takvimSayfa").style.display = "none";
+    document.getElementById("kazancSayfa").style.display = "none";
+    document.getElementById("raporSayfa").style.display = "none";
+    
+    // Header'ı gizlemiyoruz, çünkü kullanıcı çıkış yapmak isteyebilir
+    document.getElementById("tercihlerSayfa").style.display = "block";
+}
 
-    // Ayarlar sayfasını göster
-    const tercihSayfasi = document.getElementById("tercihlerSayfa");
-    tercihSayfasi.style.display = "block";
-
-    // "Vazgeç" butonu ekleyelim (Eğer zaten ekli değilse)
-    const container = tercihSayfasi.querySelector(".p-8");
-    if (!document.getElementById("btnVazgec")) {
-        const vazgecBtn = document.createElement("button");
-        vazgecBtn.id = "btnVazgec";
-        vazgecBtn.innerText = "Değişiklik Yapmadan Dön 🔙";
-        vazgecBtn.className = "w-full mt-3 py-3 text-gray-400 font-bold text-sm hover:text-gray-600 transition";
-        vazgecBtn.onclick = () => {
-            tercihSayfasi.style.display = "none";
-            sayfaGoster('panel'); // Panele geri dön
-        };
-        // Kaydet butonunun altına ekle
-        container.appendChild(vazgecBtn);
-    }
+// Yeni Kapatma Fonksiyonu (Sağ üstteki X butonu için)
+function tercihKapat() {
+    // Ayarları kapat, panele dön
+    document.getElementById("tercihlerSayfa").style.display = "none";
+    sayfaGoster('panel');
 }
