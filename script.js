@@ -219,7 +219,7 @@ function ayarlariKaydet() {
 }
 
 /* =========================================
-   4. DİNAMİK TAKVİM OLUŞTURMA (HATA ÖNLEYİCİ VERSİYON)
+   4. DİNAMİK TAKVİM OLUŞTURMA
    ========================================= */
 
 function takvimOlustur() {
@@ -227,14 +227,11 @@ function takvimOlustur() {
     if(!tbody) return;
     tbody.innerHTML = ""; 
 
-    // ÖNEMLİ: Gelen verileri kesinlikle Sayıya (Number) çeviriyoruz.
-    // Yoksa "13" + 0.5 = "130.5" olur ve döngü çalışmaz.
-    const basla = globalAyarlar ? Number(globalAyarlar.mesaiBasla) : 13;
-    const bitis = globalAyarlar ? Number(globalAyarlar.mesaiBitis) : 22;
+    const basla = globalAyarlar ? globalAyarlar.mesaiBasla : 13;
+    const bitis = globalAyarlar ? globalAyarlar.mesaiBitis : 22;
     const tatiller = globalAyarlar ? (globalAyarlar.tatilGunleri || []) : [];
 
-    // Döngü başlangıcı
-    for (let s = basla; s < bitis + 0.1; s += 0.5) {
+    for (let s = basla; s < bitis; s += 0.5) {
         const basSaatStr = s % 1 === 0 ? `${s}:00` : `${Math.floor(s)}:30`;
         
         let rowHtml = `<tr class='border-b last:border-0'>`;
@@ -243,7 +240,6 @@ function takvimOlustur() {
         for (let g = 1; g <= 7; g++) {
             const tatilMi = tatiller.includes(g);
             const bgClass = tatilMi ? "bg-gray-100" : "";
-            // Hücre ID oluşturma
             rowHtml += `<td id="hucre-${g}-${s}" class="p-0 border-r min-h-[50px] relative ${bgClass}"></td>`;
         }
         rowHtml += "</tr>";
@@ -274,12 +270,9 @@ function verileriBuluttanDinle() {
         const veri = snapshot.val();
         dersler = veri ? Object.keys(veri).map(key => ({ id: key, ...veri[key] })) : [];
         
-        // Eğer takvim sayfası o an açıksa anında çiz
         if(document.getElementById("takvimSayfa").style.display !== "none") {
             tabloyuTemizle();
-            setTimeout(() => { // Ufak bir gecikme ekledim, tablo oluşsun diye
-                dersler.forEach(ders => dersCiz(ders));
-            }, 100);
+            dersler.forEach(ders => dersCiz(ders));
         }
         panelOzetiniGuncelle();
     });
