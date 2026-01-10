@@ -142,44 +142,56 @@
             <div id="panelSayfa" class="sayfa-bolum">
 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-8">
     
-    <div class="bg-white p-3 md:p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center border-l-4 border-l-blue-400">
-        <div>
-            <p class="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Öğrenciler</p>
-            <h3 id="panel-toplamOgrenci" class="text-xl md:text-3xl font-black text-gray-800 tracking-tighter">0</h3>
-        </div>
-        <div class="flex w-8 h-8 md:w-12 md:h-12 bg-blue-50/50 rounded-full items-center justify-center text-blue-500 text-sm md:text-lg border border-blue-100 shrink-0">
+    <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group h-32 flex flex-col justify-between transition-all hover:shadow-md">
+        <div class="absolute -right-4 -bottom-4 text-8xl opacity-10 text-blue-600 group-hover:scale-110 transition-transform duration-500 select-none grayscale-0">
             👥
         </div>
+        
+        <div class="relative z-10">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Toplam Öğrenci</p>
+            <h3 id="panel-toplamOgrenci" class="text-3xl font-black text-gray-800 tracking-tight">0</h3>
+        </div>
+        
+        <div class="w-12 h-1.5 bg-blue-500 rounded-full mt-auto relative z-10 opacity-80"></div>
     </div>
 
-    <div class="bg-white p-3 md:p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center border-l-4 border-l-indigo-400">
-        <div>
-            <p class="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Dersler</p>
-            <h3 id="panel-buAyDers" class="text-xl md:text-3xl font-black text-gray-800 tracking-tighter">0</h3>
-        </div>
-        <div class="flex w-8 h-8 md:w-12 md:h-12 bg-indigo-50/50 rounded-full items-center justify-center text-indigo-500 text-sm md:text-lg border border-indigo-100 shrink-0">
+    <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group h-32 flex flex-col justify-between transition-all hover:shadow-md">
+        <div class="absolute -right-4 -bottom-4 text-8xl opacity-10 text-indigo-600 group-hover:scale-110 transition-transform duration-500 select-none">
             ✏️
         </div>
+        
+        <div class="relative z-10">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Bu Ay Ders</p>
+            <h3 id="panel-buAyDers" class="text-3xl font-black text-gray-800 tracking-tight">0</h3>
+        </div>
+        
+        <div class="w-12 h-1.5 bg-indigo-500 rounded-full mt-auto relative z-10 opacity-80"></div>
     </div>
 
-    <div class="bg-white p-3 md:p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center border-l-4 border-l-emerald-400">
-        <div>
-            <p class="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Kazanç</p>
-            <h3 id="panel-kazanc" class="text-xl md:text-3xl font-black text-gray-800 tracking-tighter">₺0</h3>
-        </div>
-        <div class="flex w-8 h-8 md:w-12 md:h-12 bg-emerald-50/50 rounded-full items-center justify-center text-emerald-500 text-sm md:text-lg border border-emerald-100 shrink-0">
+    <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group h-32 flex flex-col justify-between transition-all hover:shadow-md">
+        <div class="absolute -right-6 -bottom-6 text-[100px] opacity-10 text-emerald-600 group-hover:scale-110 transition-transform duration-500 select-none font-serif">
             ₺
         </div>
+        
+        <div class="relative z-10">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Tahsil Edilen</p>
+            <h3 id="panel-kazanc" class="text-3xl font-black text-emerald-600 tracking-tight">₺0</h3>
+        </div>
+        
+        <div class="w-12 h-1.5 bg-emerald-500 rounded-full mt-auto relative z-10 opacity-80"></div>
     </div>
 
-    <div class="bg-white p-3 md:p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center border-l-4 border-l-rose-300">
-        <div>
-            <p class="text-[8px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Bekleyen</p>
-            <h3 id="panel-bekleyen" class="text-xl md:text-3xl font-black text-rose-500 tracking-tighter uppercase">₺0</h3>
-        </div>
-        <div class="flex w-8 h-8 md:w-12 md:h-12 bg-rose-50/40 rounded-full items-center justify-center text-rose-400 text-sm md:text-lg border border-rose-100 shrink-0">
+    <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group h-32 flex flex-col justify-between transition-all hover:shadow-md">
+        <div class="absolute -right-4 -bottom-4 text-8xl opacity-10 text-rose-500 group-hover:scale-110 transition-transform duration-500 select-none">
             ⌛
         </div>
+        
+        <div class="relative z-10">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Bekleyen Ödeme</p>
+            <h3 id="panel-bekleyen" class="text-3xl font-black text-rose-500 tracking-tight">₺0</h3>
+        </div>
+        
+        <div class="w-12 h-1.5 bg-rose-500 rounded-full mt-auto relative z-10 opacity-80"></div>
     </div>
 
 </div>
