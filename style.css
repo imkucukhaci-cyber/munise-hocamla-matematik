@@ -151,3 +151,19 @@ canvas {
     max-height: 100% !important;
     max-width: 100% !important;
 }
+
+/* =========================================
+   5. MOBİL İÇİN ÖZEL DÜZELTMELER (YENİ EKLENDİ)
+   ========================================= */
+@media (max-width: 768px) {
+    /* Grafiklerin bulunduğu ızgarayı (grid) hedefle */
+    .grid-cols-1.lg\:grid-cols-2 {
+        gap: 32px !important; /* Kutular arasındaki boşluğu açar */
+    }
+
+    /* Grafik kutusunun yüksekliğini mobilde biraz azalt, daha şık dursun */
+    .h-\[350px\] {
+        height: 300px !important; 
+        margin-bottom: 16px; /* Altına ekstra güvenlik payı */
+    }
+}
