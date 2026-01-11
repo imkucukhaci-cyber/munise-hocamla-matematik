@@ -332,54 +332,91 @@ function panelOzetiniGuncelle() {
     paneliCiz(aylikKazancVerisi, aylikDersVerisi);
 }
 
-// --- YENİLENMİŞ GRAFİK ÇİZİM FONKSİYONU ---
+// --- YENİLENMİŞ, MİNİMALİST VE ŞIK GRAFİK ÇİZİMİ ---
 function paneliCiz(kazancData, dersData) {
+    // Eğer grafik alanı yoksa işlemi durdur
     if(!document.getElementById('kazancChart')) return;
 
-    const aylar = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+    const aylar = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
     
-    // 1. KAZANÇ GRAFİĞİ
+    // ------------------------------------------
+    // 1. KAZANÇ GRAFİĞİ (Modern & Minimalist)
+    // ------------------------------------------
     const ctx1 = document.getElementById('kazancChart').getContext('2d');
     
-    const gradient = ctx1.createLinearGradient(0, 0, 0, 300);
-    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)'); 
-    gradient.addColorStop(1, 'rgba(59, 130, 246, 0.0)'); 
+    // Yeşil Gradyan Oluşturma (Yukarıdan aşağıya solan renk)
+    const gradientKazanc = ctx1.createLinearGradient(0, 0, 0, 400);
+    gradientKazanc.addColorStop(0, 'rgba(16, 185, 129, 0.5)'); // Canlı Zümrüt Yeşili
+    gradientKazanc.addColorStop(1, 'rgba(16, 185, 129, 0.0)'); // Tamamen Şeffaf
 
-    if(kazancGrafik) kazancGrafik.destroy();
+    if(kazancGrafik) kazancGrafik.destroy(); // Eskisini temizle
     
     kazancGrafik = new Chart(ctx1, {
         type: 'line',
         data: {
             labels: aylar,
             datasets: [{ 
-                label: 'Kazanç (₺)', 
+                label: 'Kazanç', 
                 data: kazancData, 
-                borderColor: '#3b82f6', 
-                backgroundColor: gradient, 
+                borderColor: '#10b981', // Çizgi rengi (Emerald-500)
+                backgroundColor: gradientKazanc, // Altındaki dolgu
                 borderWidth: 3,
-                pointBackgroundColor: '#ffffff',
-                pointBorderColor: '#3b82f6',
-                pointBorderWidth: 2,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                fill: true, 
-                tension: 0.4 
+                pointRadius: 0, // Normalde noktaları gizle (Daha temiz görünür)
+                pointHoverRadius: 8, // Üzerine gelince nokta büyüsün
+                pointBackgroundColor: '#fff', // Nokta içi beyaz
+                pointBorderColor: '#10b981', // Nokta kenarı yeşil
+                pointBorderWidth: 3,
+                fill: true, // Altını doldur
+                tension: 0.4 // Çizgiyi yumuşat (Kavisli yap)
             }]
         },
         options: { 
             responsive: true, 
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            plugins: { 
+                legend: { display: false }, // Üstteki etiketi gizle
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    cornerRadius: 8,
+                    displayColors: false, // Renk kutucuğunu gizle
+                    callbacks: {
+                        label: function(context) {
+                            return '₺' + context.raw; // Tooltip'te ₺ işareti olsun
+                        }
+                    }
+                }
+            },
             scales: {
-                y: { beginAtZero: true, grid: { borderDash: [5, 5] }, border: { display: false } },
-                x: { grid: { display: false }, border: { display: false } }
-            }
+                // X Ekseni (Aylar) - GİZLİ
+                x: { 
+                    display: false, // Yazıları ve çizgileri tamamen kapatır
+                    grid: { display: false } 
+                },
+                // Y Ekseni (Sayılar) - GİZLİ ama alt sınır 0
+                y: { 
+                    display: false, // Sayıları kapat
+                    beginAtZero: true, 
+                    grid: { display: false } 
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index',
+            },
         }
     });
 
-    // 2. DERS GRAFİĞİ
+    // ------------------------------------------
+    // 2. DERS YOĞUNLUĞU GRAFİĞİ (Modern Bar)
+    // ------------------------------------------
     const ctx2 = document.getElementById('dersChart').getContext('2d');
     
+    // Mavi Gradyan
+    const gradientDers = ctx2.createLinearGradient(0, 0, 0, 300);
+    gradientDers.addColorStop(0, '#6366f1'); // Indigo
+    gradientDers.addColorStop(1, '#a5b4fc'); // Açık Indigo
+
     if(dersGrafik) dersGrafik.destroy();
     
     dersGrafik = new Chart(ctx2, {
@@ -387,20 +424,36 @@ function paneliCiz(kazancData, dersData) {
         data: {
             labels: aylar,
             datasets: [{ 
-                label: 'Ders Sayısı', 
+                label: 'Ders Adedi', 
                 data: dersData, 
-                backgroundColor: '#6366f1', 
-                borderRadius: 6, 
-                barThickness: 12
+                backgroundColor: gradientDers, 
+                borderRadius: 8, // Barların köşelerini yuvarla
+                barThickness: 16, // Barlar çok kalın olmasın
+                hoverBackgroundColor: '#4338ca' // Üzerine gelince koyulaşsın
             }]
         },
         options: { 
             responsive: true, 
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    padding: 10,
+                    cornerRadius: 8,
+                    displayColors: false
+                }
+            },
             scales: {
-                y: { beginAtZero: true, grid: { borderDash: [5, 5] }, border: { display: false } },
-                x: { grid: { display: false }, border: { display: false } }
+                x: { 
+                    display: false, // Ayları gizle
+                    grid: { display: false } 
+                },
+                y: { 
+                    display: false, // Sayıları gizle
+                    beginAtZero: true, 
+                    grid: { display: false } 
+                }
             }
         }
     });
