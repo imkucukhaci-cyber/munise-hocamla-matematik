@@ -612,6 +612,7 @@ function ayModalKapat() {
 
 function dersEkle() {
     const ogrenci = document.getElementById("ogrenci").value;
+    const iletisim = document.getElementById("iletisim").value; // <--- YENİ: Veriyi al
     const ucret = Number(document.getElementById("ucret").value);
     const gun = document.getElementById("gun").value;
     const baslangic = parseFloat(document.getElementById("baslangic").value);
@@ -623,8 +624,9 @@ function dersEkle() {
     }
 
     if (!ogrenci || !ucret) { alert("Eksik bilgi girdiniz."); return; }
-    database.ref(`kullanicilar/${aktifKullaniciId}/dersler`).push({ ogrenci, ucret, gun, baslangic, sure });
+    database.ref(`kullanicilar/${aktifKullaniciId}/dersler`).push({ ogrenci, iletisim, ucret, gun, baslangic, sure });
     document.getElementById("ogrenci").value = "";
+    document.getElementById("iletisim").value = ""; // <--- YENİ: Temizle
 }
 
 function dersCiz(ders) {
