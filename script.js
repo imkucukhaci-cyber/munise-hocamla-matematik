@@ -162,7 +162,10 @@ function sayfaGoster(sayfaId) {
     }
     if (sayfaId === "rapor") raporOgrencileriYukle();
     if (sayfaId === "kazanc") ogrencileriYukle();
-    if (sayfaId === "panel") panelOzetiniGuncelle();
+    if (sayfaId === "panel") {
+        panelOzetiniGuncelle();
+        karsilamaGuncelle(); // <-- Bunu ekledik
+    }
 }
 
 /* =========================================
@@ -833,4 +836,25 @@ function tercihleriAc() {
 function tercihKapat() {
     document.getElementById("tercihlerSayfa").style.display = "none";
     sayfaGoster('panel');
+}
+
+/* =========================================
+   9. KARŞILAMA METNİ GÜNCELLEME
+   ========================================= */
+function karsilamaGuncelle() {
+    // 1. Tarihi Yazdır
+    const tarihEl = document.getElementById("karsilamaTarih");
+    if (tarihEl) {
+        const simdi = new Date();
+        const secenekler = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        tarihEl.innerText = simdi.toLocaleDateString('tr-TR', secenekler);
+    }
+
+    // 2. İsmi Yazdır
+    const adEl = document.getElementById("karsilamaAd");
+    if (adEl && globalAyarlar && globalAyarlar.ad) {
+        // Sadece ilk ismi alıp samimi yapalım (Örn: "Munise Yılmaz" -> "Munise")
+        const sadeIsim = globalAyarlar.ad.split(' ')[0];
+        adEl.innerText = sadeIsim;
+    }
 }
