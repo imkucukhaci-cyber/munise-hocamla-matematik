@@ -736,9 +736,9 @@ function dersCiz(ders) {
     dersBlok.className = "ders-blok animate-in fade-in zoom-in duration-300 shadow-md hover:shadow-xl transition-all cursor-pointer";
     dersBlok.innerHTML = `
         <div class="flex flex-col h-full justify-center px-1 md:px-2 bg-blue-100 border-l-4 border-blue-600 rounded-r-md overflow-hidden leading-tight">
-            <span class="font-black text-[10px] md:text-xs text-blue-900 truncate">${ders.ogrenci}</span>
+            <span class="font-black text-[11px] md:text-xs text-blue-900 truncate">${ders.ogrenci}</span>
             
-            <span class="text-[9px] font-semibold text-blue-700 truncate opacity-80">${ders.duzey || ''}</span>
+            <span class="text-[10px] font-semibold text-blue-700 truncate opacity-80">${ders.duzey || ''}</span>
             
             <span class="text-[9px] font-bold text-blue-500 mt-0.5">${ders.ucret} ₺</span>
         </div>
