@@ -24,7 +24,8 @@ let kazancGrafik = null;
 let dersGrafik = null;
 let modalAcikAy = null;
 let modalAcikYil = null;
-let globalAyarlar = null; 
+let globalAyarlar = null;
+let duzenlenecekDersId = null; // Düzenleme modu takibi için
 
 
 /* =========================================
@@ -654,24 +655,70 @@ function ayModalKapat() {
    ========================================= */
 
 function dersEkle() {
+    // 1. Verileri Al
     const ogrenci = document.getElementById("ogrenci").value;
-    const iletisim = document.getElementById("iletisim").value; // <--- YENİ: Veriyi al
-    const duzey = document.getElementById("duzey").value; // <--- YENİ: Veriyi al
+    const iletisim = document.getElementById("iletisim").value;
     const ucret = Number(document.getElementById("ucret").value);
+    const duzey = document.getElementById("duzey").value;
     const gun = document.getElementById("gun").value;
     const baslangic = parseFloat(document.getElementById("baslangic").value);
     const sure = parseFloat(document.getElementById("sure").value);
 
+    // 2. Tatil Kontrolü
     if (globalAyarlar && globalAyarlar.tatilGunleri && globalAyarlar.tatilGunleri.includes(Number(gun))) {
         alert("Seçtiğiniz gün tatil olarak ayarlanmış! Ders ekleyemezsiniz.");
         return;
     }
 
+    // 3. Eksik Bilgi Kontrolü
     if (!ogrenci || !ucret) { alert("Eksik bilgi girdiniz."); return; }
-    database.ref(`kullanicilar/${aktifKullaniciId}/dersler`).push({ ogrenci, iletisim, ucret, duzey, gun, baslangic, sure });
+    
+    const dersVerisi = { 
+        ogrenci, 
+        iletisim, 
+        ucret, 
+        duzey,
+        gun, 
+        baslangic, 
+        sure 
+    };
+
+    // --- KARAR ANI: GÜNCELLEME Mİ, YENİ Mİ? ---
+    
+    if (duzenlenecekDersId) {
+        // A) GÜNCELLEME MODU
+        database.ref(`kullanicilar/${aktifKullaniciId}/dersler/${duzenlenecekDersId}`).update(dersVerisi)
+            .then(() => {
+                alert("Ders başarıyla güncellendi! ✅");
+                formuSifirla(); // Butonu ve değişkeni eski haline getir
+            });
+    } else {
+        // B) YENİ EKLEME MODU
+        database.ref(`kullanicilar/${aktifKullaniciId}/dersler`).push(dersVerisi);
+        // Formu temizle (Sadece inputları)
+        document.getElementById("ogrenci").value = "";
+        document.getElementById("iletisim").value = "";
+        document.getElementById("duzey").value = "";
+        // Diğerleri (Saat vb.) kalsın, belki peş peşe ekler
+    }
+}
+
+// Yardımcı Fonksiyon: Formu ve Butonu Sıfırla
+function formuSifirla() {
+    duzenlenecekDersId = null; // Moddan çık
+    
+    // İnputları temizle
     document.getElementById("ogrenci").value = "";
-    document.getElementById("iletisim").value = ""; // <--- YENİ: Temizle
-    document.getElementById("duzey").value = ""; // <--- YENİ: Temizle
+    document.getElementById("iletisim").value = "";
+    document.getElementById("duzey").value = "";
+
+    // Butonu eski haline (Mavi) getir
+    const kaydetBtn = document.querySelector("#takvimSayfa button[onclick='dersEkle()']");
+    if(kaydetBtn) {
+        kaydetBtn.innerText = "Dersi Kaydet";
+        kaydetBtn.classList.remove("bg-orange-500", "hover:bg-orange-600");
+        kaydetBtn.classList.add("bg-blue-600", "hover:bg-blue-700");
+    }
 }
 
 function dersCiz(ders) {
@@ -1037,4 +1084,42 @@ function tercihKapat() {
     if (modal) {
         modal.style.display = "none";
     }
+}
+
+/* =========================================
+   YENİ: DÜZENLEME FONKSİYONU
+   ========================================= */
+function secimDuzenle() {
+    if (!aktifBlok) return;
+
+    // 1. Seçilen dersin verisini bul
+    const id = aktifBlok.dataset.id;
+    const ders = dersler.find(d => d.id === id);
+    
+    if (!ders) return;
+
+    // 2. Yukarıdaki kutuları doldur
+    document.getElementById("ogrenci").value = ders.ogrenci;
+    document.getElementById("iletisim").value = ders.iletisim || ""; // Varsa doldur
+    document.getElementById("ucret").value = ders.ucret;
+    document.getElementById("duzey").value = ders.duzey || ""; // Varsa seç
+    
+    document.getElementById("gun").value = ders.gun;
+    document.getElementById("baslangic").value = ders.baslangic;
+    document.getElementById("sure").value = ders.sure;
+
+    // 3. Modu "Düzenleme" yap
+    duzenlenecekDersId = id;
+
+    // 4. Kaydet butonunun şeklini değiştir (Turuncu yap)
+    const kaydetBtn = document.querySelector("#takvimSayfa button[onclick='dersEkle()']");
+    if(kaydetBtn) {
+        kaydetBtn.innerText = "Değişiklikleri Güncelle";
+        kaydetBtn.classList.remove("bg-blue-600", "hover:bg-blue-700");
+        kaydetBtn.classList.add("bg-orange-500", "hover:bg-orange-600");
+    }
+
+    // 5. Modalı kapat ve yukarı kaydır
+    secimKapat();
+    document.getElementById("takvimSayfa").scrollIntoView({ behavior: 'smooth' });
 }
