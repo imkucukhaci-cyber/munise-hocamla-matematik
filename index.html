@@ -48,6 +48,25 @@
         background: white;
         transition: all 0.2s;
     }
+    /* Mobil süre butonları (Gün butonlarıyla aynı stilde) */
+    .sure-btn-mobil {
+        width: 100%;
+        padding: 10px 0;
+        border-radius: 8px;
+        border: 1px solid #f3f4f6;
+        font-size: 11px;
+        font-weight: 700;
+        color: #6b7280;
+        background: white;
+        transition: all 0.2s;
+    }
+    
+    /* Seçili olduğunda alacağı renk */
+    .secili-sure {
+        background-color: #3b82f6 !important; /* Mavi */
+        color: white !important;
+        border-color: #3b82f6 !important;
+    }
     /* Aktif menü butonu rengi */
     .nav-btn.text-blue-600 span { color: #2563eb; }
     
@@ -138,12 +157,12 @@
 
             <div id="panelSayfa" class="sayfa-bolum">
     <div class="flex flex-col justify-center mb-6 px-1 mt-2">
-        <h2 class="text-2xl font-black text-gray-700 tracking-tight flex items-center gap-2">
-            Merhaba, <span id="karsilamaAd" class="text-blue-400">Hocam</span> 👋
+        <h2 class="text-2xl font-black text-gray-800 tracking-tight flex items-center gap-2">
+            Merhaba, <span id="karsilamaAd" class="text-blue-600">Hocam</span> 👋
         </h2>
         <p id="karsilamaTarih" class="text-gray-400 font-bold text-xs uppercase tracking-widest mt-1"></p>
     </div>
-
+                
 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-8">
     
     <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group h-30 flex flex-col justify-between transition-all hover:shadow-md">
@@ -427,6 +446,45 @@
                     <button onclick="gunSec(this)" data-gun="7" class="gun-btn-mobil text-red-400">Paz</button>
                 </div>
             </div>
+            <div class="mt-6">
+                <label class="text-xs font-bold text-gray-400 uppercase mb-2 block">Ders Süreleri (Saat)</label>
+                <div class="grid grid-cols-3 gap-2" id="prefSureler">
+                    <button onclick="sureSec(this)" data-sure="1" class="sure-btn-mobil">1 saat</button>
+                    <button onclick="sureSec(this)" data-sure="1.5" class="sure-btn-mobil">1.5 saat</button>
+                    <button onclick="sureSec(this)" data-sure="2" class="sure-btn-mobil">2 saat</button>
+                    <button onclick="sureSec(this)" data-sure="2.5" class="sure-btn-mobil">2.5 saat</button>
+                    <button onclick="sureSec(this)" data-sure="3" class="sure-btn-mobil">3 saat</button>
+                </div>
+            </div>
+
+            <div class="mt-6 mb-12">
+                <label class="text-xs font-bold text-gray-400 uppercase mb-2 block">Öğrenci Düzeyi</label>
+                <div class="relative">
+                    <select id="prefDuzey" class="input-mobil appearance-none bg-white">
+                        <option value="">Seçiniz...</option>
+                        <option value="ilkokul">İlkokul (1-4. Sınıf)</option>
+                        <option value="ortaokul">Ortaokul (5-8. Sınıf)</option>
+                        <option value="lise">Lise (9-12. Sınıf)</option>
+                        <option value="1">1. Sınıf</option>
+                        <option value="2">2. Sınıf</option>
+                        <option value="3">3. Sınıf</option>
+                        <option value="4">4. Sınıf</option>
+                        <option value="5">5. Sınıf</option>
+                        <option value="6">6. Sınıf</option>
+                        <option value="7">7. Sınıf</option>
+                        <option value="8">8. Sınıf (LGS)</option>
+                        <option value="9">9. Sınıf</option>
+                        <option value="10">10. Sınıf</option>
+                        <option value="11">11. Sınıf</option>
+                        <option value="12">12. Sınıf (YKS)</option>
+                        <option value="mezun">Mezun</option>
+                        <option value="diger">Diğer</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </div>
+            </div>    
         </div>
 
         <div class="p-4 border-t sticky bottom-0 bg-white">

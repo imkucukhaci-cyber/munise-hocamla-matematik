@@ -190,7 +190,8 @@ function ayarlariKaydet() {
     const brans = document.getElementById("prefBrans").value;
     const basla = document.getElementById("prefMesaiBasla").value;
     const bitis = document.getElementById("prefMesaiBitis").value;
-    
+    const duzey = document.getElementById("prefDuzey").value; // Yeni: Düzey    
+
     // Seçili tatil günlerini topla
     const tatiller = [];
     document.querySelectorAll('.secili-tatil').forEach(btn => {
@@ -213,6 +214,8 @@ function ayarlariKaydet() {
         mesaiBasla: Number(basla),
         mesaiBitis: Number(bitis),
         tatilGunleri: tatiller,
+        dersSureleri: seciliSureler, // Yeni veri
+        ogrenciDuzeyi: duzey,        // Yeni veri
         kurulumTamam: true
     };
 
@@ -814,6 +817,7 @@ function tercihleriAc() {
     document.getElementById("prefBrans").value = globalAyarlar.brans || "";
     document.getElementById("prefMesaiBasla").value = globalAyarlar.mesaiBasla || "13";
     document.getElementById("prefMesaiBitis").value = globalAyarlar.mesaiBitis || "22";
+    document.getElementById("prefDuzey").value = globalAyarlar.ogrenciDuzeyi || "";
 
     document.querySelectorAll('.gun-btn-mobil').forEach(btn => {
         btn.classList.remove('bg-blue-600', 'text-white', 'secili-tatil');
@@ -826,6 +830,19 @@ function tercihleriAc() {
             if (btn) {
                 btn.classList.add('bg-blue-600', 'text-white', 'secili-tatil');
                 btn.classList.remove('bg-white', 'text-gray-400');
+            }
+        });
+    }
+    
+    document.querySelectorAll('.sure-btn-mobil').forEach(btn => {
+        btn.classList.remove('secili-sure'); // Önce temizle
+    });
+
+    if (globalAyarlar.dersSureleri) {
+        globalAyarlar.dersSureleri.forEach(sure => {
+            const btn = document.querySelector(`.sure-btn-mobil[data-sure="${sure}"]`);
+            if (btn) {
+                btn.classList.add('secili-sure');
             }
         });
     }
@@ -856,5 +873,17 @@ function karsilamaGuncelle() {
         // Sadece ilk ismi alıp samimi yapalım (Örn: "Munise Yılmaz" -> "Munise")
         const sadeIsim = globalAyarlar.ad.split(' ')[0];
         adEl.innerText = sadeIsim;
+    }
+}
+
+/* =========================================
+   10. YENİ: SÜRE BUTONU SEÇİMİ
+   ========================================= */
+function sureSec(btn) {
+    // Butona basınca seçildi/seçilmedi yap (Toggle)
+    if (btn.classList.contains('secili-sure')) {
+        btn.classList.remove('secili-sure');
+    } else {
+        btn.classList.add('secili-sure');
     }
 }
