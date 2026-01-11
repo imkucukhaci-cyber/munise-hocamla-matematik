@@ -198,6 +198,12 @@ function ayarlariKaydet() {
         tatiller.push(Number(btn.dataset.gun));
     });
 
+    // (YENİ) Ders Sürelerini Topla
+    const seciliSureler = [];
+    document.querySelectorAll('.secili-sure').forEach(btn => {
+        if(btn.dataset.sure) seciliSureler.push(Number(btn.dataset.sure));
+    });
+
     if(!hocaAd || !brans) {
         alert("Lütfen adınızı ve branşınızı giriniz.");
         return;
