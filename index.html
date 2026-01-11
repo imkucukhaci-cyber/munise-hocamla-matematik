@@ -457,34 +457,43 @@
                 </div>
             </div>
 
-            <div class="mt-6 mb-12">
-                <label class="text-xs font-bold text-gray-400 uppercase mb-2 block">Öğrenci Düzeyi</label>
-                <div class="relative">
-                    <select id="prefDuzey" class="input-mobil appearance-none bg-white">
-                        <option value="">Seçiniz...</option>
-                        <option value="ilkokul">İlkokul (1-4. Sınıf)</option>
-                        <option value="ortaokul">Ortaokul (5-8. Sınıf)</option>
-                        <option value="lise">Lise (9-12. Sınıf)</option>
-                        <option value="1">1. Sınıf</option>
-                        <option value="2">2. Sınıf</option>
-                        <option value="3">3. Sınıf</option>
-                        <option value="4">4. Sınıf</option>
-                        <option value="5">5. Sınıf</option>
-                        <option value="6">6. Sınıf</option>
-                        <option value="7">7. Sınıf</option>
-                        <option value="8">8. Sınıf (LGS)</option>
-                        <option value="9">9. Sınıf</option>
-                        <option value="10">10. Sınıf</option>
-                        <option value="11">11. Sınıf</option>
-                        <option value="12">12. Sınıf (YKS)</option>
-                        <option value="mezun">Mezun</option>
-                        <option value="diger">Diğer</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+<div class="mt-6 mb-12">
+                <label class="text-xs font-bold text-gray-400 uppercase mb-2 block">Öğrenci Düzeyleri</label>
+                
+                <button onclick="duzeyMenusuAcKapa()" class="w-full flex justify-between items-center p-4 bg-white border border-gray-200 rounded-xl shadow-sm active:bg-gray-50 transition">
+                    <span class="text-sm font-bold text-gray-700 flex items-center gap-2">
+                        🎓 Düzeyleri Seç
+                        <span id="secimSayisiRozeti" class="hidden bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full">0</span>
+                    </span>
+                    <svg id="duzeyOk" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 transition-transform duration-300" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+
+                <div id="duzeyCekmece" class="hidden mt-2 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="duzeySec(this)" data-duzey="ilkokul" class="duzey-btn-mobil font-bold text-blue-800 bg-blue-100 border-blue-200">İlkokul</button>
+                        <button onclick="duzeySec(this)" data-duzey="ortaokul" class="duzey-btn-mobil font-bold text-blue-800 bg-blue-100 border-blue-200">Ortaokul</button>
+                        <button onclick="duzeySec(this)" data-duzey="lise" class="duzey-btn-mobil font-bold text-blue-800 bg-blue-100 border-blue-200">Lise</button>
+                        
+                        <button onclick="duzeySec(this)" data-duzey="1. Sınıf" class="duzey-btn-mobil">1. Sınıf</button>
+                        <button onclick="duzeySec(this)" data-duzey="2. Sınıf" class="duzey-btn-mobil">2. Sınıf</button>
+                        <button onclick="duzeySec(this)" data-duzey="3. Sınıf" class="duzey-btn-mobil">3. Sınıf</button>
+                        <button onclick="duzeySec(this)" data-duzey="4. Sınıf" class="duzey-btn-mobil">4. Sınıf</button>
+                        <button onclick="duzeySec(this)" data-duzey="5. Sınıf" class="duzey-btn-mobil">5. Sınıf</button>
+                        <button onclick="duzeySec(this)" data-duzey="6. Sınıf" class="duzey-btn-mobil">6. Sınıf</button>
+                        <button onclick="duzeySec(this)" data-duzey="7. Sınıf" class="duzey-btn-mobil">7. Sınıf</button>
+                        <button onclick="duzeySec(this)" data-duzey="8. Sınıf" class="duzey-btn-mobil">8. Sınıf</button>
+                        <button onclick="duzeySec(this)" data-duzey="9. Sınıf" class="duzey-btn-mobil">9. Sınıf</button>
+                        <button onclick="duzeySec(this)" data-duzey="10. Sınıf" class="duzey-btn-mobil">10. Sınıf</button>
+                        <button onclick="duzeySec(this)" data-duzey="11. Sınıf" class="duzey-btn-mobil">11. Sınıf</button>
+                        <button onclick="duzeySec(this)" data-duzey="12. Sınıf" class="duzey-btn-mobil">12. Sınıf</button>
+                        
+                        <button onclick="duzeySec(this)" data-duzey="Mezun" class="duzey-btn-mobil">Mezun</button>
+                        <button onclick="duzeySec(this)" data-duzey="Diger" class="duzey-btn-mobil col-span-2">Diğer</button>
                     </div>
                 </div>
-            </div>    
+            </div> 
         </div>
 
         <div class="p-4 border-t sticky bottom-0 bg-white">

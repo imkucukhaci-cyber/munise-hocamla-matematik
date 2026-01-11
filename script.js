@@ -186,31 +186,40 @@ function gunSec(btn) {
 }
 
 function ayarlariKaydet() {
-    const hocaAd = document.getElementById("prefHocaAd").value;
-    const brans = document.getElementById("prefBrans").value;
-    const basla = document.getElementById("prefMesaiBasla").value;
-    const bitis = document.getElementById("prefMesaiBitis").value;
-    const duzey = document.getElementById("prefDuzey").value; // Yeni: Düzey    
+    console.log("Kaydetme işlemi başladı...");
 
-    // Seçili tatil günlerini topla
+    // 1. Girdileri Güvenli Şekilde Al (Hata korumalı)
+    const adEl = document.getElementById("prefHocaAd");
+    const bransEl = document.getElementById("prefBrans");
+    const baslaEl = document.getElementById("prefMesaiBasla");
+    const bitisEl = document.getElementById("prefMesaiBitis");
+
+    const hocaAd = adEl ? adEl.value : "";
+    const brans = bransEl ? bransEl.value : "";
+    const basla = baslaEl ? baslaEl.value : "13";
+    const bitis = bitisEl ? bitisEl.value : "22";
+
+    // 2. Tatil Günlerini Topla
     const tatiller = [];
     document.querySelectorAll('.secili-tatil').forEach(btn => {
-        tatiller.push(Number(btn.dataset.gun));
+        if(btn.dataset.gun) tatiller.push(Number(btn.dataset.gun));
     });
 
-    // (YENİ) Ders Sürelerini Topla
+    // 3. (Eğer eklediysen) Ders Sürelerini Topla 
     const seciliSureler = [];
     document.querySelectorAll('.secili-sure').forEach(btn => {
         if(btn.dataset.sure) seciliSureler.push(Number(btn.dataset.sure));
     });
 
+    // 4. (YENİ) Öğrenci Düzeylerini Topla
+    const seciliDuzeyler = [];
+    document.querySelectorAll('.secili-duzey').forEach(btn => {
+        if(btn.dataset.duzey) seciliDuzeyler.push(btn.dataset.duzey);
+    });
+
+    // 5. Kontroller
     if(!hocaAd || !brans) {
         alert("Lütfen adınızı ve branşınızı giriniz.");
-        return;
-    }
-
-    if(Number(basla) >= Number(bitis)) {
-        alert("Mesai başlangıç saati, bitiş saatinden önce olmalıdır.");
         return;
     }
 
@@ -220,16 +229,20 @@ function ayarlariKaydet() {
         mesaiBasla: Number(basla),
         mesaiBitis: Number(bitis),
         tatilGunleri: tatiller,
-        dersSureleri: seciliSureler, // Yeni veri
-        ogrenciDuzeyi: duzey,        // Yeni veri
+        dersSureleri: seciliSureler,
+        ogrenciDuzeyleri: seciliDuzeyler, // Veritabanına bu isimle gidiyor
         kurulumTamam: true
     };
 
-    database.ref(`kullanicilar/${aktifKullaniciId}/ayarlar`).set(yeniAyarlar).then(() => {
-        alert("Ayarlar kaydedildi!");
-        tercihKapat();
-        window.location.reload(); 
-    });
+    if (typeof database !== 'undefined' && aktifKullaniciId) {
+        database.ref(`kullanicilar/${aktifKullaniciId}/ayarlar`).set(yeniAyarlar)
+        .then(() => {
+            alert("✅ Ayarlar güncellendi!");
+            tercihKapat();
+            window.location.reload(); 
+        })
+        .catch((err) => alert("Hata: " + err.message));
+    }
 }
 
 /* =========================================
@@ -815,24 +828,33 @@ function raporUret() {
 /* =========================================
    8. AYARLARI DÜZENLEME VE GÜNCELLEME
    ========================================= */
-
+/* =========================================
+   GÜVENLİ TERCİHLERİ AÇ FONKSİYONU
+   ========================================= */
 function tercihleriAc() {
-    if (!globalAyarlar) return;
+    const modal = document.getElementById("tercihlerSayfa");
+    if (!modal) return; // Sayfa yoksa hiçbir şey yapma
 
-    document.getElementById("prefHocaAd").value = globalAyarlar.ad || "";
-    document.getElementById("prefBrans").value = globalAyarlar.brans || "";
-    document.getElementById("prefMesaiBasla").value = globalAyarlar.mesaiBasla || "13";
-    document.getElementById("prefMesaiBitis").value = globalAyarlar.mesaiBitis || "22";
-    document.getElementById("prefDuzey").value = globalAyarlar.ogrenciDuzeyi || "";
+    // Ayarlar yoksa direkt boş aç
+    if (!globalAyarlar) {
+        modal.style.display = "flex";
+        return;
+    }
 
+    // 1. Temel Bilgileri Doldur (Varsa)
+    if(document.getElementById("prefHocaAd")) document.getElementById("prefHocaAd").value = globalAyarlar.ad || "";
+    if(document.getElementById("prefBrans")) document.getElementById("prefBrans").value = globalAyarlar.brans || "";
+    if(document.getElementById("prefMesaiBasla")) document.getElementById("prefMesaiBasla").value = globalAyarlar.mesaiBasla || "13";
+    if(document.getElementById("prefMesaiBitis")) document.getElementById("prefMesaiBitis").value = globalAyarlar.mesaiBitis || "22";
+
+    // 2. Tatil Günlerini Yükle
     document.querySelectorAll('.gun-btn-mobil').forEach(btn => {
         btn.classList.remove('bg-blue-600', 'text-white', 'secili-tatil');
         btn.classList.add('bg-white', 'text-gray-400');
     });
-
     if (globalAyarlar.tatilGunleri) {
-        globalAyarlar.tatilGunleri.forEach(gunIndex => {
-            const btn = document.querySelector(`.gun-btn-mobil[data-gun="${gunIndex}"]`);
+        globalAyarlar.tatilGunleri.forEach(gun => {
+            const btn = document.querySelector(`.gun-btn-mobil[data-gun="${gun}"]`);
             if (btn) {
                 btn.classList.add('bg-blue-600', 'text-white', 'secili-tatil');
                 btn.classList.remove('bg-white', 'text-gray-400');
@@ -840,26 +862,48 @@ function tercihleriAc() {
         });
     }
 
-    // (YENİ) Ders Sürelerini Geri Yükle
-    document.querySelectorAll('.sure-btn-mobil').forEach(btn => {
-        btn.classList.remove('secili-sure'); // Önce temizle
-    });
-
+    // 3. Ders Sürelerini Yükle
+    document.querySelectorAll('.sure-btn-mobil').forEach(b => b.classList.remove('secili-sure'));
     if (globalAyarlar.dersSureleri) {
         globalAyarlar.dersSureleri.forEach(sure => {
             const btn = document.querySelector(`.sure-btn-mobil[data-sure="${sure}"]`);
-            if (btn) {
-                btn.classList.add('secili-sure');
-            }
+            if (btn) btn.classList.add('secili-sure');
         });
     }
 
-    document.getElementById("tercihlerSayfa").style.display = "flex";
-}
+    // 4. (YENİ) Öğrenci Düzeylerini Yükle
+    document.querySelectorAll('.duzey-btn-mobil').forEach(b => b.classList.remove('secili-duzey'));
+    
+    // Veriyi diziye çevir (Hata önleyici)
+    let kayitliDuzeyler = globalAyarlar.ogrenciDuzeyleri || globalAyarlar.ogrenciDuzeyi || [];
+    if (!Array.isArray(kayitliDuzeyler)) {
+        kayitliDuzeyler = [kayitliDuzeyler]; 
+    }
 
-function tercihKapat() {
-    document.getElementById("tercihlerSayfa").style.display = "none";
-    sayfaGoster('panel');
+    kayitliDuzeyler.forEach(duzey => {
+        const btn = document.querySelector(`.duzey-btn-mobil[data-duzey="${duzey}"]`);
+        if (btn) btn.classList.add('secili-duzey');
+    });
+
+    // 5. Menüyü Kapalı Başlat ve Rozeti Güncelle
+    const cekmece = document.getElementById("duzeyCekmece");
+    const ok = document.getElementById("duzeyOk");
+    if(cekmece) cekmece.classList.add("hidden");
+    if(ok) ok.style.transform = "rotate(0deg)";
+
+    const seciliSayisi = document.querySelectorAll('.secili-duzey').length;
+    const rozet = document.getElementById("secimSayisiRozeti");
+    if(rozet) {
+        if(seciliSayisi > 0) {
+            rozet.innerText = seciliSayisi;
+            rozet.classList.remove("hidden");
+        } else {
+            rozet.classList.add("hidden");
+        }
+    }
+
+    // Sayfayı Aç
+    modal.style.display = "flex";
 }
 
 /* =========================================
@@ -892,5 +936,48 @@ function sureSec(btn) {
         btn.classList.remove('secili-sure');
     } else {
         btn.classList.add('secili-sure');
+    }
+}
+
+/* =========================================
+   11. YENİ: AKORDEON VE SEÇİM FONKSİYONLARI
+   ========================================= */
+
+// 1. Menüyü Açıp Kapatma (Ok işaretiyle birlikte)
+function duzeyMenusuAcKapa() {
+    const cekmece = document.getElementById("duzeyCekmece");
+    const ok = document.getElementById("duzeyOk");
+    
+    if (cekmece.classList.contains("hidden")) {
+        // Gizliyse -> Göster
+        cekmece.classList.remove("hidden");
+        if(ok) ok.style.transform = "rotate(180deg)"; // Oku yukarı çevir
+    } else {
+        // Açıksa -> Gizle
+        cekmece.classList.add("hidden");
+        if(ok) ok.style.transform = "rotate(0deg)"; // Oku aşağı çevir
+    }
+}
+
+// 2. Butona Tıklayınca Seçme/Bırakma ve Rozet Sayısı
+function duzeySec(btn) {
+    // Seçim işlemini yap
+    if (btn.classList.contains('secili-duzey')) {
+        btn.classList.remove('secili-duzey');
+    } else {
+        btn.classList.add('secili-duzey');
+    }
+
+    // Kaç tane seçili olduğunu say ve rozete yaz
+    const seciliSayisi = document.querySelectorAll('.secili-duzey').length;
+    const rozet = document.getElementById("secimSayisiRozeti");
+    
+    if (rozet) {
+        if (seciliSayisi > 0) {
+            rozet.innerText = seciliSayisi;
+            rozet.classList.remove("hidden");
+        } else {
+            rozet.classList.add("hidden");
+        }
     }
 }

@@ -167,3 +167,22 @@ canvas {
         margin-bottom: 16px; /* Altına ekstra güvenlik payı */
     }
 }
+
+/* --- DÜZEY SEÇİM BUTONLARI --- */
+.duzey-btn-mobil {
+    width: 100%;
+    padding: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    font-size: 11px;
+    color: #4b5563;
+    background: white;
+    transition: all 0.2s;
+}
+
+/* Seçili Olduğunda (Koyu Mavi) */
+.secili-duzey {
+    background-color: #2563eb !important; /* Royal Blue */
+    color: white !important;
+    border-color: #2563eb !important;
+}
