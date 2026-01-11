@@ -981,3 +981,13 @@ function duzeySec(btn) {
         }
     }
 }
+
+/* =========================================
+   PENCEREYİ KAPATMA FONKSİYONU (EKSİKSE ÇALIŞMAZ)
+   ========================================= */
+function tercihKapat() {
+    const modal = document.getElementById("tercihlerSayfa");
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
