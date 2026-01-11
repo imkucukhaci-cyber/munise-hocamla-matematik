@@ -284,6 +284,27 @@ function takvimOlustur() {
              saatSelect.appendChild(opt);
         }
     }
+
+    // --- YENİ: Düzey Kutusunu Ayarlardan Doldur ---
+    const duzeySelect = document.getElementById("duzey");
+    if (duzeySelect) {
+        // Önce temizle ve varsayılanı ekle
+        duzeySelect.innerHTML = '<option value="">Düzey Seçiniz</option>';
+        
+        // Ayarlardaki veriyi güvenli şekilde al
+        let duzeyler = (globalAyarlar && (globalAyarlar.ogrenciDuzeyleri || globalAyarlar.ogrenciDuzeyi)) || [];
+        
+        // Eğer veri tekil geldiyse diziye çevir
+        if (!Array.isArray(duzeyler)) duzeyler = [duzeyler];
+
+        // Seçenekleri oluştur
+        duzeyler.forEach(d => {
+            const opt = document.createElement("option");
+            opt.value = d;
+            opt.innerText = d;
+            duzeySelect.appendChild(opt);
+        });
+    }
 }
 
 
@@ -613,6 +634,7 @@ function ayModalKapat() {
 function dersEkle() {
     const ogrenci = document.getElementById("ogrenci").value;
     const iletisim = document.getElementById("iletisim").value; // <--- YENİ: Veriyi al
+    const duzey = document.getElementById("duzey").value; // <--- YENİ: Veriyi al
     const ucret = Number(document.getElementById("ucret").value);
     const gun = document.getElementById("gun").value;
     const baslangic = parseFloat(document.getElementById("baslangic").value);
@@ -624,9 +646,10 @@ function dersEkle() {
     }
 
     if (!ogrenci || !ucret) { alert("Eksik bilgi girdiniz."); return; }
-    database.ref(`kullanicilar/${aktifKullaniciId}/dersler`).push({ ogrenci, iletisim, ucret, gun, baslangic, sure });
+    database.ref(`kullanicilar/${aktifKullaniciId}/dersler`).push({ ogrenci, iletisim, ucret, duzey, gun, baslangic, sure });
     document.getElementById("ogrenci").value = "";
     document.getElementById("iletisim").value = ""; // <--- YENİ: Temizle
+    document.getElementById("duzey").value = ""; // <--- YENİ: Temizle
 }
 
 function dersCiz(ders) {
