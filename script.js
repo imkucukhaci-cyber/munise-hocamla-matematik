@@ -533,54 +533,42 @@ function dersEkle() {
     document.getElementById("ogrenci").value = "";
 }
 
-// Ders Çiz fonksiyonunu kesin çözümle güncelle
 function dersCiz(ders) {
-    // 100ms gecikme DOM'un (tablonun) render edilmesine izin verir
-    setTimeout(() => {
-        const hucre = document.getElementById(`hucre-${ders.gun}-${ders.baslangic}`);
-        const tablo = document.querySelector("table");
-        
-        if (!hucre || !tablo) return;
+    const hucre = document.getElementById(`hucre-${ders.gun}-${ders.baslangic}`);
+    
+    if (!hucre) return;
 
-        // Koordinatları hesapla (Tablonun kendi offset değerlerini kullanıyoruz)
-        const topPos = hucre.offsetTop;
-        const leftPos = hucre.offsetLeft;
-        const width = hucre.offsetWidth;
-        const height = hucre.offsetHeight;
-        const parcaSayisi = ders.sure / 0.5;
+    const topPos = hucre.offsetTop;
+    const leftPos = hucre.offsetLeft;
+    const width = hucre.offsetWidth;
+    const height = hucre.offsetHeight;
+    const parcaSayisi = ders.sure / 0.5;
 
-        const dersBlok = document.createElement("div");
-        dersBlok.className = "ders-blok animate-in fade-in zoom-in duration-300"; // Küçük bir giriş efekti
-        dersBlok.innerHTML = `
-            <div class="flex flex-col h-full justify-center px-1 overflow-hidden">
-                <span class="font-black text-[11px] leading-none mb-0.5 truncate">${ders.ogrenci}</span>
-                <span class="text-[9px] font-bold opacity-80 uppercase leading-none">${ders.ucret} ₺</span>
-            </div>
-        `;
-        dersBlok.dataset.id = ders.id;
+    const dersBlok = document.createElement("div");
+    dersBlok.className = "ders-blok animate-in fade-in zoom-in duration-300 shadow-md hover:shadow-xl transition-all cursor-pointer";
+    dersBlok.innerHTML = `
+        <div class="flex flex-col h-full justify-center px-2 bg-blue-100 border-l-4 border-blue-600 rounded-r-md overflow-hidden">
+            <span class="font-black text-[10px] md:text-xs leading-tight text-blue-900 truncate">${ders.ogrenci}</span>
+            <span class="text-[9px] font-bold text-blue-500">${ders.ucret} ₺</span>
+        </div>
+    `;
+    dersBlok.dataset.id = ders.id;
 
-        // Stil Atamaları
-        Object.assign(dersBlok.style, {
-            position: "absolute",
-            top: (topPos + 1) + "px",
-            left: (leftPos + 1) + "px",
-            width: (width - 2) + "px",
-            height: (height * parcaSayisi - 2) + "px",
-            zIndex: "10",
-            pointerEvents: "auto"
-        });
-        
-        dersBlok.onclick = function (e) { 
-            e.stopPropagation();
-            secimModalAc(this); 
-        };
-        
-        // Önemli: Bloğu tabloya değil, tablonun parent'ına veya bağıl bir alana eklemek gerekebilir 
-        // ama mevcut yapında tablo relative olduğu için tablonun içine ekliyoruz.
-        tablo.appendChild(dersBlok);
-    }, 100);
+    // Hücre içine göre göreceli konumlandırma
+    dersBlok.style.position = "absolute";
+    dersBlok.style.top = "0px";
+    dersBlok.style.left = "0px";
+    dersBlok.style.width = "100%";
+    dersBlok.style.height = `calc(${parcaSayisi * 100}% + ${parcaSayisi - 1}px)`;
+    dersBlok.style.zIndex = "20";
+    
+    dersBlok.onclick = function (e) { 
+        e.stopPropagation();
+        secimModalAc(this); 
+    };
+    
+    hucre.appendChild(dersBlok);
 }
-
 function tabloyuTemizle() {
     document.querySelectorAll(".ders-blok").forEach(b => b.remove());
 }
