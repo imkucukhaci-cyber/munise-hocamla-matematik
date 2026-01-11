@@ -332,22 +332,22 @@ function panelOzetiniGuncelle() {
     paneliCiz(aylikKazancVerisi, aylikDersVerisi);
 }
 
-// --- YENİLENMİŞ, MİNİMALİST VE ŞIK GRAFİK ÇİZİMİ ---
-// --- DENGELİ VE ŞIK GRAFİK TASARIMI (Referans Çizgili) ---
+/// --- DENGELİ, ŞIK VE "MAVİ KONSEPT" GRAFİKLER ---
 function paneliCiz(kazancData, dersData) {
     if(!document.getElementById('kazancChart')) return;
 
-    // Ayları kısalttık ki mobilde sığsın
+    // Ayları kısalttık (Mobilde sığması için)
     const aylar = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
     
     // ------------------------------------------
-    // 1. KAZANÇ GRAFİĞİ 
+    // 1. KAZANÇ GRAFİĞİ (MAVİ - LINE)
     // ------------------------------------------
     const ctx1 = document.getElementById('kazancChart').getContext('2d');
     
-    const gradientKazanc = ctx1.createLinearGradient(0, 0, 0, 300);
-    gradientKazanc.addColorStop(0, 'rgba(16, 185, 129, 0.4)'); // Koyu yeşil
-    gradientKazanc.addColorStop(1, 'rgba(16, 185, 129, 0.0)'); // Şeffaf
+    // Mavi Gradyan (Yukarıdan aşağıya solan)
+    const gradientKazanc = ctx1.createLinearGradient(0, 0, 0, 350);
+    gradientKazanc.addColorStop(0, 'rgba(37, 99, 235, 0.5)'); // Blue-600 (Yarı şeffaf)
+    gradientKazanc.addColorStop(1, 'rgba(37, 99, 235, 0.0)'); // Tam şeffaf
 
     if(kazancGrafik) kazancGrafik.destroy();
     
@@ -358,17 +358,17 @@ function paneliCiz(kazancData, dersData) {
             datasets: [{ 
                 label: 'Kazanç', 
                 data: kazancData, 
-                borderColor: '#10b981', 
+                borderColor: '#2563eb', // ANA RENK: Blue-600
                 backgroundColor: gradientKazanc, 
                 borderWidth: 3,
-                // Noktaları geri getirdik ama küçük ve zarif
+                // Noktalar
                 pointRadius: 3, 
-                pointBackgroundColor: '#ffffff',
-                pointBorderColor: '#10b981',
+                pointBackgroundColor: '#ffffff', // İçi beyaz
+                pointBorderColor: '#2563eb',     // Çerçevesi Mavi
                 pointBorderWidth: 2,
                 pointHoverRadius: 6,
                 fill: true, 
-                tension: 0.4 
+                tension: 0.4 // Yumuşak kavis
             }]
         },
         options: { 
@@ -379,7 +379,7 @@ function paneliCiz(kazancData, dersData) {
                 tooltip: {
                     backgroundColor: 'rgba(255, 255, 255, 0.95)', // Beyaz tooltip
                     titleColor: '#1e293b', // Koyu başlık
-                    bodyColor: '#10b981', // Yeşil yazı
+                    bodyColor: '#2563eb',  // Mavi yazı
                     borderColor: '#e2e8f0',
                     borderWidth: 1,
                     padding: 10,
@@ -394,21 +394,18 @@ function paneliCiz(kazancData, dersData) {
             },
             scales: {
                 x: { 
-                    display: true, // Ayları göster
-                    grid: { display: false }, // Dikey çizgileri gizle (Temiz görünüm)
-                    ticks: {
-                        color: '#94a3b8', // Soluk gri yazı
-                        font: { size: 10 } // Küçük font
-                    }
+                    display: true, 
+                    grid: { display: false }, 
+                    ticks: { color: '#94a3b8', font: { size: 10 } }
                 },
                 y: { 
-                    display: true, // Yatay çizgileri aç
+                    display: true,
                     beginAtZero: true, 
                     grid: { 
-                        color: '#f1f5f9', // Çok silik çizgi rengi
-                        borderDash: [5, 5] // Kesik çizgi yap (Modern durur)
+                        color: '#f1f5f9', // Çok silik ızgara
+                        borderDash: [5, 5] // Kesik çizgiler
                     },
-                    ticks: { display: false } // Sol taraftaki sayıları yine gizli tutalım (Alan kazanalım)
+                    ticks: { display: false } 
                 }
             },
             interaction: {
@@ -419,13 +416,14 @@ function paneliCiz(kazancData, dersData) {
     });
 
     // ------------------------------------------
-    // 2. DERS YOĞUNLUĞU GRAFİĞİ
+    // 2. DERS YOĞUNLUĞU GRAFİĞİ (MAVİ - BAR)
     // ------------------------------------------
     const ctx2 = document.getElementById('dersChart').getContext('2d');
     
+    // Bar için Mavi Geçiş
     const gradientDers = ctx2.createLinearGradient(0, 0, 0, 300);
-    gradientDers.addColorStop(0, '#6366f1'); 
-    gradientDers.addColorStop(1, '#a5b4fc'); 
+    gradientDers.addColorStop(0, '#2563eb'); // Üst taraf Blue-600
+    gradientDers.addColorStop(1, '#60a5fa'); // Alt taraf Blue-400 (Daha açık)
 
     if(dersGrafik) dersGrafik.destroy();
     
@@ -438,8 +436,8 @@ function paneliCiz(kazancData, dersData) {
                 data: dersData, 
                 backgroundColor: gradientDers, 
                 borderRadius: 6, 
-                barThickness: 12, // Barlar ince ve zarif
-                hoverBackgroundColor: '#4f46e5'
+                barThickness: 12, // İnce ve zarif barlar
+                hoverBackgroundColor: '#1d4ed8' // Üzerine gelince koyu mavi
             }]
         },
         options: { 
@@ -448,9 +446,9 @@ function paneliCiz(kazancData, dersData) {
             plugins: { 
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
                     titleColor: '#1e293b',
-                    bodyColor: '#6366f1',
+                    bodyColor: '#2563eb', // Mavi yazı
                     borderColor: '#e2e8f0',
                     borderWidth: 1,
                     padding: 10,
@@ -459,19 +457,16 @@ function paneliCiz(kazancData, dersData) {
             },
             scales: {
                 x: { 
-                    display: true, // Ayları göster
+                    display: true, 
                     grid: { display: false },
-                    ticks: {
-                        color: '#94a3b8',
-                        font: { size: 10 }
-                    }
+                    ticks: { color: '#94a3b8', font: { size: 10 } }
                 },
                 y: { 
                     display: true,
                     beginAtZero: true, 
                     grid: { 
                         color: '#f1f5f9',
-                        borderDash: [5, 5] // Kesik çizgi
+                        borderDash: [5, 5]
                     },
                     ticks: { display: false }
                 }
