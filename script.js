@@ -839,7 +839,8 @@ function tercihleriAc() {
             }
         });
     }
-    
+
+    // (YENİ) Ders Sürelerini Geri Yükle
     document.querySelectorAll('.sure-btn-mobil').forEach(btn => {
         btn.classList.remove('secili-sure'); // Önce temizle
     });
