@@ -305,6 +305,28 @@ function takvimOlustur() {
             duzeySelect.appendChild(opt);
         });
     }
+
+// --- YENİ (GÜNCEL): Süre Kutusunu Ayarlardan Doldur (SAAT CİNSİNDEN) ---
+    const sureSelect = document.getElementById("sure");
+    if (sureSelect) {
+        sureSelect.innerHTML = ""; // Temizle
+        
+        // Ayarlardan süreleri al (Yoksa varsayılan 1 saat olsun)
+        let sureler = (globalAyarlar && globalAyarlar.dersSureleri) ? globalAyarlar.dersSureleri : [];
+        if (sureler.length === 0) sureler = [1]; 
+
+        sureler.forEach(saat => {
+            const opt = document.createElement("option");
+            
+            // Ayarlar zaten saat (1, 1.5, 2) olduğu için direkt atıyoruz
+            opt.value = saat; 
+            
+            // Ekranda görünecek yazı
+            opt.innerText = `${saat} Saat`;
+            
+            sureSelect.appendChild(opt);
+        });
+    }
 }
 
 
