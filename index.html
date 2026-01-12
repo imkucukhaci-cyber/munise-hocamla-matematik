@@ -295,35 +295,37 @@
             </div>
             
             <div id="kazancSayfa" class="sayfa-bolum" style="display:none">
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 items-end">
+            <div class="flex flex-col gap-4">
                 
-                <div class="space-y-1 col-span-2 lg:col-span-1">
+                <div class="space-y-1">
                     <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Öğrenci</label>
-                    <select id="kazancOgrenci" class="w-full p-3 border rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-green-500 transition">
+                    <select id="kazancOgrenci" class="w-full p-3 border border-gray-200 rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-green-500 transition appearance-none shadow-sm">
                         </select>
                 </div>
 
                 <div class="space-y-1">
                     <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Tarih</label>
-                    <input type="date" id="kazancTarih" class="w-full p-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-green-500 transition font-medium">
+                    <input type="date" id="kazancTarih" class="w-full p-3 border border-gray-200 rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-green-500 transition appearance-none min-h-[46px] shadow-sm">
                 </div>
 
                 <div class="space-y-1">
                     <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Süre</label>
-                    <select id="kazancSure" class="w-full p-3 border rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-green-500 transition">
+                    <select id="kazancSure" class="w-full p-3 border border-gray-200 rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-green-500 transition appearance-none min-h-[46px] shadow-sm">
                         </select>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <div class="flex-1 flex items-center justify-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-200 h-[46px]">
-                         <input type="checkbox" id="kazancOdeme" class="w-4 h-4 accent-green-600 cursor-pointer">
-                         <label for="kazancOdeme" class="text-xs font-bold text-gray-600 cursor-pointer select-none">Ödeme Alındı</label>
-                    </div>
-                    
-                    <button onclick="kazancEkle()" class="bg-green-600 text-white font-bold rounded-xl h-[46px] px-4 hover:bg-green-700 transition shadow-lg active:scale-95">
-                        ✓
-                    </button>
+                <div class="flex items-center justify-center gap-3 p-3 bg-white border border-gray-200 rounded-xl h-[54px] cursor-pointer hover:bg-gray-50 transition shadow-sm mt-2" onclick="document.getElementById('kazancOdeme').click()">
+                     <input type="checkbox" id="kazancOdeme" class="w-5 h-5 accent-green-600 rounded cursor-pointer">
+                     <label for="kazancOdeme" class="text-sm font-bold text-gray-700 cursor-pointer select-none">Ödeme Alındı Olarak İşaretle</label>
                 </div>
+
+                <button onclick="kazancEkle()" class="w-full h-[54px] bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition shadow-lg shadow-green-200 active:scale-95 flex items-center justify-center gap-2">
+                    <span>Dersi Kaydet</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+
             </div>
 
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
