@@ -162,7 +162,7 @@ function sayfaGoster(sayfaId) {
         }, 50);
     }
     if (sayfaId === "rapor") raporOgrencileriYukle();
-    if (sayfaId === "kazanc") ogrencileriYukle();
+    if (sayfaId === "kazanc") formVerileriniYukle();    
     if (sayfaId === "panel") {
         panelOzetiniGuncelle();
         karsilamaGuncelle(); // <-- Bunu ekledik
@@ -798,18 +798,48 @@ function kazancEkle() {
     alert("Ders kaydedildi!");
 }
 
-function ogrencileriYukle() {
-    const select = document.getElementById("kazancOgrenci");
-    if(!select) return;
-    const mevcutSecim = select.value;
-    select.innerHTML = `<option value="">Öğrenci Seç</option>`;
-    const ogrenciler = [...new Set(dersler.map(d => d.ogrenci))];
-    ogrenciler.forEach(o => {
-        const opt = document.createElement("option");
-        opt.value = o; opt.textContent = o;
-        select.appendChild(opt);
-    });
-    if(mevcutSecim) select.value = mevcutSecim;
+
+function formVerileriniYukle() {
+    // 1. Öğrencileri Doldur
+    const ogrSelect = document.getElementById("kazancOgrenci");
+    if(ogrSelect) {
+        const mevcutSecim = ogrSelect.value;
+        ogrSelect.innerHTML = `<option value="">Öğrenci Seçiniz</option>`;
+        
+        // Derslerden benzersiz öğrencileri bul
+        const ogrenciler = [...new Set(dersler.map(d => d.ogrenci))];
+        
+        ogrenciler.forEach(o => {
+            const opt = document.createElement("option");
+            opt.value = o; 
+            opt.textContent = o;
+            ogrSelect.appendChild(opt);
+        });
+        if(mevcutSecim) ogrSelect.value = mevcutSecim;
+    }
+
+    // 2. Süreleri Doldur (Ayarlardan - Saat Cinsinden)
+    const sureSelect = document.getElementById("kazancSure");
+    if (sureSelect) {
+        sureSelect.innerHTML = ""; // Temizle
+        
+        // Ayarlardan süreleri al (Yoksa varsayılan 1 saat)
+        let sureler = (globalAyarlar && globalAyarlar.dersSureleri) ? globalAyarlar.dersSureleri : [];
+        if (sureler.length === 0) sureler = [1]; 
+
+        sureler.forEach(saat => {
+            const opt = document.createElement("option");
+            opt.value = saat; // Value örneğin: 1.5
+            opt.innerText = `${saat} Saat`; // Görünüm: 1.5 Saat
+            sureSelect.appendChild(opt);
+        });
+    }
+
+    // 3. Tarihi Bugüne Ayarla (Eğer boşsa)
+    const tarihInput = document.getElementById("kazancTarih");
+    if(tarihInput && !tarihInput.value) {
+        tarihInput.valueAsDate = new Date();
+    }
 }
 
 // Rapor sayfasındaki öğrenci listesini günceller

@@ -295,32 +295,40 @@
             </div>
             
             <div id="kazancSayfa" class="sayfa-bolum" style="display:none">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
-                    <h2 class="text-xl font-black mb-4">✅ Tamamlanan Dersi İşle</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Öğrenci</label>
-                            <select id="kazancOgrenci" class="w-full p-3 border rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-green-500 transition"></select>
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Tarih</label>
-                            <input type="date" id="kazancTarih" class="w-full p-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-green-500 transition">
-                        </div>
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Süre (Saat)</label>
-                            <input type="number" id="kazancSure" placeholder="1.5" class="w-full p-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-green-500 transition">
-                        </div>
-                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-                             <input type="checkbox" id="kazancOdeme" class="w-5 h-5 accent-green-600">
-                             <label for="kazancOdeme" class="text-sm font-bold text-gray-600">Ödeme Alındı</label>
-                        </div>
-                        <button onclick="kazancEkle()" class="bg-green-600 text-white font-bold rounded-xl py-3 hover:bg-green-700 transition shadow-lg">Dersi Kaydet</button>
-                    </div>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 items-end">
+                
+                <div class="space-y-1 col-span-2 lg:col-span-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Öğrenci</label>
+                    <select id="kazancOgrenci" class="w-full p-3 border rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-green-500 transition">
+                        </select>
                 </div>
+
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Tarih</label>
+                    <input type="date" id="kazancTarih" class="w-full p-3 border rounded-xl text-sm outline-none focus:ring-2 focus:ring-green-500 transition font-medium">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Süre</label>
+                    <select id="kazancSure" class="w-full p-3 border rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-green-500 transition">
+                        </select>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <div class="flex-1 flex items-center justify-center gap-2 p-3 bg-gray-50 rounded-xl border border-gray-200 h-[46px]">
+                         <input type="checkbox" id="kazancOdeme" class="w-4 h-4 accent-green-600 cursor-pointer">
+                         <label for="kazancOdeme" class="text-xs font-bold text-gray-600 cursor-pointer select-none">Ödeme Alındı</label>
+                    </div>
+                    
+                    <button onclick="kazancEkle()" class="bg-green-600 text-white font-bold rounded-xl h-[46px] px-4 hover:bg-green-700 transition shadow-lg active:scale-95">
+                        ✓
+                    </button>
+                </div>
+            </div>
 
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="font-black text-gray-700">💰 Yıllık Kazanç Tablosu</h3>
+                        <h3 class="font-black text-gray-700">💰 Kazanç Tablosu</h3>
                         <select id="yilSecim" onchange="kazancTablosuCiz()" class="p-2 border rounded-lg text-sm bg-gray-50 font-bold">
                             <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
                         </select>
