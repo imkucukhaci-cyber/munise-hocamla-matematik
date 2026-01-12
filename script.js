@@ -802,7 +802,7 @@ function kazancEkle() {
 /* =========================================
    KAZANÇ SAYFASI FORM HAZIRLIĞI
    ========================================= */
-function ogrencileriYukle() {
+function formVerileriniYukle() {
     // 1. Öğrencileri Doldur
     const ogrSelect = document.getElementById("kazancOgrenci");
     if(ogrSelect) {
