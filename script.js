@@ -799,14 +799,16 @@ function kazancEkle() {
 }
 
 
-function formVerileriniYukle() {
+/* =========================================
+   KAZANÇ SAYFASI FORM HAZIRLIĞI
+   ========================================= */
+function ogrencileriYukle() {
     // 1. Öğrencileri Doldur
     const ogrSelect = document.getElementById("kazancOgrenci");
     if(ogrSelect) {
         const mevcutSecim = ogrSelect.value;
         ogrSelect.innerHTML = `<option value="">Öğrenci Seçiniz</option>`;
         
-        // Derslerden benzersiz öğrencileri bul
         const ogrenciler = [...new Set(dersler.map(d => d.ogrenci))];
         
         ogrenciler.forEach(o => {
@@ -818,10 +820,10 @@ function formVerileriniYukle() {
         if(mevcutSecim) ogrSelect.value = mevcutSecim;
     }
 
-    // 2. Süreleri Doldur (Ayarlardan - Saat Cinsinden)
+    // 2. Süreleri Doldur (Ayarlardan Gelen Seçenekler)
     const sureSelect = document.getElementById("kazancSure");
     if (sureSelect) {
-        sureSelect.innerHTML = ""; // Temizle
+        sureSelect.innerHTML = ""; 
         
         // Ayarlardan süreleri al (Yoksa varsayılan 1 saat)
         let sureler = (globalAyarlar && globalAyarlar.dersSureleri) ? globalAyarlar.dersSureleri : [];
@@ -829,8 +831,8 @@ function formVerileriniYukle() {
 
         sureler.forEach(saat => {
             const opt = document.createElement("option");
-            opt.value = saat; // Value örneğin: 1.5
-            opt.innerText = `${saat} Saat`; // Görünüm: 1.5 Saat
+            opt.value = saat; 
+            opt.innerText = `${saat} Saat`; 
             sureSelect.appendChild(opt);
         });
     }
