@@ -295,47 +295,64 @@
             </div>
             
             <div id="kazancSayfa" class="sayfa-bolum" style="display:none">
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
                 
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Öğrenci</label>
-                    <select id="kazancOgrenci" class="w-full p-3 border border-gray-200 rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-green-500 transition appearance-none">
-                        </select>
-                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                    <h2 class="text-xl font-black mb-6 flex items-center gap-2 text-gray-800">
+                        ✨ Ders Kaydı Oluştur
+                    </h2>
 
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Tarih</label>
-                    <input type="date" id="kazancTarih" class="w-full p-3 border border-gray-200 rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-green-500 transition appearance-none h-[46px] text-left">
-                </div>
+                    <div class="flex flex-col gap-5">
+                        <div class="space-y-1.5">
+                            <label class="text-[11px] font-bold text-gray-400 uppercase ml-1 tracking-wide">ÖĞRENCİ SEÇİNİZ</label>
+                            <div class="relative">
+                                <select id="kazancOgrenci" class="w-full p-4 border border-gray-200 rounded-2xl text-sm bg-gray-50 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition appearance-none font-bold text-gray-700">
+                                    </select>
+                                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">▼</div>
+                            </div>
+                        </div>
 
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Süre</label>
-                    <select id="kazancSure" class="w-full p-3 border border-gray-200 rounded-xl text-sm bg-white outline-none focus:ring-2 focus:ring-green-500 transition appearance-none h-[46px]">
-                        </select>
-                </div>
+                        <div class="space-y-1.5">
+                            <label class="text-[11px] font-bold text-gray-400 uppercase ml-1 tracking-wide">TARİH</label>
+                            <input type="date" id="kazancTarih" class="w-full p-4 border border-gray-200 rounded-2xl text-sm bg-gray-50 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition appearance-none font-bold text-gray-700 text-left h-[54px]">
+                        </div>
 
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Durum</label>
-                    <div class="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl h-[46px] cursor-pointer hover:bg-gray-50 transition select-none" onclick="document.getElementById('kazancOdeme').click()">
-                         <input type="checkbox" id="kazancOdeme" class="w-5 h-5 accent-green-600 rounded cursor-pointer" onclick="event.stopPropagation()">
-                         <span class="text-xs font-bold text-gray-600">Ödeme Alındı</span>
+                        <div class="space-y-1.5">
+                            <label class="text-[11px] font-bold text-gray-400 uppercase ml-1 tracking-wide">SÜRE</label>
+                            <div class="relative">
+                                <select id="kazancSure" class="w-full p-4 border border-gray-200 rounded-2xl text-sm bg-gray-50 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition appearance-none font-bold text-gray-700">
+                                    </select>
+                                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">▼</div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="text-[11px] font-bold text-gray-400 uppercase ml-1 tracking-wide">ÖDEME DURUMU</label>
+                            <div onclick="document.getElementById('kazancOdeme').click()" class="w-full p-4 border border-gray-200 rounded-2xl bg-white hover:bg-gray-50 transition cursor-pointer flex items-center gap-3 h-[54px]">
+                                <div class="relative flex items-center">
+                                    <input type="checkbox" id="kazancOdeme" class="peer h-6 w-6 cursor-pointer appearance-none rounded-lg border-2 border-gray-300 transition-all checked:border-emerald-500 checked:bg-emerald-500" onclick="event.stopPropagation()">
+                                    <svg class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="3">
+                                        <path d="M20 6L9 17l-5-5"></path>
+                                    </svg>
+                                </div>
+                                <span class="text-sm font-bold text-gray-600 select-none">Ödeme Alındı Olarak İşaretle</span>
+                            </div>
+                        </div>
+
+                        <button onclick="kazancEkle()" class="w-full py-4 bg-emerald-600 text-white font-black rounded-2xl hover:bg-emerald-700 transition shadow-lg shadow-emerald-200 active:scale-95 text-base flex items-center justify-center gap-2 mt-2">
+                            <span>KAYDET</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
 
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-white uppercase ml-1 select-none">.</label>
-                    <button onclick="kazancEkle()" class="w-full h-[46px] bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition shadow-md active:scale-95">
-                        Dersi Kaydet
-                    </button>
-                </div>
-
-            </div>
-
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="font-black text-gray-700">💰 Kazanç Tablosu</h3>
-                        <select id="yilSecim" onchange="kazancTablosuCiz()" class="p-2 border rounded-lg text-sm bg-gray-50 font-bold">
+                        <h3 class="font-black text-gray-700 text-lg flex items-center gap-2">
+                            <span>📊</span> Kazanç Tablosu
+                        </h3>
+                        <select id="yilSecim" onchange="kazancTablosuCiz()" class="p-2 border rounded-xl text-sm bg-gray-50 font-bold outline-none focus:ring-2 focus:ring-emerald-500">
                             <option value="2025">2025</option><option value="2026" selected>2026</option><option value="2027">2027</option>
                         </select>
                     </div>
@@ -343,12 +360,12 @@
                         <table id="kazancTablo" class="w-full text-center text-[11px] border-collapse">
                             <thead>
                                 <tr class="bg-gray-50 text-gray-400 font-bold border-b">
-                                    <th class="p-3 text-left">ÖĞRENCİ</th>
+                                    <th class="p-4 text-left rounded-tl-xl">ÖĞRENCİ</th>
                                     <th>OCA</th><th>ŞUB</th><th>MAR</th><th>NİS</th><th>MAY</th><th>HAZ</th>
-                                    <th>TEM</th><th>AĞU</th><th>EYL</th><th>EKİ</th><th>KAS</th><th>ARA</th>
+                                    <th>TEM</th><th>AĞU</th><th>EYL</th><th>EKİ</th><th>KAS</th><th class="rounded-tr-xl">ARA</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-100">
+                            <tbody class="divide-y divide-gray-100 text-xs">
                                 </tbody>
                         </table>
                     </div>
