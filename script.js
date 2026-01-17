@@ -622,6 +622,8 @@ function ayDetayiniGoster(ayIndex, yil, seciliOgrenci) {
 
     liste.innerHTML = "";
     modal.style.display = "flex";
+
+    document.body.style.overflow = 'hidden';
     
     // Başlığı güncelle (Örn: Mert - Mart 2026 Detayı)
     baslik.innerHTML = `<span class="text-emerald-600">${seciliOgrenci}</span> <span class="text-gray-400">|</span> ${aylar[ayIndex]} ${yil}`;
@@ -665,7 +667,7 @@ function ayDetayiniGoster(ayIndex, yil, seciliOgrenci) {
             
             <div class="flex gap-2">
                 <button onclick="odemeDurumuGuncelle('${k.id}', ${!k.odemeDurumu}, '${seciliOgrenci}')" class="h-9 px-3 rounded-lg text-xs font-bold transition flex items-center gap-1 ${k.odemeDurumu ? 'bg-gray-100 text-gray-500 hover:bg-gray-200' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-200 shadow-md'}">
-                    ${k.odemeDurumu ? 'İptal Et' : '✅ Öde'}
+                    ${k.odemeDurumu ? 'Ödemeyi İptal Et' : '✅ Ödeme Alındı'}
                 </button>
                 
                 <button onclick="kazancKaydiSil('${k.id}', '${seciliOgrenci}')" class="h-9 w-9 flex items-center justify-center rounded-lg bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 transition">
@@ -695,6 +697,7 @@ function ayModalKapat() {
     const modal = document.getElementById('ayModalArka');
     if (modal) {
         modal.style.display = 'none';
+        document.body.style.overflow = '';
     }
 }
 
@@ -815,10 +818,12 @@ function tabloyuTemizle() {
 function secimModalAc(blok) {
     aktifBlok = blok;
     document.getElementById("secimModalArka").style.display = "flex";
+    document.body.style.overflow = "hidden";
 }
 
 function secimKapat() {
     document.getElementById("secimModalArka").style.display = "none";
+    document.body.style.overflow = "";
 }
 
 function secimSil() {
