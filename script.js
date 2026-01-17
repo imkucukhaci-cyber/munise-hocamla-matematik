@@ -545,7 +545,7 @@ function paneliCiz(kazancData, dersData) {
 }
 
 /* =========================================
-   6. KAZANÇ TABLOSU & MODALLAR
+   6. KAZANÇ TABLOSU & MODALLAR (GÜNCELLENMİŞ)
    ========================================= */
 
 function kazancTablosuCiz() {
@@ -556,11 +556,14 @@ function kazancTablosuCiz() {
     const aylikToplam = Array(12).fill(0);
     const ogrenciToplam = {};
 
+    // 1. Verileri Hesapla
     kazancKayitlari.forEach(k => {
         const tarih = new Date(k.tarih);
         if (tarih.getFullYear() === yil) {
             const ay = tarih.getMonth();
             const tutar = k.sure * k.ucret;
+            
+            // Eğer ödenmişse toplamlara ekle
             if (k.odemeDurumu) {
                 aylikToplam[ay] += tutar;
                 if (!ogrenciToplam[k.ogrenci]) ogrenciToplam[k.ogrenci] = Array(12).fill(0);
@@ -573,28 +576,45 @@ function kazancTablosuCiz() {
     if(!tbody) return;
     tbody.innerHTML = "";
 
+    // 2. Genel Toplam Satırı
     const toplamSatir = document.createElement("tr");
-    toplamSatir.className = "font-bold bg-gray-100 border-b";
-    toplamSatir.innerHTML = `<td class="p-3 text-left">GENEL TOPLAM</td>`;
+    toplamSatir.className = "font-black bg-emerald-50/50 text-emerald-800 border-b";
+    toplamSatir.innerHTML = `<td class="p-4 text-left">GENEL TOPLAM</td>`;
     aylikToplam.forEach(t => {
-        toplamSatir.innerHTML += `<td class="p-2 text-center text-gray-700">${t > 0 ? '₺' + t.toFixed(0) : '-'}</td>`;
+        toplamSatir.innerHTML += `<td class="p-2 text-center">${t > 0 ? '₺' + t.toFixed(0) : '-'}</td>`;
     });
     tbody.appendChild(toplamSatir);
 
+    // 3. Öğrenci Satırları
     Object.keys(ogrenciToplam).forEach(o => {
         const tr = document.createElement("tr");
-        tr.className = "hover:bg-gray-50 border-b border-gray-100 transition";
-        tr.innerHTML = `<td class="p-3 text-left font-medium text-gray-800">${o}</td>`;
-        ogrenciToplam[o].forEach(t => {
-            tr.innerHTML += `<td class="p-2 text-center text-gray-600">${t > 0 ? '₺' + t.toFixed(0) : '-'}</td>`;
+        tr.className = "hover:bg-gray-50 border-b border-gray-100 transition group";
+        
+        // Öğrenci Adı
+        tr.innerHTML = `<td class="p-4 text-left font-bold text-gray-700">${o}</td>`;
+        
+        // Aylık Hücreler (TIKLANABİLİR)
+        ogrenciToplam[o].forEach((t, ayIndex) => {
+            // Hücre içeriği
+            const hucreIcerik = t > 0 ? '₺' + t.toFixed(0) : '<span class="text-gray-200 text-[9px]">•</span>';
+            const aktifClass = t > 0 ? 'text-emerald-600 font-bold cursor-pointer hover:bg-emerald-100 hover:scale-110 transition-all rounded-lg' : 'cursor-pointer hover:bg-gray-100 rounded-lg';
+            
+            // Tıklayınca ayDetayiniGoster fonksiyonuna ÖĞRENCİ ADINI da gönderiyoruz
+            tr.innerHTML += `
+                <td onclick="ayDetayiniGoster(${ayIndex}, ${yil}, '${o}')" class="p-2 text-center ${aktifClass}">
+                    ${hucreIcerik}
+                </td>`;
         });
         tbody.appendChild(tr);
     });
 }
 
-function ayDetayiniGoster(ayIndex, yil) {
+// Detay Penceresini Açma (Öğrenci Filtreli)
+function ayDetayiniGoster(ayIndex, yil, seciliOgrenci) {
     modalAcikAy = ayIndex;
     modalAcikYil = yil;
+    // Öğrenci adını global veya geçici tutabiliriz ama filtrede kullanacağız
+    
     const modal = document.getElementById('ayModalArka');
     const liste = document.getElementById('ayKayitListe');
     const baslik = document.getElementById('ayModalBaslik');
@@ -602,52 +622,80 @@ function ayDetayiniGoster(ayIndex, yil) {
 
     liste.innerHTML = "";
     modal.style.display = "flex";
-    baslik.innerText = `${aylar[ayIndex]} ${yil} Detayı`;
+    
+    // Başlığı güncelle (Örn: Mert - Mart 2026 Detayı)
+    baslik.innerHTML = `<span class="text-emerald-600">${seciliOgrenci}</span> <span class="text-gray-400">|</span> ${aylar[ayIndex]} ${yil}`;
 
+    // Filtreleme: Yıl + Ay + Öğrenci
     const filtreli = kazancKayitlari.filter(k => {
         const d = new Date(k.tarih);
-        return d.getMonth() === ayIndex && d.getFullYear() === yil;
-    }).sort((a,b) => new Date(b.tarih) - new Date(a.tarih));
+        return d.getMonth() === ayIndex && 
+               d.getFullYear() === yil && 
+               k.ogrenci === seciliOgrenci;
+    }).sort((a,b) => new Date(b.tarih) - new Date(a.tarih)); // Tarihe göre sırala
 
     if (filtreli.length === 0) {
-        liste.innerHTML = `<div class="text-center p-8 text-gray-400">Kayıt yok.</div>`;
+        liste.innerHTML = `
+            <div class="flex flex-col items-center justify-center p-8 text-gray-400 gap-2">
+                <span class="text-2xl">📭</span>
+                <p class="text-sm font-medium">Bu tarihte kayıtlı ders bulunamadı.</p>
+            </div>`;
         return;
     }
 
     filtreli.forEach(k => {
         const tutar = k.sure * k.ucret;
+        
+        // Tarihi güzelleştir (17 Jan 2026 formatı yerine 17.01.2026)
+        const tarihGuzel = new Date(k.tarih).toLocaleDateString('tr-TR', {day: 'numeric', month: 'long'});
+        
         const kart = document.createElement("div");
-        kart.className = `flex items-center justify-between p-4 rounded-xl border mb-2 ${k.odemeDurumu ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100'}`;
+        kart.className = `flex items-center justify-between p-4 rounded-xl border mb-3 transition hover:shadow-sm ${k.odemeDurumu ? 'bg-white border-emerald-100' : 'bg-red-50/50 border-red-100'}`;
+        
         kart.innerHTML = `
-            <div>
-                <div class="font-bold text-gray-800">${k.ogrenci}</div>
-                <div class="text-xs text-gray-500">${k.tarih} | ${k.sure} Saat | ₺${tutar}</div>
+            <div class="flex items-center gap-3">
+                <div class="flex flex-col items-center justify-center w-10 h-10 rounded-lg ${k.odemeDurumu ? 'bg-emerald-50 text-emerald-600' : 'bg-red-100 text-red-500'} font-black text-xs">
+                    <span>${new Date(k.tarih).getDate()}</span>
+                </div>
+                <div>
+                    <div class="font-bold text-gray-800 text-sm">${tarihGuzel}</div>
+                    <div class="text-xs text-gray-500 font-medium">${k.sure} Saat • <span class="text-gray-900 font-bold">₺${tutar}</span></div>
+                </div>
             </div>
+            
             <div class="flex gap-2">
-                <button onclick="odemeDurumuGuncelle('${k.id}', ${!k.odemeDurumu})" class="text-xs font-bold px-3 py-1 rounded-lg ${k.odemeDurumu ? 'bg-gray-200 text-gray-600' : 'bg-green-600 text-white'}">
-                    ${k.odemeDurumu ? 'İptal Et' : 'Öde'}
+                <button onclick="odemeDurumuGuncelle('${k.id}', ${!k.odemeDurumu}, '${seciliOgrenci}')" class="h-9 px-3 rounded-lg text-xs font-bold transition flex items-center gap-1 ${k.odemeDurumu ? 'bg-gray-100 text-gray-500 hover:bg-gray-200' : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-200 shadow-md'}">
+                    ${k.odemeDurumu ? 'İptal Et' : '✅ Öde'}
                 </button>
-                <button onclick="kazancKaydiSil('${k.id}')" class="text-gray-400 hover:text-red-500 px-2">🗑️</button>
+                
+                <button onclick="kazancKaydiSil('${k.id}', '${seciliOgrenci}')" class="h-9 w-9 flex items-center justify-center rounded-lg bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                </button>
             </div>
         `;
         liste.appendChild(kart);
     });
 }
 
-function odemeDurumuGuncelle(id, durum) {
+// Güncelleme Fonksiyonu (Parametre eklendi: seciliOgrenci)
+function odemeDurumuGuncelle(id, durum, seciliOgrenci) {
     database.ref(`kullanicilar/${aktifKullaniciId}/kazanclar/${id}`).update({ odemeDurumu: durum })
-        .then(() => ayDetayiniGoster(modalAcikAy, modalAcikYil));
+        .then(() => ayDetayiniGoster(modalAcikAy, modalAcikYil, seciliOgrenci));
 }
 
-function kazancKaydiSil(id) {
-    if(confirm("Silmek istediğinize emin misiniz?")) {
+// Silme Fonksiyonu (Parametre eklendi: seciliOgrenci)
+function kazancKaydiSil(id, seciliOgrenci) {
+    if(confirm("Bu ders kaydını tamamen silmek istediğinize emin misiniz?")) {
         database.ref(`kullanicilar/${aktifKullaniciId}/kazanclar/${id}`).remove()
-            .then(() => ayDetayiniGoster(modalAcikAy, modalAcikYil));
+            .then(() => ayDetayiniGoster(modalAcikAy, modalAcikYil, seciliOgrenci));
     }
 }
 
 function ayModalKapat() {
-    document.getElementById('ayModalArka').style.display = "none";
+    const modal = document.getElementById('ayModalArka');
+    if (modal) {
+        modal.style.display = 'none';
+    }
 }
 
 /* =========================================
