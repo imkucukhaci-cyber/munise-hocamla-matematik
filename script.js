@@ -1033,6 +1033,7 @@ function tercihleriAc() {
 
     // Sayfayı Aç
     modal.style.display = "flex";
+    document.body.style.overflow = "hidden";
 }
 
 /* =========================================
@@ -1118,6 +1119,7 @@ function tercihKapat() {
     const modal = document.getElementById("tercihlerSayfa");
     if (modal) {
         modal.style.display = "none";
+        document.body.style.overflow = "";
     }
 }
 
