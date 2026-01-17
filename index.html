@@ -430,16 +430,28 @@
         </div>
     </div>
 
-    <div id="ayModalArka" class="modal-arka" style="display:none;">
-        <div class="bg-white p-6 rounded-2xl max-w-2xl w-full shadow-2xl mx-4 max-h-[90vh] flex flex-col">
-            <div class="flex justify-between items-center mb-6">
-                <h3 id="ayModalBaslik" class="font-black text-xl text-gray-800">Aylık Detay</h3>
-                <button onclick="ayModalKapat()" class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">✕</button>
+<div id="ayModalArka" class="fixed inset-0 bg-black/60 hidden z-[200] items-end justify-center sm:items-center backdrop-blur-sm transition-opacity" onclick="disTiklamaKapat(event)">
+    
+    <div class="bg-white w-full h-[85vh] sm:h-auto sm:max-h-[85vh] sm:max-w-lg rounded-t-3xl sm:rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-slide-up">
+        
+        <div class="flex justify-between items-center p-5 border-b bg-gray-50">
+            <h3 id="ayModalBaslik" class="text-lg font-black text-gray-800">
+                </h3>
+            <button onclick="ayModalKapat()" class="w-9 h-9 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center hover:bg-gray-300 hover:text-red-500 transition font-bold text-lg">
+                ✕
+            </button>
+        </div>
+
+        <div id="ayKayitListe" class="flex-1 overflow-y-auto p-4 space-y-3 bg-white">
             </div>
-            <div id="ayKayitListe" class="overflow-y-auto space-y-3 pr-2">
-                </div>
+
+        <div class="p-4 border-t bg-gray-50 sm:hidden">
+            <button onclick="ayModalKapat()" class="w-full py-3 bg-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-300 transition">
+                Kapat
+            </button>
         </div>
     </div>
+</div>
 
 <div id="tercihlerSayfa" class="fixed inset-0 z-[100] bg-white md:bg-gray-900/80 md:backdrop-blur-sm flex items-center justify-center p-0 md:p-4" style="display:none;">
     
