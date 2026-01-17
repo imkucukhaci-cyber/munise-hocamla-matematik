@@ -186,3 +186,17 @@ canvas {
     color: white !important;
     border-color: #2563eb !important;
 }
+
+/* =========================================
+   6. TARİH KUTUSU DÜZELTMESİ (MOBİL)
+   ========================================= */
+input[type="date"] {
+    text-align: left !important; /* Sola yasla (Zorla) */
+    display: block;
+    -webkit-appearance: none; /* iPhone varsayılan stilini kaldır */
+}
+
+/* Özellikle iOS Safari için gerekli kod: */
+input[type="date"]::-webkit-date-and-time-value {
+    text-align: left !important; 
+}
