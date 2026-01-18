@@ -1238,3 +1238,33 @@ function secimDuzenle() {
     secimKapat();
     document.getElementById("takvimSayfa").scrollIntoView({ behavior: 'smooth' });
 }
+
+/* =========================================
+   MOBİL ZOOM ENGELLEME (IPHONE İÇİN)
+   ========================================= */
+
+// 1. İki parmakla büyütmeyi (Pinch) engelle
+document.addEventListener('gesturestart', function(e) {
+    e.preventDefault();
+});
+
+document.addEventListener('gesturechange', function(e) {
+    e.preventDefault();
+});
+
+document.addEventListener('gestureend', function(e) {
+    e.preventDefault();
+});
+
+// 2. Çift dokunarak büyütmeyi (Double Tap) engelle
+let sonDokunmaZamani = 0;
+document.addEventListener('touchstart', function(event) {
+    const simdi = new Date().getTime();
+    const zamanFarki = simdi - sonDokunmaZamani;
+    
+    // Eğer 300ms içinde iki kere dokunulursa engelle
+    if (zamanFarki < 300 && zamanFarki > 0) {
+        event.preventDefault();
+    }
+    sonDokunmaZamani = simdi;
+}, { passive: false });

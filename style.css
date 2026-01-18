@@ -1,7 +1,17 @@
 /* =========================================
+   0. ZOOM VE KAYDIRMA ENGELLEME (APP HİSSİ)
+   ========================================= */
+html, body {
+    touch-action: pan-x pan-y; /* Sadece kaydırmaya izin ver, büyütmeye değil */
+    -webkit-text-size-adjust: 100%; /* iPhone'da yazı büyütmeyi engelle */
+    overscroll-behavior: none; /* Sayfa sonuna gelince oluşan lastik etkisini kapat */
+}
+
+/* =========================================
    1. GENEL AYARLAR (YENİ TASARIMLA UYUMLU)
    ========================================= */
-body {
+
+   body {
     font-family: 'Inter', sans-serif;
     background-color: #f8fafc;
     margin: 0;
