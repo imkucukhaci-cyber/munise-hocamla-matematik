@@ -1343,3 +1343,108 @@ function bildirimGoster(mesaj, tur = "basarili") {
         setTimeout(() => { kutu.classList.add("hidden"); }, 500);
     }, 3000);
 }
+
+/* =========================================
+   9. RAPOR SAYFASI GELİŞTİRMELERİ (ÖĞRENCİ LİSTESİ)
+   ========================================= */
+
+// 1. Mod Değiştirme (Finansal <-> Öğrenci)
+function raporModuDegistir() {
+    const secim = document.getElementById("raporTuru").value;
+    const panelFinansal = document.getElementById("panelFinansal");
+    const panelOgrenci = document.getElementById("panelOgrenci");
+    const sonucAlani = document.getElementById("raporSonucAlani");
+
+    if (secim === "finansal") {
+        panelFinansal.classList.remove("hidden");
+        panelOgrenci.classList.add("hidden");
+        // Eğer daha önce rapor alındıysa sonucunu göster
+        if (sonucAlani.innerHTML.trim() !== "") {
+            sonucAlani.classList.remove("hidden");
+        }
+    } else {
+        panelFinansal.classList.add("hidden");
+        panelOgrenci.classList.remove("hidden");
+        sonucAlani.classList.add("hidden"); // Finansal tabloyu gizle
+        
+        // Öğrenci listesini oluştur
+        ogrenciListesiOlustur();
+    }
+}
+
+// 2. Öğrenci Listesini Oluşturma ve Gruplama
+function ogrenciListesiOlustur() {
+    const container = document.getElementById("ogrenciListesiContainer");
+    container.innerHTML = "";
+
+    if (dersler.length === 0) {
+        container.innerHTML = `<div class="text-center text-gray-400 py-8 italic">Henüz kayıtlı öğrenci yok.</div>`;
+        return;
+    }
+
+    // Öğrencileri İsimlerine Göre Grupla (Aynı öğrencinin birden fazla dersi olabilir)
+    const ogrenciMap = {};
+
+    dersler.forEach(ders => {
+        if (!ogrenciMap[ders.ogrenci]) {
+            ogrenciMap[ders.ogrenci] = {
+                ad: ders.ogrenci,
+                iletisim: ders.iletisim || "-",
+                ucret: ders.ucret,
+                duzey: ders.duzey || "Belirtilmedi",
+                dersler: [] // Hangi günler geldiğini tutacağız
+            };
+        }
+        // Gün ismini al (1=Pazartesi...)
+        const gunler = ["", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
+        ogrenciMap[ders.ogrenci].dersler.push({
+            gun: gunler[ders.gun],
+            saat: ders.saat,
+            sure: ders.sure
+        });
+    });
+
+    // İsim sırasına göre diz
+    const siraliOgrenciler = Object.values(ogrenciMap).sort((a, b) => a.ad.localeCompare(b.ad));
+
+    // HTML Kartlarını Bas
+    siraliOgrenciler.forEach(ogr => {
+        let dersProgramiHtml = "";
+        ogr.dersler.forEach(d => {
+            dersProgramiHtml += `<span class="inline-block bg-orange-50 text-orange-600 text-[10px] font-bold px-2 py-1 rounded-md mr-1 mb-1 border border-orange-100">${d.gun} ${d.saat} (${d.sure}dk)</span>`;
+        });
+
+        // Telefon linki (Tıklayınca arar)
+        let telHtml = ogr.iletisim !== "-" 
+            ? `<a href="tel:${ogr.iletisim}" class="text-blue-500 hover:underline flex items-center gap-1"><span class="text-xs">📞</span>${ogr.iletisim}</a>` 
+            : `<span class="text-gray-400 text-xs">Tel Yok</span>`;
+
+        const kart = document.createElement("div");
+        kart.className = "bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition flex flex-col gap-2";
+        kart.innerHTML = `
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 class="font-black text-gray-800 text-lg leading-tight">${ogr.ad}</h3>
+                    <div class="text-xs font-bold text-gray-400 mt-1 uppercase tracking-wide">${ogr.duzey}</div>
+                </div>
+                <div class="text-right">
+                    <div class="font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg text-sm">₺${ogr.ucret}/saat</div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-50 my-1"></div>
+            
+            <div class="flex items-center justify-between">
+                <div class="flex flex-wrap items-center">
+                    ${dersProgramiHtml}
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mt-1 pt-2 border-t border-gray-50">
+                ${telHtml}
+                <span class="text-[10px] text-gray-400 font-bold">TOPLAM ${ogr.dersler.length} DERS</span>
+            </div>
+        `;
+        container.appendChild(kart);
+    });
+}
