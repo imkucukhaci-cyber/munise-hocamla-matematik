@@ -935,11 +935,18 @@ function formVerileriniYukle() {
         if(mevcutSecim) ogrSelect.value = mevcutSecim;
     }
 
-    // 2. Süreleri Doldur (Ayarlardan Gelen Seçenekler)
+// 2. Süreleri Doldur (Ayarlardan Gelen Seçenekler)
     const sureSelect = document.getElementById("kazancSure");
     if (sureSelect) {
         sureSelect.innerHTML = ""; 
         
+        // YENİ EKLENEN KISIM: Varsayılan başlık
+        const baslikOpt = document.createElement("option");
+        baslikOpt.value = "";
+        baslikOpt.text = "Süre Seçiniz";
+        sureSelect.appendChild(baslikOpt);
+        // -------------------------------------
+
         // Ayarlardan süreleri al (Yoksa varsayılan 1 saat)
         let sureler = (globalAyarlar && globalAyarlar.dersSureleri) ? globalAyarlar.dersSureleri : [];
         if (sureler.length === 0) sureler = [1]; 
