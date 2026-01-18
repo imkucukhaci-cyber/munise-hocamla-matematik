@@ -325,54 +325,41 @@
             
             <div id="kazancSayfa" class="sayfa-bolum" style="display:none">
                 
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-5">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
                     <h2 class="text-lg font-black mb-4 flex items-center gap-2 text-gray-800">
                         ✨ Ders Kaydı Oluştur
                     </h2>
 
                     <div class="flex flex-col gap-3">
                         
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-gray-400 uppercase ml-1 tracking-wide">ÖĞRENCİ</label>
-                            <div class="relative">
-                                <select id="kazancOgrenci" class="w-full p-3 border border-gray-200 rounded-xl text-sm bg-gray-50 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 transition appearance-none font-bold text-gray-700">
-                                    </select>
-                                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">▼</div>
+                        <div class="w-full relative">
+                            <select id="kazancOgrenci" class="w-full h-[40px] px-4 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 bg-white outline-none focus:ring-2 focus:ring-emerald-500 transition appearance-none">
+                                </select>
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">▼</div>
+                        </div>
+
+                        <div class="w-full">
+                            <input type="date" id="kazancTarih" class="w-full h-[40px] px-4 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 bg-white outline-none focus:ring-2 focus:ring-emerald-500 transition text-left placeholder-gray-400">
+                        </div>
+
+                        <div class="w-full relative">
+                            <select id="kazancSure" class="w-full h-[40px] px-4 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 bg-white outline-none focus:ring-2 focus:ring-emerald-500 transition appearance-none">
+                                </select>
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">▼</div>
+                        </div>
+
+                        <div onclick="document.getElementById('kazancOdeme').click()" class="w-full h-[40px] px-4 border border-gray-200 rounded-xl bg-white hover:bg-gray-50 transition cursor-pointer flex items-center gap-3">
+                            <div class="relative flex items-center">
+                                <input type="checkbox" id="kazancOdeme" class="peer h-5 w-5 cursor-pointer appearance-none rounded border-2 border-gray-300 transition-all checked:border-emerald-500 checked:bg-emerald-500" onclick="event.stopPropagation()">
+                                <svg class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="3">
+                                    <path d="M20 6L9 17l-5-5"></path>
+                                </svg>
                             </div>
+                            <span class="text-sm font-bold text-gray-600 select-none">Ödeme Alındı</span>
                         </div>
 
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-gray-400 uppercase ml-1 tracking-wide">TARİH</label>
-                            <input type="date" id="kazancTarih" class="w-full p-3 border border-gray-200 rounded-xl text-sm bg-gray-50 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 transition appearance-none font-bold text-gray-700 text-left h-[46px]">
-                        </div>
-
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-gray-400 uppercase ml-1 tracking-wide">SÜRE</label>
-                            <div class="relative">
-                                <select id="kazancSure" class="w-full p-3 border border-gray-200 rounded-xl text-sm bg-gray-50 outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500 transition appearance-none font-bold text-gray-700">
-                                    </select>
-                                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">▼</div>
-                            </div>
-                        </div>
-
-                        <div class="space-y-1">
-                            <label class="text-[10px] font-bold text-gray-400 uppercase ml-1 tracking-wide">DURUM</label>
-                            <div onclick="document.getElementById('kazancOdeme').click()" class="w-full p-3 border border-gray-200 rounded-xl bg-white hover:bg-gray-50 transition cursor-pointer flex items-center gap-3 h-[46px]">
-                                <div class="relative flex items-center">
-                                    <input type="checkbox" id="kazancOdeme" class="peer h-5 w-5 cursor-pointer appearance-none rounded border-2 border-gray-300 transition-all checked:border-emerald-500 checked:bg-emerald-500" onclick="event.stopPropagation()">
-                                    <svg class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="3">
-                                        <path d="M20 6L9 17l-5-5"></path>
-                                    </svg>
-                                </div>
-                                <span class="text-xs font-bold text-gray-600 select-none">Ödeme Alındı</span>
-                            </div>
-                        </div>
-
-                        <button onclick="kazancEkle()" class="w-full py-3.5 bg-emerald-600 text-white font-black rounded-xl hover:bg-emerald-700 transition shadow-lg shadow-emerald-200 active:scale-95 text-sm flex items-center justify-center gap-2 mt-2">
+                        <button onclick="kazancEkle()" class="w-full h-[40px] bg-emerald-600 text-white font-black rounded-xl hover:bg-emerald-700 transition shadow-lg shadow-emerald-200 active:scale-95 text-sm flex items-center justify-center gap-2 mt-1">
                             <span>KAYDET</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                            </svg>
                         </button>
                     </div>
                 </div>
