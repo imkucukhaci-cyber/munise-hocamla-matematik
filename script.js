@@ -55,12 +55,36 @@ function googleIleGiris() {
 }
 
 function cikisYap() {
-    if(confirm("Çıkış yapmak istediğinize emin misiniz?")) {
-        auth.signOut().then(() => {
-            // Başarılı çıkış sonrası giriş sayfasına temiz bir dönüş
-            window.location.reload();
-        });
+    const modal = document.getElementById('cikisModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex'); // Flex ile ortalayarak aç
     }
+}
+
+function cikisIptal() {
+    const modal = document.getElementById('cikisModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}
+
+function cikisOnayla() {
+    cikisIptal(); // Önce pencereyi kapat
+    
+    auth.signOut().then(() => {
+        // Çıkış başarılı olunca havalı bir veda mesajı göster
+        bildirimGoster("Başarıyla çıkış yapıldı!");
+        
+        // 1 saniye sonra giriş sayfasına yönlendir (Firebase zaten yönlendirir ama garanti olsun)
+        setTimeout(() => {
+            sayfaGoster("login");
+            window.location.reload();
+        }, 1000);
+    }).catch((error) => {
+        console.error("Çıkış hatası:", error);
+    });
 }
 
 function ayarKontrolVeBaslat() {

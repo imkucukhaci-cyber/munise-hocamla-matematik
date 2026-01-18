@@ -636,6 +636,29 @@
     <div id="bildirimMetin" class="text-sm font-bold">İşlem Başarılı</div>
 </div>
 
+<div id="cikisModal" class="fixed inset-0 bg-black/60 hidden z-[200] items-center justify-center backdrop-blur-sm transition-opacity">
+    <div class="bg-white rounded-2xl p-6 max-w-xs w-full mx-4 shadow-2xl animate-scale-up text-center">
+        
+        <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-red-100">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+        </div>
+
+        <h3 class="text-lg font-black text-gray-800 mb-2">Çıkış Yapılıyor</h3>
+        <p class="text-gray-500 text-sm mb-6 font-medium">Hesabınızdan çıkış yapmak istediğinize emin misiniz?</p>
+
+        <div class="flex gap-3">
+            <button onclick="cikisIptal()" class="flex-1 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition text-sm">
+                Vazgeç
+            </button>
+            <button onclick="cikisOnayla()" class="flex-1 py-3 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition shadow-lg shadow-red-200 active:scale-95 text-sm">
+                Evet, Çıkış Yap
+            </button>
+        </div>
+    </div>
+</div>
+
     <script src="script.js"></script>
     <script>
         // Service Worker Kaydı
