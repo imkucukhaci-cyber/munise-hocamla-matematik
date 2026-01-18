@@ -238,9 +238,16 @@ function ayarlariKaydet() {
     if (typeof database !== 'undefined' && aktifKullaniciId) {
         database.ref(`kullanicilar/${aktifKullaniciId}/ayarlar`).set(yeniAyarlar)
         .then(() => {
-            alert("✅ Ayarlar güncellendi!");
+            // Modalı hemen kapat
             tercihKapat();
-            window.location.reload(); 
+            
+            // Havalı bildirimi göster
+            bildirimGoster("Ayarlar başarıyla güncellendi! ✅");
+            
+            // Bildirim göründükten 1.5 saniye sonra sayfayı yenile
+            setTimeout(() => {
+                window.location.reload(); 
+            }, 1500);
         })
         .catch((err) => alert("Hata: " + err.message));
     }
@@ -1268,3 +1275,34 @@ document.addEventListener('touchstart', function(event) {
     }
     sonDokunmaZamani = simdi;
 }, { passive: false });
+
+// Profesyonel Bildirim Gösterme Fonksiyonu
+function bildirimGoster(mesaj, tur = "basarili") {
+    const kutu = document.getElementById("bildirimKutusu");
+    const metin = document.getElementById("bildirimMetin");
+    const ikon = document.getElementById("bildirimIkon");
+
+    // İçeriği Ayarla
+    metin.innerText = mesaj;
+    
+    if (tur === "basarili") {
+        kutu.className = "fixed top-4 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-4 rounded-full shadow-2xl z-[10000] flex items-center gap-3 transition-all";
+        ikon.innerText = "✅";
+    } else {
+        kutu.className = "fixed top-4 left-1/2 -translate-x-1/2 bg-red-600 text-white px-6 py-4 rounded-full shadow-2xl z-[10000] flex items-center gap-3 transition-all";
+        ikon.innerText = "⚠️";
+    }
+
+    // Göster
+    kutu.classList.remove("hidden");
+    kutu.classList.remove("bildirim-gizle");
+    kutu.classList.add("bildirim-goster");
+
+    // 3 Saniye sonra gizle
+    setTimeout(() => {
+        kutu.classList.remove("bildirim-goster");
+        kutu.classList.add("bildirim-gizle");
+        // Animasyon bitince hidden yap
+        setTimeout(() => { kutu.classList.add("hidden"); }, 500);
+    }, 3000);
+}

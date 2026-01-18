@@ -535,7 +535,7 @@
                 </div>
             </div>
 
-<div class="mt-6 mb-12">
+            <div class="mt-6 mb-12">
                 <label class="text-xs font-bold text-gray-400 uppercase mb-2 block">Öğrenci Düzeyleri</label>
                 
                 <button onclick="duzeyMenusuAcKapa()" class="w-full flex justify-between items-center p-4 bg-white border border-gray-200 rounded-xl shadow-sm active:bg-gray-50 transition">
@@ -574,8 +574,12 @@
             </div> 
         </div>
 
-        <div class="p-4 border-t sticky bottom-0 bg-white">
-            <button onclick="ayarlariKaydet()" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl text-sm shadow-lg shadow-blue-200 active:scale-95 transition">
+        <div class="p-4 border-t sticky bottom-0 bg-white flex gap-3">
+            <button onclick="tercihKapat()" class="flex-1 bg-gray-100 text-gray-600 font-bold py-4 rounded-xl text-sm hover:bg-gray-200 transition">
+                VAZGEÇ
+            </button>
+            
+            <button onclick="ayarlariKaydet()" class="flex-[2] bg-blue-600 text-white font-bold py-4 rounded-xl text-sm shadow-lg shadow-blue-200 active:scale-95 transition">
                 KAYDET VE GÜNCELLE
             </button>
         </div>
@@ -626,6 +630,11 @@
     </button>
 
 </nav>
+
+<div id="bildirimKutusu" class="fixed top-4 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-2xl z-[10000] hidden items-center gap-3 transition-all duration-300 transform translate-y-[-100px]">
+    <div id="bildirimIkon" class="text-xl">✅</div>
+    <div id="bildirimMetin" class="text-sm font-bold">İşlem Başarılı</div>
+</div>
 
     <script src="script.js"></script>
     <script>
