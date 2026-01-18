@@ -545,7 +545,7 @@ function paneliCiz(kazancData, dersData) {
 }
 
 /* =========================================
-   6. KAZANÇ TABLOSU & MODALLAR (GÜNCELLENMİŞ)
+   6. KAZANÇ TABLOSU (DÜZELTİLMİŞ: ÖDENMEYENLER DE GÖRÜNÜR)
    ========================================= */
 
 function kazancTablosuCiz() {
@@ -554,7 +554,8 @@ function kazancTablosuCiz() {
     
     const yil = Number(yilElement.value);
     const aylikToplam = Array(12).fill(0);
-    const ogrenciToplam = {};
+    const ogrenciToplam = {};      // Paraların tutulduğu yer
+    const ogrenciKayitVar = {};    // "Burada ders var mı?" kontrolü (Ödenmese bile)
 
     // 1. Verileri Hesapla
     kazancKayitlari.forEach(k => {
@@ -562,11 +563,20 @@ function kazancTablosuCiz() {
         if (tarih.getFullYear() === yil) {
             const ay = tarih.getMonth();
             const tutar = k.sure * k.ucret;
+
+            // ÖNEMLİ DÜZELTME: Öğrenci nesnesini her durumda oluştur (Ödenmese bile)
+            if (!ogrenciToplam[k.ogrenci]) {
+                ogrenciToplam[k.ogrenci] = Array(12).fill(0);
+                ogrenciKayitVar[k.ogrenci] = Array(12).fill(false);
+            }
+
+            // Kayıt var diye işaretle (Rengi ayarlamak için lazım olacak)
+            ogrenciKayitVar[k.ogrenci][ay] = true;
             
-            // Eğer ödenmişse toplamlara ekle
+            // Eğer ÖDEME ALINDI ise parayı toplama ekle
+            // (Alınmadıysa bakiye 0 kalır ama kayıt var görünür)
             if (k.odemeDurumu) {
                 aylikToplam[ay] += tutar;
-                if (!ogrenciToplam[k.ogrenci]) ogrenciToplam[k.ogrenci] = Array(12).fill(0);
                 ogrenciToplam[k.ogrenci][ay] += tutar;
             }
         }
@@ -581,27 +591,42 @@ function kazancTablosuCiz() {
     toplamSatir.className = "font-black bg-emerald-50/50 text-emerald-800 border-b";
     toplamSatir.innerHTML = `<td class="p-4 text-left">GENEL TOPLAM</td>`;
     aylikToplam.forEach(t => {
-        toplamSatir.innerHTML += `<td class="p-2 text-center">${t > 0 ? '₺' + t.toFixed(0) : '-'}</td>`;
+        toplamSatir.innerHTML += `<td class="p-2 text-center text-xs">${t > 0 ? '₺' + t.toFixed(0) : '-'}</td>`;
     });
     tbody.appendChild(toplamSatir);
 
     // 3. Öğrenci Satırları
-    Object.keys(ogrenciToplam).forEach(o => {
+    Object.keys(ogrenciToplam).sort().forEach(o => {
         const tr = document.createElement("tr");
         tr.className = "hover:bg-gray-50 border-b border-gray-100 transition group";
         
         // Öğrenci Adı
-        tr.innerHTML = `<td class="p-4 text-left font-bold text-gray-700">${o}</td>`;
+        tr.innerHTML = `<td class="p-4 text-left font-bold text-gray-700 text-xs">${o}</td>`;
         
-        // Aylık Hücreler (TIKLANABİLİR)
+        // Aylık Hücreler
         ogrenciToplam[o].forEach((t, ayIndex) => {
-            // Hücre içeriği
-            const hucreIcerik = t > 0 ? '₺' + t.toFixed(0) : '<span class="text-gray-200 text-[9px]">•</span>';
-            const aktifClass = t > 0 ? 'text-emerald-600 font-bold cursor-pointer hover:bg-emerald-100 hover:scale-110 transition-all rounded-lg' : 'cursor-pointer hover:bg-gray-100 rounded-lg';
+            const kayitVarMi = ogrenciKayitVar[o][ayIndex];
             
-            // Tıklayınca ayDetayiniGoster fonksiyonuna ÖĞRENCİ ADINI da gönderiyoruz
+            let hucreIcerik = '';
+            let stil = '';
+
+            if (t > 0) {
+                // A) Para Ödenmiş: Yeşil Bakiye Göster
+                hucreIcerik = '₺' + t.toFixed(0);
+                stil = 'text-emerald-600 font-bold bg-emerald-50/50 hover:bg-emerald-100 hover:scale-105';
+            } else if (kayitVarMi) {
+                // B) Para 0 ama Ders Var (ÖDENMEMİŞ): Kırmızı Uyarı Göster
+                hucreIcerik = '<span class="text-[10px]">ÖDENMEDİ</span>';
+                stil = 'text-red-500 font-bold bg-red-50 hover:bg-red-100 hover:scale-105 border border-red-100';
+            } else {
+                // C) Hiç Ders Yok: Gri Nokta
+                hucreIcerik = '<span class="text-gray-200 text-[9px]">•</span>';
+                stil = 'text-gray-300 hover:bg-gray-50';
+            }
+            
+            // Hepsine tıklama özelliği veriyoruz (Boş olana bile, belki yanlışlıkla sildi geri ekleyecek)
             tr.innerHTML += `
-                <td onclick="ayDetayiniGoster(${ayIndex}, ${yil}, '${o}')" class="p-2 text-center ${aktifClass}">
+                <td onclick="ayDetayiniGoster(${ayIndex}, ${yil}, '${o}')" class="p-2 text-center transition-all rounded-lg cursor-pointer ${stil}">
                     ${hucreIcerik}
                 </td>`;
         });
