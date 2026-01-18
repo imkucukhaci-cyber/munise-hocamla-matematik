@@ -58,7 +58,10 @@ function cikisYap() {
     const modal = document.getElementById('cikisModal');
     if (modal) {
         modal.classList.remove('hidden');
-        modal.classList.add('flex'); // Flex ile ortalayarak aç
+        modal.classList.add('flex');
+        
+        // KRİTİK NOKTA: Arka planın kaymasını engelle
+        document.body.style.overflow = 'hidden'; 
     }
 }
 
@@ -67,6 +70,9 @@ function cikisIptal() {
     if (modal) {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
+        
+        // KRİTİK NOKTA: Kaydırmayı tekrar serbest bırak
+        document.body.style.overflow = ''; 
     }
 }
 
