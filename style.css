@@ -201,14 +201,23 @@ canvas {
    6. TARİH KUTUSU DÜZELTMESİ (MOBİL)
    ========================================= */
 input[type="date"] {
-    text-align: left !important; /* Sola yasla (Zorla) */
     display: block;
-    -webkit-appearance: none; /* iPhone varsayılan stilini kaldır */
+    -webkit-appearance: none; /* Tarayıcı stilini kapat */
+    appearance: none;
+    line-height: 50px !important; /* Satır yüksekliğini kutuyla eşitle */
+    padding-top: 0 !important;    /* Üst dolguyu sıfırla */
+    padding-bottom: 0 !important; /* Alt dolguyu sıfırla */
+    min-height: 50px;
 }
 
-/* Özellikle iOS Safari için gerekli kod: */
+/* iPhone (iOS) İçin Özel Hizalama */
 input[type="date"]::-webkit-date-and-time-value {
-    text-align: left !important; 
+    text-align: left;
+    margin: 0;
+    padding: 0;
+    line-height: 50px; /* iOS'ta yazıyı tam ortaya çiviler */
+    display: flex;
+    align-items: center;
 }
 
 /* HEADER ZORLAMA (MAVİ/ŞEFFAF SORUNU İÇİN) */
