@@ -210,3 +210,12 @@ input[type="date"] {
 input[type="date"]::-webkit-date-and-time-value {
     text-align: left !important; 
 }
+
+/* HEADER ZORLAMA (MAVİ/ŞEFFAF SORUNU İÇİN) */
+header {
+    background-color: #ffffff !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+}
