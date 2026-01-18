@@ -242,7 +242,7 @@ function ayarlariKaydet() {
             tercihKapat();
             
             // Havalı bildirimi göster
-            bildirimGoster("Ayarlar başarıyla güncellendi! ✅");
+            bildirimGoster("Ayarlar başarıyla güncellendi!");
             
             // Bildirim göründükten 1.5 saniye sonra sayfayı yenile
             setTimeout(() => {

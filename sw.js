@@ -1,4 +1,4 @@
-const cacheName = 'ders-takip-v19.72'; // Versiyonu v2 yaptık (önbellek tazelenmesi için)
+const cacheName = 'ders-takip-v19.73'; // Versiyonu v2 yaptık (önbellek tazelenmesi için)
 const staticAssets = [
   './',
   './index.html',
