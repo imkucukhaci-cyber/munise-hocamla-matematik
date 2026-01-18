@@ -339,7 +339,14 @@
                         </div>
 
                         <div class="w-full">
-                            <input type="date" id="kazancTarih" class="w-full h-[50px] px-4 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 bg-white outline-none focus:ring-2 focus:ring-emerald-500 transition text-left placeholder-gray-400">
+                            <input 
+                                type="text" 
+                                id="kazancTarih" 
+                                placeholder="Tarih Seçiniz" 
+                                onfocus="(this.type='date')" 
+                                onblur="(this.value ? this.type='date' : this.type='text')" 
+                                class="w-full h-[50px] px-4 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 bg-white outline-none focus:ring-2 focus:ring-emerald-500 transition text-left placeholder-gray-400"
+                            >
                         </div>
 
                         <div class="w-full relative">
