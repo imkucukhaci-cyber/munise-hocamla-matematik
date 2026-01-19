@@ -882,53 +882,110 @@ function dersCiz(ders) {
     
     if (!hucre) return;
 
-    const topPos = hucre.offsetTop;
-    const leftPos = hucre.offsetLeft;
-    const width = hucre.offsetWidth;
-    const height = hucre.offsetHeight;
-    const parcaSayisi = ders.sure / 0.5;
+    const parcaSayisi = ders.sure / 0.5; // Yarım saatlik dilimler
 
     const dersBlok = document.createElement("div");
-    dersBlok.className = "ders-blok animate-in fade-in zoom-in duration-300 shadow-md hover:shadow-xl transition-all cursor-pointer";
+    // Yeni Stil ve Animasyon Sınıfları
+    dersBlok.className = "absolute top-0 left-0 w-full z-20 animate-in fade-in zoom-in duration-300 shadow-md hover:shadow-xl transition-all cursor-pointer";
+    
+    // Kutunun yüksekliği (Ders süresine göre)
+    dersBlok.style.height = `calc(${parcaSayisi * 100}% + ${parcaSayisi - 1}px)`;
+    
+    // İç Tasarım
     dersBlok.innerHTML = `
         <div class="flex flex-col h-full justify-center px-1 md:px-2 bg-blue-100 border-l-4 border-blue-600 rounded-r-md overflow-hidden leading-tight">
             <span class="font-black text-[11px] md:text-xs text-blue-900 truncate">${ders.ogrenci}</span>
-            
             <span class="text-[10px] font-semibold text-blue-700 truncate opacity-80">${ders.duzey || ''}</span>
-            
             <span class="text-[9px] font-bold text-blue-500 mt-0.5">${ders.ucret} ₺</span>
         </div>
     `;
-    dersBlok.dataset.id = ders.id;
-
-    // Hücre içine göre göreceli konumlandırma
-    dersBlok.style.position = "absolute";
-    dersBlok.style.top = "0px";
-    dersBlok.style.left = "0px";
-    dersBlok.style.width = "100%";
-    dersBlok.style.height = `calc(${parcaSayisi * 100}% + ${parcaSayisi - 1}px)`;
-    dersBlok.style.zIndex = "20";
     
+    // --- VERİLERİ KUTUYA YAPIŞTIR (ÖNEMLİ KISIM) ---
+    dersBlok.dataset.id = ders.id;
+    dersBlok.dataset.ogrenci = ders.ogrenci; // İsmi de ekledik
+    dersBlok.dataset.saat = ders.baslangic;
+    dersBlok.dataset.sure = ders.sure;
+    dersBlok.dataset.ucret = ders.ucret;
+    dersBlok.dataset.iletisim = ders.iletisim || "-";
+    dersBlok.dataset.gun = ders.gun;
+    // -----------------------------------------------
+
+    // Tıklama Olayı: Yeni Modalı Aç
     dersBlok.onclick = function (e) { 
-        e.stopPropagation();
-        secimModalAc(this); 
+        e.stopPropagation(); // Arka plandaki hücreye tıklamayı engelle
+        secimGoster(this);   // Yeni fonksiyonu çağır
     };
     
     hucre.appendChild(dersBlok);
 }
+
 function tabloyuTemizle() {
     document.querySelectorAll(".ders-blok").forEach(b => b.remove());
 }
 
-function secimModalAc(blok) {
-    aktifBlok = blok;
-    document.getElementById("secimModalArka").style.display = "flex";
-    document.body.style.overflow = "hidden";
+/* =========================================
+   11. SEÇİM (DETAY) MODALI YÖNETİMİ
+   ========================================= */
+
+function secimGoster(div) {
+    aktifBlok = div; // Tıklanan kutuyu hafızaya al (Silme/Düzenleme için lazım)
+    
+    const modal = document.getElementById("secimModal");
+    
+    // Dataset'ten verileri çek
+    const ad = div.dataset.ogrenci;
+    const saat = div.dataset.saat;
+    const sure = div.dataset.sure;
+    const ucret = div.dataset.ucret;
+    const iletisim = div.dataset.iletisim;
+    const gunIndex = div.dataset.gun;
+
+    // 1. Başlık ve Tarih
+    document.getElementById("secimOgrenci").innerText = ad;
+    
+    // Saati formatla (14.5 -> 14:30)
+    const gunler = ["", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
+    let saatYazisi = saat;
+    if (!isNaN(saat)) {
+        const s = Math.floor(parseFloat(saat));
+        const d = (parseFloat(saat) % 1) * 60;
+        const dkStr = d === 0 ? "00" : d.toString();
+        saatYazisi = `${s}:${dkStr}`;
+    }
+    document.getElementById("secimTarihSaat").innerText = `${gunler[gunIndex]}, Saat ${saatYazisi}`;
+
+    // 2. Süre ve Ücret
+    const sureBirim = parseFloat(sure) <= 10 ? "Saat" : "dk"; // 1 Saat mi, 60 dk mı?
+    document.getElementById("secimSure").innerText = `${sure} ${sureBirim}`;
+    document.getElementById("secimUcret").innerText = `₺${ucret}`;
+
+    // 3. İletişim Bilgisi
+    const iletisimKutu = document.getElementById("secimIletisim");
+    if (iletisim && iletisim !== "-" && iletisim.length > 3) {
+        iletisimKutu.innerText = iletisim;
+        iletisimKutu.href = `tel:${iletisim}`;
+        iletisimKutu.classList.remove("text-gray-400", "pointer-events-none");
+        iletisimKutu.classList.add("text-blue-700", "hover:underline");
+    } else {
+        iletisimKutu.innerText = "Telefon Kayıtlı Değil";
+        iletisimKutu.href = "#";
+        iletisimKutu.classList.remove("text-blue-700", "hover:underline");
+        iletisimKutu.classList.add("text-gray-400", "pointer-events-none");
+    }
+
+    // Modalı Göster
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    document.body.style.overflow = "hidden"; // Arka planı kilitle
 }
 
 function secimKapat() {
-    document.getElementById("secimModalArka").style.display = "none";
-    document.body.style.overflow = "";
+    const modal = document.getElementById("secimModal");
+    if (modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        document.body.style.overflow = ""; // Kilidi aç
+    }
 }
 
 // GÜNCELLENMİŞ SİLME İSTEĞİ FONKSİYONU
