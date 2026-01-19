@@ -779,7 +779,7 @@ function dersEkle() {
 
     // 2. Tatil Kontrolü
     if (globalAyarlar && globalAyarlar.tatilGunleri && globalAyarlar.tatilGunleri.includes(Number(gun))) {
-        alert("Seçtiğiniz gün tatil olarak ayarlanmış! Ders ekleyemezsiniz.");
+        bildirimGoster("Seçtiğiniz gün tatil olarak ayarlanmış! Ders ekleyemezsiniz.", "hata");
         return;
     }
 

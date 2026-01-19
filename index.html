@@ -661,6 +661,29 @@
     </div>
 </div>
 
+<div id="silmeModal" class="fixed inset-0 bg-black/60 hidden z-[300] items-center justify-center backdrop-blur-sm transition-opacity">
+    <div class="bg-white rounded-2xl p-6 max-w-xs w-full mx-4 shadow-2xl animate-scale-up text-center">
+        
+        <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-red-100">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+        </div>
+
+        <h3 class="text-lg font-black text-gray-800 mb-2">Dersi Sil</h3>
+        <p class="text-gray-500 text-sm mb-6 font-medium">Bu ders kaydını silmek istediğinize emin misiniz? Bu işlem geri alınamaz.</p>
+
+        <div class="flex gap-3">
+            <button onclick="silmeIptal()" class="flex-1 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition text-sm">
+                Vazgeç
+            </button>
+            <button onclick="silmeOnayla()" class="flex-1 py-3 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition shadow-lg shadow-red-200 active:scale-95 text-sm">
+                Evet, Sil
+            </button>
+        </div>
+    </div>
+</div>
+
     <script src="script.js"></script>
     <script>
         // Service Worker Kaydı
