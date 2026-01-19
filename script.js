@@ -883,14 +883,16 @@ function dersCiz(ders) {
     if (!hucre) return;
 
     const parcaSayisi = ders.sure / 0.5; // Yarım saatlik dilimler
-
+   
     const dersBlok = document.createElement("div");
-    // Yeni Stil ve Animasyon Sınıfları
-    dersBlok.className = "absolute top-0 left-0 w-full z-20 animate-in fade-in zoom-in duration-300 shadow-md hover:shadow-xl transition-all cursor-pointer";
+    
+    // DÜZELTME: En başa 'ders-blok' sınıfını ekledik.
+    // Bu sınıf stil için değil, JavaScript'in kutuyu bulup silmesi için gerekli.
+    dersBlok.className = "ders-blok absolute top-0 left-0 w-full z-20 animate-in fade-in zoom-in duration-300 shadow-md hover:shadow-xl transition-all cursor-pointer";
     
     // Kutunun yüksekliği (Ders süresine göre)
     dersBlok.style.height = `calc(${parcaSayisi * 100}% + ${parcaSayisi - 1}px)`;
-    
+
     // İç Tasarım
     dersBlok.innerHTML = `
         <div class="flex flex-col h-full justify-center px-1 md:px-2 bg-blue-100 border-l-4 border-blue-600 rounded-r-md overflow-hidden leading-tight">
