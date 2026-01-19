@@ -1598,21 +1598,31 @@ function silmeIptal() {
 }
 
 // Evet, Sil Butonuna Basınca (DÜZELTİLMİŞ VERSİYON)
+// Evet, Sil Butonuna Basınca (HIZLANDIRILMIŞ VERSİYON)
 function silmeOnayla() {
-    // 1. Önce ID'yi güvenli bir değişkene al
+    // 1. Silinecek ID'yi al
     const idSil = window.silinecekDersId; 
 
     if (idSil) {
-        // 2. Şimdi pencereyi kapatabiliriz (Global değişken sıfırlansa bile elimizde 'idSil' var)
+        // 2. Modalı hemen kapat
         silmeIptal();
 
-        // 3. Yedeklediğimiz ID ile silme işlemini yap
+        // 3. ANINDA GÖRSEL MÜDAHALE: Veritabanını beklemeden kutuyu ekrandan söküp at
+        const silinecekKutu = document.querySelector(`.ders-blok[data-id="${idSil}"]`);
+        if (silinecekKutu) {
+            silinecekKutu.remove(); // Kutuyu HTML'den sil
+        }
+
+        // 4. Arka planda sessizce veritabanından sil
         database.ref(`kullanicilar/${aktifKullaniciId}/dersler/${idSil}`).remove()
             .then(() => {
                 bildirimGoster("Ders kaydı başarıyla silindi!");
+                // Not: Listener zaten çalışacak ve listeyi güncelleyecek ama biz görseli çoktan sildik.
             })
             .catch((error) => {
                 bildirimGoster("Silme hatası: " + error.message, "hata");
+                // Eğer veritabanında hata olursa, sayfayı yenile ki silinen ders geri gelsin (güvenlik için)
+                setTimeout(() => window.location.reload(), 2000);
             });
     }
 }
