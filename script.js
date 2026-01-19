@@ -250,7 +250,7 @@ function ayarlariKaydet() {
 
     // 5. Kontroller
     if(!hocaAd || !brans) {
-        alert("Lütfen adınızı ve branşınızı giriniz.");
+        bildirimGoster("Lütfen adınızı ve branşınızı giriniz.", "hata");
         return;
     }
 
@@ -802,7 +802,7 @@ function dersEkle() {
         // A) GÜNCELLEME MODU
         database.ref(`kullanicilar/${aktifKullaniciId}/dersler/${duzenlenecekDersId}`).update(dersVerisi)
             .then(() => {
-                alert("Ders başarıyla güncellendi! ✅");
+                bildirimGoster("Ders başarıyla güncellendi!");
                 formuSifirla(); // Butonu ve değişkeni eski haline getir
             });
     } else {
@@ -888,11 +888,22 @@ function secimKapat() {
     document.body.style.overflow = "";
 }
 
+// GÜNCELLENMİŞ SİLME İSTEĞİ FONKSİYONU
 function secimSil() {
     if (!aktifBlok) return;
-    if(confirm("Bu dersi programdan silmek istiyor musunuz?")) {
-        database.ref(`kullanicilar/${aktifKullaniciId}/dersler/${aktifBlok.dataset.id}`).remove();
-        secimKapat();
+    
+    // 1. Silinecek dersin ID'sini hafızaya al (Global değişken kullanacağız)
+    window.silinecekDersId = aktifBlok.dataset.id;
+    
+    // 2. Seçim penceresini (turuncu/kırmızı butonlu olanı) kapat
+    secimKapat();
+    
+    // 3. Bizim yeni kırmızı onay kutusunu aç
+    const modal = document.getElementById('silmeModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden'; // Arka planı dondur
     }
 }
 
@@ -902,7 +913,7 @@ function kazancEkle() {
     const sure = parseFloat(document.getElementById("kazancSure").value);
     const odemeAlindi = document.getElementById("kazancOdeme").checked;
 
-    if (!ogrenci || !tarih || !sure) { alert("Lütfen tüm alanları doldurun."); return; }
+    if (!ogrenci || !tarih || !sure) { bildirimGoster("Lütfen tüm alanları doldurun.", "hata"); return; }
 
     const dersProg = dersler.find(d => d.ogrenci === ogrenci);
     const ucret = dersProg ? Number(dersProg.ucret) : 0;
@@ -910,7 +921,7 @@ function kazancEkle() {
     database.ref(`kullanicilar/${aktifKullaniciId}/kazanclar`).push({
         ogrenci, tarih, sure, ucret, odemeDurumu: odemeAlindi
     });
-    alert("Ders kaydedildi!");
+    bildirimGoster("Ders kaydedildi!");
 }
 
 
@@ -1466,4 +1477,41 @@ function ogrenciListesiOlustur() {
         `;
         container.appendChild(kart);
     });
+}
+
+/* =========================================
+   12. SİLME MODALI FONKSİYONLARI (YENİ)
+   ========================================= */
+// Silinecek ID'yi tutacak değişken
+window.silinecekDersId = null;
+
+// Vazgeç Butonuna Basınca
+function silmeIptal() {
+    window.silinecekDersId = null; // Hafızayı temizle
+    
+    const modal = document.getElementById('silmeModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = ''; // Kilidi aç
+    }
+}
+
+// Evet, Sil Butonuna Basınca
+function silmeOnayla() {
+    if (window.silinecekDersId) {
+        // Önce pencereyi kapat
+        silmeIptal();
+
+        // Firebase'den veriyi sil
+        database.ref(`kullanicilar/${aktifKullaniciId}/dersler/${window.silinecekDersId}`).remove()
+            .then(() => {
+                // Başarılı olunca yeşil tikli bildirimi göster
+                bildirimGoster("Ders kaydı başarıyla silindi!");
+                // Not: Takvim zaten "on('value')" ile dinlendiği için otomatik güncellenir.
+            })
+            .catch((error) => {
+                bildirimGoster("Silme hatası: " + error.message, "hata");
+            });
+    }
 }
