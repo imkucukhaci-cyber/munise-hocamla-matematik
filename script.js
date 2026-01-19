@@ -922,7 +922,14 @@ function dersCiz(ders) {
 }
 
 function tabloyuTemizle() {
-    document.querySelectorAll(".ders-blok").forEach(b => b.remove());
+    // ESKİ YÖNTEM: Sadece .ders-blok sınıfı olanları siliyordu (Hatalı)
+    // document.querySelectorAll(".ders-blok").forEach(b => b.remove());
+
+    // YENİ "NÜKLEER" YÖNTEM: Tüm hücrelerin içini boşalt (Kesin Çözüm)
+    // ID'si 'hucre-' ile başlayan tüm tablo gözlerini bul ve temizle
+    document.querySelectorAll("[id^='hucre-']").forEach(hucre => {
+        hucre.innerHTML = "";
+    });
 }
 
 /* =========================================
@@ -1599,31 +1606,29 @@ function silmeIptal() {
     }
 }
 
-// Evet, Sil Butonuna Basınca (DÜZELTİLMİŞ VERSİYON)
-// Evet, Sil Butonuna Basınca (HIZLANDIRILMIŞ VERSİYON)
+// Evet, Sil Butonuna Basınca (KESİN ÇÖZÜM VERSİYONU)
 function silmeOnayla() {
-    // 1. Silinecek ID'yi al
     const idSil = window.silinecekDersId; 
 
     if (idSil) {
-        // 2. Modalı hemen kapat
+        // 1. Modalı kapat
         silmeIptal();
 
-        // 3. ANINDA GÖRSEL MÜDAHALE: Veritabanını beklemeden kutuyu ekrandan söküp at
-        const silinecekKutu = document.querySelector(`.ders-blok[data-id="${idSil}"]`);
+        // 2. GÖRSEL MÜDAHALE: Sınıf ismine bakmaksızın, ID'si tutan DIV'i bul ve sil
+        // (Önceki kodda .ders-blok şartı vardı, şimdi kaldırdık)
+        const silinecekKutu = document.querySelector(`div[data-id="${idSil}"]`);
         if (silinecekKutu) {
-            silinecekKutu.remove(); // Kutuyu HTML'den sil
+            silinecekKutu.remove(); 
         }
 
-        // 4. Arka planda sessizce veritabanından sil
+        // 3. Veritabanından sil
         database.ref(`kullanicilar/${aktifKullaniciId}/dersler/${idSil}`).remove()
             .then(() => {
                 bildirimGoster("Ders kaydı başarıyla silindi!");
-                // Not: Listener zaten çalışacak ve listeyi güncelleyecek ama biz görseli çoktan sildik.
             })
             .catch((error) => {
                 bildirimGoster("Silme hatası: " + error.message, "hata");
-                // Eğer veritabanında hata olursa, sayfayı yenile ki silinen ders geri gelsin (güvenlik için)
+                // Hata olursa sayfayı yenile (Güvenlik önlemi)
                 setTimeout(() => window.location.reload(), 2000);
             });
     }
