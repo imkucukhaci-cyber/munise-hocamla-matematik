@@ -779,12 +779,12 @@ function dersEkle() {
 
     // 2. Tatil Kontrolü
     if (globalAyarlar && globalAyarlar.tatilGunleri && globalAyarlar.tatilGunleri.includes(Number(gun))) {
-        bildirimGoster("Seçtiğiniz gün tatil olarak ayarlanmış! Ders ekleyemezsiniz.", "hata");
+        bildirimGoster("Seçtiğiniz gün tatil olarak ayarlanmış!", "hata");
         return;
     }
 
     // 3. Eksik Bilgi Kontrolü
-    if (!ogrenci || !ucret) { alert("Eksik bilgi girdiniz."); return; }
+    if (!ogrenci || !ucret) { bildirimGoster("Eksik bilgi girdiniz.", "hata"); return; }
     
     const dersVerisi = { 
         ogrenci, 
