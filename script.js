@@ -786,6 +786,35 @@ function dersEkle() {
     // 3. Eksik Bilgi Kontrolü
     if (!ogrenci || !ucret) { bildirimGoster("Eksik bilgi girdiniz.", "hata"); return; }
     
+    //ÇAKIŞMA KONTROLÜ BAŞLANGIÇ 🔥
+    // 1. Yeni dersin başlangıç ve bitiş dakikasını hesapla
+    const yeniBaslangic = dakikayaCevir(secilenSaat);
+    const yeniSure = parseInt(secilenSure) || 60; // Seçili süre yoksa 60 dk say
+    const yeniBitis = yeniBaslangic + yeniSure;
+
+    // 2. Mevcut dersleri döngüyle kontrol et
+    const cakismaVar = dersler.find(ders => {
+        // Eğer düzenleme yapıyorsak, kendi kendisiyle çakışmasını engelle
+        if (duzenlenecekDersId && ders.id === duzenlenecekDersId) return false;
+
+        // Farklı günlerdeyse çakışma olmaz
+        if (parseInt(ders.gun) !== parseInt(secilenGun)) return false;
+
+        // Mevcut dersin zaman aralığını hesapla
+        const mevcutBaslangic = dakikayaCevir(ders.saat || ders.baslangic);
+        const mevcutSure = parseInt(ders.sure) || 60;
+        const mevcutBitis = mevcutBaslangic + mevcutSure;
+
+        // MATEMATİKSEL ÇAKIŞMA FORMÜLÜ:
+        // (Yeni Başlangıç < Mevcut Bitiş) VE (Yeni Bitiş > Mevcut Başlangıç)
+        return (yeniBaslangic < mevcutBitis && yeniBitis > mevcutBaslangic);
+    });
+
+    if (cakismaVar) {
+        bildirimGoster(`Dikkat! Saat ${cakisma.saat || cakisma.baslangic}'da ${cakisma.ogrenci} ile dersiniz var!`, "hata");
+        return; // İşlemi durdur, kaydetme!
+    }
+
     const dersVerisi = { 
         ogrenci, 
         iletisim, 
@@ -1515,4 +1544,13 @@ function silmeOnayla() {
                 bildirimGoster("Silme hatası: " + error.message, "hata");
             });
     }
+}
+
+/* =========================================
+   YARDIMCI: SAATİ DAKİKAYA ÇEVİRME
+   ========================================= */
+function dakikayaCevir(saatStr) {
+    if (!saatStr) return 0;
+    const [saat, dakika] = saatStr.split(":").map(Number);
+    return (saat * 60) + dakika;
 }
