@@ -1497,18 +1497,19 @@ function silmeIptal() {
     }
 }
 
-// Evet, Sil Butonuna Basınca
+// Evet, Sil Butonuna Basınca (DÜZELTİLMİŞ VERSİYON)
 function silmeOnayla() {
-    if (window.silinecekDersId) {
-        // Önce pencereyi kapat
+    // 1. Önce ID'yi güvenli bir değişkene al
+    const idSil = window.silinecekDersId; 
+
+    if (idSil) {
+        // 2. Şimdi pencereyi kapatabiliriz (Global değişken sıfırlansa bile elimizde 'idSil' var)
         silmeIptal();
 
-        // Firebase'den veriyi sil
-        database.ref(`kullanicilar/${aktifKullaniciId}/dersler/${window.silinecekDersId}`).remove()
+        // 3. Yedeklediğimiz ID ile silme işlemini yap
+        database.ref(`kullanicilar/${aktifKullaniciId}/dersler/${idSil}`).remove()
             .then(() => {
-                // Başarılı olunca yeşil tikli bildirimi göster
                 bildirimGoster("Ders kaydı başarıyla silindi!");
-                // Not: Takvim zaten "on('value')" ile dinlendiği için otomatik güncellenir.
             })
             .catch((error) => {
                 bildirimGoster("Silme hatası: " + error.message, "hata");
