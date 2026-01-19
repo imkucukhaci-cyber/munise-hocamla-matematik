@@ -783,14 +783,20 @@ function dersEkle() {
         return;
     }
 
-    // 3. Eksik Bilgi Kontrolü
-    if (!ogrenci || !ucret) { bildirimGoster("Eksik bilgi girdiniz.", "hata"); return; }
+    // 3. Eksik Bilgi Kontrolü (Sıfır değeri kontrolü için !baslangic yerine isNaN kullandık)
+    if (!ogrenci || !ucret || !gun || isNaN(baslangic) || isNaN(sure)) { 
+        bildirimGoster("Eksik bilgi girdiniz. Lütfen tüm alanları doldurun.", "hata"); 
+        return; 
+    }
     
-    //ÇAKIŞMA KONTROLÜ BAŞLANGIÇ 🔥
-    // 1. Yeni dersin başlangıç ve bitiş dakikasını hesapla
-    const yeniBaslangic = dakikayaCevir(secilenSaat);
-    const yeniSure = parseInt(secilenSure) || 60; // Seçili süre yoksa 60 dk say
-    const yeniBitis = yeniBaslangic + yeniSure;
+    // ============================================================
+    // 🔥 ÇAKIŞMA KONTROLÜ (DÜZELTİLMİŞ VERSİYON) 🔥
+    // ============================================================
+    
+    // 1. Yeni dersin başlangıç ve bitişini dakikaya çevir (Senin sisteminde saat 13.5 gibi geliyor)
+    const yeniBaslangicDk = baslangic * 60; 
+    const yeniSureDk = sure * 60; 
+    const yeniBitisDk = yeniBaslangicDk + yeniSureDk;
 
     // 2. Mevcut dersleri döngüyle kontrol et
     const cakismaVar = dersler.find(ders => {
@@ -798,22 +804,28 @@ function dersEkle() {
         if (duzenlenecekDersId && ders.id === duzenlenecekDersId) return false;
 
         // Farklı günlerdeyse çakışma olmaz
-        if (parseInt(ders.gun) !== parseInt(secilenGun)) return false;
+        if (parseInt(ders.gun) !== parseInt(gun)) return false;
 
         // Mevcut dersin zaman aralığını hesapla
-        const mevcutBaslangic = dakikayaCevir(ders.saat || ders.baslangic);
-        const mevcutSure = parseInt(ders.sure) || 60;
-        const mevcutBitis = mevcutBaslangic + mevcutSure;
+        // Veritabanından gelen veri string olabilir, float'a çeviriyoruz
+        const mevcutBaslangicDk = parseFloat(ders.baslangic) * 60;
+        const mevcutSureDk = parseFloat(ders.sure) * 60;
+        const mevcutBitisDk = mevcutBaslangicDk + mevcutSureDk;
 
         // MATEMATİKSEL ÇAKIŞMA FORMÜLÜ:
         // (Yeni Başlangıç < Mevcut Bitiş) VE (Yeni Bitiş > Mevcut Başlangıç)
-        return (yeniBaslangic < mevcutBitis && yeniBitis > mevcutBaslangic);
+        return (yeniBaslangicDk < mevcutBitisDk && yeniBitisDk > mevcutBaslangicDk);
     });
 
     if (cakismaVar) {
-        bildirimGoster(`Dikkat! Saat ${cakisma.saat || cakisma.baslangic}'da ${cakisma.ogrenci} ile dersiniz var!`, "hata");
+        // Çakışan dersin saatini formatlayarak gösterelim (örn: 13.5 -> 13:30)
+        const cakisanSaat = cakismaVar.baslangic % 1 === 0 ? `${cakismaVar.baslangic}:00` : `${Math.floor(cakismaVar.baslangic)}:30`;
+        bildirimGoster(`Dikkat! Saat ${cakisanSaat}'da ${cakismaVar.ogrenci} ile dersiniz var!`, "hata");
         return; // İşlemi durdur, kaydetme!
     }
+    // ============================================================
+    // 🔥 KONTROL BİTİŞ 🔥
+    // ============================================================
 
     const dersVerisi = { 
         ogrenci, 
@@ -836,12 +848,14 @@ function dersEkle() {
             });
     } else {
         // B) YENİ EKLEME MODU
-        database.ref(`kullanicilar/${aktifKullaniciId}/dersler`).push(dersVerisi);
-        // Formu temizle (Sadece inputları)
-        document.getElementById("ogrenci").value = "";
-        document.getElementById("iletisim").value = "";
-        document.getElementById("duzey").value = "";
-        // Diğerleri (Saat vb.) kalsın, belki peş peşe ekler
+        database.ref(`kullanicilar/${aktifKullaniciId}/dersler`).push(dersVerisi)
+            .then(() => {
+                bildirimGoster("Öğrenci başarıyla kaydedildi!");
+                // Formu temizle (Sadece inputları, saatler kalsın seri ekleme için)
+                document.getElementById("ogrenci").value = "";
+                document.getElementById("iletisim").value = "";
+                document.getElementById("duzey").value = "";
+            });
     }
 }
 
