@@ -1500,6 +1500,9 @@ function raporModuDegistir() {
 }
 
 // 2. Öğrenci Listesini Oluşturma ve Gruplama (DÜZELTİLMİŞ VERSİYON)
+/* =========================================
+   2. ÖĞRENCİ LİSTESİ OLUŞTURMA (SAAT FORMATLI)
+   ========================================= */
 function ogrenciListesiOlustur() {
     const container = document.getElementById("ogrenciListesiContainer");
     container.innerHTML = "";
@@ -1525,12 +1528,28 @@ function ogrenciListesiOlustur() {
         
         const gunler = ["", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
         
-        // DÜZELTME 1: Saati 'baslangic' olarak al, yoksa 'saat'i dene, o da yoksa '-' koy
-        let dersSaati = ders.baslangic || ders.saat || "-";
+        // --- SAAT FORMATLAMA (YENİ KISIM) ---
+        let hamSaat = parseFloat(ders.baslangic || ders.saat);
+        let formatliSaat = "-";
+
+        if (!isNaN(hamSaat)) {
+            // Saati ve dakikayı matematiksel olarak ayır
+            let sa = Math.floor(hamSaat);
+            let dk = Math.round((hamSaat - sa) * 60);
+            
+            // Dakika tek haneli ise başına 0 koy (0 -> 00, 5 -> 05)
+            let dkYazi = dk < 10 ? "0" + dk : dk;
+            
+            // Saat tek haneli ise başına 0 koy (9 -> 09) - Daha düzenli durur
+            let saYazi = sa < 10 ? "0" + sa : sa;
+
+            formatliSaat = `${saYazi}:${dkYazi}`;
+        }
+        // ------------------------------------
 
         ogrenciMap[ders.ogrenci].dersler.push({
             gun: gunler[ders.gun],
-            saat: dersSaati,
+            saat: formatliSaat, // Artık "09:30" gibi gelecek
             sure: ders.sure
         });
     });
@@ -1543,9 +1562,7 @@ function ogrenciListesiOlustur() {
         let dersProgramiHtml = "";
         
         ogr.dersler.forEach(d => {
-            // DÜZELTME 2: Akıllı Süre Gösterimi
-            // Eğer süre 10'dan küçükse (1, 2, 1.5 gibi) "Saat" yaz.
-            // Eğer 10'dan büyükse (30, 40, 60 gibi) "dk" yaz.
+            // Akıllı Süre Gösterimi (Saat/dk)
             let sureBirimi = parseFloat(d.sure) <= 10 ? "Saat" : "dk";
 
             dersProgramiHtml += `<span class="inline-block bg-orange-50 text-orange-600 text-[10px] font-bold px-2 py-1 rounded-md mr-1 mb-1 border border-orange-100">
