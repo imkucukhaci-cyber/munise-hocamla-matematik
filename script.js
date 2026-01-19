@@ -1313,7 +1313,7 @@ document.addEventListener('touchstart', function(event) {
     sonDokunmaZamani = simdi;
 }, { passive: false });
 
-// Profesyonel Bildirim Gösterme Fonksiyonu
+// Profesyonel Bildirim Gösterme Fonksiyonu (SVG İkonlu)
 function bildirimGoster(mesaj, tur = "basarili") {
     const kutu = document.getElementById("bildirimKutusu");
     const metin = document.getElementById("bildirimMetin");
@@ -1323,11 +1323,19 @@ function bildirimGoster(mesaj, tur = "basarili") {
     metin.innerText = mesaj;
     
     if (tur === "basarili") {
-        kutu.className = "fixed top-4 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-4 rounded-full shadow-2xl z-[10000] flex items-center gap-3 transition-all";
-        ikon.innerText = "✅";
+        // BAŞARILI DURUMU (Yeşil Yuvarlak Tik)
+        kutu.className = "fixed top-4 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-4 rounded-full shadow-2xl z-[10000] flex items-center gap-3 transition-all border border-gray-700";
+        ikon.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>`;
     } else {
-        kutu.className = "fixed top-4 left-1/2 -translate-x-1/2 bg-red-600 text-white px-6 py-4 rounded-full shadow-2xl z-[10000] flex items-center gap-3 transition-all";
-        ikon.innerText = "⚠️";
+        // HATA DURUMU (Kırmızı Yuvarlak Ünlem)
+        kutu.className = "fixed top-4 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-4 rounded-full shadow-2xl z-[10000] flex items-center gap-3 transition-all border border-gray-700";
+        ikon.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>`;
     }
 
     // Göster
@@ -1339,7 +1347,6 @@ function bildirimGoster(mesaj, tur = "basarili") {
     setTimeout(() => {
         kutu.classList.remove("bildirim-goster");
         kutu.classList.add("bildirim-gizle");
-        // Animasyon bitince hidden yap
         setTimeout(() => { kutu.classList.add("hidden"); }, 500);
     }, 3000);
 }
