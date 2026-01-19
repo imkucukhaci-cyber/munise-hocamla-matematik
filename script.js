@@ -1372,7 +1372,7 @@ function raporModuDegistir() {
     }
 }
 
-// 2. Öğrenci Listesini Oluşturma ve Gruplama
+// 2. Öğrenci Listesini Oluşturma ve Gruplama (DÜZELTİLMİŞ VERSİYON)
 function ogrenciListesiOlustur() {
     const container = document.getElementById("ogrenciListesiContainer");
     container.innerHTML = "";
@@ -1382,7 +1382,7 @@ function ogrenciListesiOlustur() {
         return;
     }
 
-    // Öğrencileri İsimlerine Göre Grupla (Aynı öğrencinin birden fazla dersi olabilir)
+    // Öğrencileri Grupla
     const ogrenciMap = {};
 
     dersler.forEach(ders => {
@@ -1392,14 +1392,18 @@ function ogrenciListesiOlustur() {
                 iletisim: ders.iletisim || "-",
                 ucret: ders.ucret,
                 duzey: ders.duzey || "Belirtilmedi",
-                dersler: [] // Hangi günler geldiğini tutacağız
+                dersler: [] 
             };
         }
-        // Gün ismini al (1=Pazartesi...)
+        
         const gunler = ["", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"];
+        
+        // DÜZELTME 1: Saati 'baslangic' olarak al, yoksa 'saat'i dene, o da yoksa '-' koy
+        let dersSaati = ders.baslangic || ders.saat || "-";
+
         ogrenciMap[ders.ogrenci].dersler.push({
             gun: gunler[ders.gun],
-            saat: ders.saat,
+            saat: dersSaati,
             sure: ders.sure
         });
     });
@@ -1407,14 +1411,22 @@ function ogrenciListesiOlustur() {
     // İsim sırasına göre diz
     const siraliOgrenciler = Object.values(ogrenciMap).sort((a, b) => a.ad.localeCompare(b.ad));
 
-    // HTML Kartlarını Bas
+    // Kartları Oluştur
     siraliOgrenciler.forEach(ogr => {
         let dersProgramiHtml = "";
+        
         ogr.dersler.forEach(d => {
-            dersProgramiHtml += `<span class="inline-block bg-orange-50 text-orange-600 text-[10px] font-bold px-2 py-1 rounded-md mr-1 mb-1 border border-orange-100">${d.gun} ${d.saat} (${d.sure}dk)</span>`;
+            // DÜZELTME 2: Akıllı Süre Gösterimi
+            // Eğer süre 10'dan küçükse (1, 2, 1.5 gibi) "Saat" yaz.
+            // Eğer 10'dan büyükse (30, 40, 60 gibi) "dk" yaz.
+            let sureBirimi = parseFloat(d.sure) <= 10 ? "Saat" : "dk";
+
+            dersProgramiHtml += `<span class="inline-block bg-orange-50 text-orange-600 text-[10px] font-bold px-2 py-1 rounded-md mr-1 mb-1 border border-orange-100">
+                ${d.gun} ${d.saat} (${d.sure} ${sureBirimi})
+            </span>`;
         });
 
-        // Telefon linki (Tıklayınca arar)
+        // Telefon linki
         let telHtml = ogr.iletisim !== "-" 
             ? `<a href="tel:${ogr.iletisim}" class="text-blue-500 hover:underline flex items-center gap-1"><span class="text-xs">📞</span>${ogr.iletisim}</a>` 
             : `<span class="text-gray-400 text-xs">Tel Yok</span>`;

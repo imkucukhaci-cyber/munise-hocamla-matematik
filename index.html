@@ -365,7 +365,7 @@
                             <span class="text-sm font-bold text-gray-600 select-none">Ödeme Alındı</span>
                         </div>
 
-                        <button onclick="kazancEkle()" class="w-full h-[50px] bg-emerald-600 text-white font-black rounded-xl hover:bg-emerald-700 transition shadow shadow-emerald-200 active:scale-95 text-sm flex items-center justify-center gap-2 mt-1">
+                        <button onclick="kazancEkle()" class="w-full h-[50px] bg-emerald-600 text-white font-black rounded-xl hover:bg-emerald-700 transition shadow shadow-emerald-200 active:scale-95 flex items-center justify-center gap-2 mt-1">
                             <span>Dersi Kaydet</span>
                         </button>
                     </div>
@@ -396,7 +396,7 @@
                 </div>
             </div>
 
-<section id="raporSayfa" class="hidden animate-fade-in pb-24">
+<section id="raporSayfa" class="sayfa-bolum hidden animate-fade-in pb-24">
         <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-6">
             <h2 class="text-xl font-black mb-6 flex items-center gap-2 text-gray-800">
                 📈 Detaylı Raporlar
@@ -406,8 +406,8 @@
                 <label class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1 block">RAPOR TÜRÜ</label>
                 <div class="relative">
                     <select id="raporTuru" onchange="raporModuDegistir()" class="w-full h-[50px] px-4 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 bg-gray-50 outline-none focus:ring-2 focus:ring-orange-500 transition appearance-none">
-                        <option value="finansal">💰 Finansal & Ders Raporu</option>
-                        <option value="ogrenci">👨‍🎓 Kayıtlı Öğrenci Listesi</option>
+                        <option value="finansal">Finansal & Ders Raporu</option>
+                        <option value="ogrenci">Kayıtlı Öğrenci Listesi</option>
                     </select>
                     <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">▼</div>
                 </div>
